@@ -6,7 +6,7 @@ A library of string validators and sanitizers, based on the js library [validato
 
 ## Rationale
 Why not use popular go libraries like [Package validator](https://github.com/go-playground/validator) or [govalidator](https://github.com/asaskevich/govalidator)? Because they focus on validating structs rather than standalone strings and do not have a robust library of validators as the original js [validator.js](https://github.com/validatorjs/validator.js) package it was based on.
-I made this project so that can work that i can actually work on another go open source library called [ginvalidator](https://github.com/bube054/ginvalidator), a go version of the popular node/express library [express-validator](https://express-validator.github.io/docs/). Seeing that the most popular libraries in the go ecosystem where either overkill, not as robust, not a good fit for my project, I decided to make my own library.
+I made this project so that can work that i can actually work on another go open source library called [ginvalidator](https://github.com/bube054/ginvalidator), a go version of the popular node/express library [express-validator](https://express-validator.github.io/docs/). Seeing that the most popular libraries in the go ecosystem where either overkill, not as robust or not a good fit for my use case, I decided to make my own library.
 
 ## Installation
 Using go get.
