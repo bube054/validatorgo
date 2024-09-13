@@ -33,8 +33,6 @@ If you are unhappy using the long validatorgo, you can do something like this.
     fmt.Println(validId) // true
   }
  ```
-This library is v0(unstable) and follows SemVer strictly.
-This library has no dependencies outside the Go standard library.
 
 # Validators
 Here is a list of the validators currently available.
