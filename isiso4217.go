@@ -1,4 +1,4 @@
-package govalidator
+package validatorgo
 
 var AllISO4217Codes = [...]string{
 	"AED", "AFN", "ALL", "AMD", "ANG", "AOA", "ARS", "AUD", "AWG", "AZN",

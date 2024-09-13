@@ -1,4 +1,4 @@
-package govalidator
+package validatorgo
 
 import (
 	"fmt"
@@ -7,11 +7,11 @@ import (
 )
 
 type IsIntOpts struct {
-	Min                *int
-	Max                *int
+	Min *int
+	Max *int
 
-	Gt                 *int
-	Lt                 *int
+	Gt *int
+	Lt *int
 
 	AllowLeadingZeroes bool
 }
@@ -41,13 +41,13 @@ func IsInt(str string, opts IsIntOpts) bool {
 	fmt.Println("Passes regex and conversion")
 
 	withinLimits := true
-	
+
 	if opts.Min != nil {
 		fmt.Println("within min")
 		isMin := *(opts.Min) <= strInt
 		withinLimits = withinLimits && isMin
 	}
-	
+
 	if opts.Max != nil {
 		fmt.Println("within max")
 		isMax := *(opts.Max) >= strInt
@@ -57,13 +57,13 @@ func IsInt(str string, opts IsIntOpts) bool {
 	fmt.Println(strInt, withinLimits)
 
 	if opts.Lt != nil {
-		isMin :=  strInt < *(opts.Lt)
+		isMin := strInt < *(opts.Lt)
 		withinLimits = withinLimits && isMin
 		fmt.Println("within lt", withinLimits)
 	}
-	
+
 	if opts.Gt != nil {
-		isMax :=  strInt > *(opts.Gt)
+		isMax := strInt > *(opts.Gt)
 		withinLimits = withinLimits && isMax
 		fmt.Println("within gt", withinLimits)
 	}

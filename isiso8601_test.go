@@ -1,4 +1,4 @@
-package govalidator
+package validatorgo
 
 import "testing"
 
@@ -53,8 +53,6 @@ func TestIsISO8601(t *testing.T) {
 		{name: "Invalid, slashes / used in date", param1: "2023/09/05T14:30:00", param2: IsISO8601Opts{StrictSeparator: true, Strict: true}, want: false},
 		{name: "Invalid, dots used in date", param1: "2023.09.05T14:30:00", param2: IsISO8601Opts{StrictSeparator: true, Strict: true}, want: false},
 		{name: "Invalid, spaces used in time", param1: "2023-09-05T14 30 00", param2: IsISO8601Opts{StrictSeparator: true, Strict: true}, want: false},
-
-
 	}
 
 	for _, test := range tests {

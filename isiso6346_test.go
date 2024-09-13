@@ -1,4 +1,4 @@
-package govalidator
+package validatorgo
 
 import "testing"
 
@@ -21,7 +21,6 @@ func TestIsISO6346(t *testing.T) {
 		{name: "Serial number too long", param1: "APLZ32165488", want: false},
 		{name: "Missing one digit in serial number", param1: "CMAU765432", want: false},
 		{name: "Wrong check digit", param1: "CMAU7654329", want: false},
-
 	}
 
 	for _, test := range tests {

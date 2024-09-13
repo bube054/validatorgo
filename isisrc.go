@@ -1,4 +1,4 @@
-package govalidator
+package validatorgo
 
 import (
 	"fmt"

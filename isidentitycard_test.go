@@ -1,4 +1,4 @@
-package govalidator
+package validatorgo
 
 import "testing"
 
@@ -61,9 +61,8 @@ func TestIsIdentityCard(t *testing.T) {
 		{name: "Invalid Pakistan", param1: "123456789012", param2: "PK", want: false},
 
 		// Tests for locales not in the list
-		{name: "Valid with Unrecognized Locale", param1: "1234567890123", param2: "XX", want: true},  
+		{name: "Valid with Unrecognized Locale", param1: "1234567890123", param2: "XX", want: true},
 		{name: "Invalid with Unrecognized Locale", param1: "12345678901239009", param2: "YY", want: false},
-
 	}
 
 	for _, test := range tests {

@@ -1,4 +1,4 @@
-package govalidator
+package validatorgo
 
 var AllISO31661Alpha2 = [...]string{"AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT",
 	"AU", "AV", "AW", "AX", "AY", "AZ",
