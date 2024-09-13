@@ -27,7 +27,7 @@ If you are unhappy using the long validatorgo, you can do something like this.
     vgo "github.com/bube054/validatorgo"
   )
  ```
-Simple example usage
+Simple example
  ```go
   func main(){
     id := "5f2a6c69e1d7a4e0077b4e6b"
