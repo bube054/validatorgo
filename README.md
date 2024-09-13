@@ -40,7 +40,7 @@ Simple example usage
 Here is a list of the validators currently available.
 | s/n | Validator |  description  | 
 |:-----|:--------:| :--------|
-| 1 | Contains | A validator that checks if the string contains the seed. ==ContainsOpt== is a struct that defaults to =={ IgnoreCase: false, MinOccurrences: 1 }==. <br /> Options: <br /> ==IgnoreCase==: Ignore case when doing comparison, default false.<br /> ==MinOccurrences==: Minimum number of occurrences for the seed in the string. Defaults to 1.|
+| 1 | Contains | A validator that checks if the string contains the seed. <mark>ContainsOpt</mark> is a struct that defaults to <mark>{ IgnoreCase: false, MinOccurrences: 1 }</mark>. <br /> Options: <br /> <mark>IgnoreCase</mark>: Ignore case when doing comparison, default false.<br /> <mark>MinOccurrences</mark>: Minimum number of occurrences for the seed in the string. Defaults to 1.|
 
 # Sanitizers
 Here is a list of the validators currently available.
