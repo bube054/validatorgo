@@ -15,11 +15,23 @@ Using go get.
  ```
 Then import the package into your own code.
  ```go
-  import "github.com/bube054/validatorgo"
+  import (
+    "fmt"
+    "github.com/bube054/validatorgo"
+  )
  ```
 If you are unhappy using the long validatorgo, you can do something like this.
  ```go
-  import gv "github.com/bube054/validatorgo"
+  import (
+    "fmt"
+    vgo "github.com/bube054/validatorgo"
+  )
+
+  func main(){
+    id := "5f2a6c69e1d7a4e0077b4e6b"
+    validId := vgo.IsMongoID(id)
+    fmt.Println(validId) // true
+  }
  ```
 This library is v0(unstable) and follows SemVer strictly.
 This library has no dependencies outside the Go standard library.
