@@ -26,7 +26,9 @@ If you are unhappy using the long validatorgo, you can do something like this.
     "fmt"
     vgo "github.com/bube054/validatorgo"
   )
-
+ ```
+Simple example usage
+ ```go
   func main(){
     id := "5f2a6c69e1d7a4e0077b4e6b"
     validId := vgo.IsMongoID(id)
@@ -36,13 +38,13 @@ If you are unhappy using the long validatorgo, you can do something like this.
 
 # Validators
 Here is a list of the validators currently available.
-| s/n | Validator |  docs  | 
+| s/n | Validator |  description  | 
 |:-----|:--------:| :--------|
-|  |  | |
+| 1 | Contains | A validator that checks if the string contains the seed. ==ContainsOpt== is a struct that defaults to =={ IgnoreCase: false, MinOccurrences: 1 }==. <br /> Options: <br /> ==IgnoreCase==: Ignore case when doing comparison, default false.<br /> ==MinOccurrences==: Minimum number of occurrences for the seed in the string. Defaults to 1.|
 
 # Sanitizers
 Here is a list of the validators currently available.
-| s/n | Sanitizer |  docs  | 
+| s/n | Sanitizer |  description  | 
 |:-----|:--------:| :--------|
 |  |  | |
 

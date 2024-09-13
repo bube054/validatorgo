@@ -10,27 +10,29 @@ func TestContains(t *testing.T) {
 		param3 ContainsOpt
 		want   bool
 	}{
-		{
-			name:   "1",
-			param1: "Hello, world! Hello, universe!",
-			param2: "hello",
-			param3: ContainsOpt{IgnoreCase: true},
-			want:   true,
-		},
-		{
-			name:   "2",
-			param1: "Hello, world! Hello, universe!",
-			param2: "Hello",
-			param3: ContainsOpt{MinOccurrences: 2},
-			want:   true,
-		},
-		{
-			name:   "3",
-			param1: "Hello, world! Hello, universe!",
-			param2: "Hello",
-			param3: ContainsOpt{MinOccurrences: 3},
-			want:   false,
-		},
+		// Valid default config
+		{name: "Basic match", param1: "hello world", param2: "world", param3: ContainsOpt{}, want: true},
+		{name: "Basic match digits", param1: "abc123", param2: "123", param3: ContainsOpt{}, want: true},
+
+		// Valid with ignoreCase true
+		{name: "Case-insensitive match", param1: "Hello World", param2: "hello", param3: ContainsOpt{IgnoreCase: true}, want: true},
+		{name: "Case-insensitive match mixed", param1: "FOOBAR", param2: "bar", param3: ContainsOpt{IgnoreCase: true}, want: true},
+
+		// Valid with minimum occurrences
+		{name: "Minimum occurrences met", param1: "hello hello world", param2: "hello", param3: ContainsOpt{MinOccurrences: 2}, want: true},
+		{name: "Minimum occurrences default", param1: "abc123", param2: "123", param3: ContainsOpt{MinOccurrences: 1}, want: true},
+
+		// Invalid default config
+		{name: "No match", param1: "hello world", param2: "earth", param3: ContainsOpt{}, want: false},
+		{name: "No match digits", param1: "abc123", param2: "xyz", param3: ContainsOpt{}, want: false},
+
+		// Invalid with ignoreCase false
+		{name: "Case-sensitive no match", param1: "Hello World", param2: "WORLD", param3: ContainsOpt{IgnoreCase: false}, want: false},
+		{name: "Case-insensitive fail", param1: "FOOBAR", param2: "baz", param3: ContainsOpt{IgnoreCase: true}, want: false},
+
+		// Invalid with minimum occurrences
+		{name: "Minimum occurrences not met", param1: "hello world", param2: "hello", param3: ContainsOpt{MinOccurrences: 2}, want: false},
+		{name: "Zero occurrences required", param1: "abc123", param2: "123", param3: ContainsOpt{MinOccurrences: 0}, want: true},
 	}
 
 	for _, test := range tests {

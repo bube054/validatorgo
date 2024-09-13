@@ -3,16 +3,28 @@ package validatorgo
 
 import "strings"
 
-// ContainsOpt defaults to { ignoreCase: false, minOccurrences: 1 }.
+// ContainsOpt is used to configure Contains
+// defaults to { IgnoreCase: false, MinOccurrences: 1 }.
 type ContainsOpt struct {
-	IgnoreCase     bool // Ignore case when doing comparison, default false.
-	MinOccurrences int  // Minimum number of occurrences for the seed in the string. Defaults to 1.
+	IgnoreCase     bool // ignore case when doing comparison, default false.
+	MinOccurrences int  // minimum number of occurrences for the seed in the string. Defaults to 1.
 }
 
 // A validator that checks if the string contains the seed.
 //
-//	ok := govalidator.Contains("Hello, world! Hello, universe!", "hello", ContainsOpt{IgnoreCase: true})
-//	fmt.Println(ok) // true
+// ContainsOpt is a struct that defaults to { IgnoreCase: false, MinOccurrences: 1 }.
+//
+// Options:
+//
+// IgnoreCase: Ignore case when doing comparison, default false.
+//
+// MinOccurrences: Minimum number of occurrences for the seed in the string. Defaults to 1.
+//
+//	v := validatorgo.Contains("hello world", "world", ContainsOpt{})
+//	fmt.Println(v) // true
+//
+//	v := validatorgo.Contains("hello world", "earth", ContainsOpt{})
+//	fmt.Println(v) // false
 func Contains(str, seed string, options ContainsOpt) bool {
 	if options.MinOccurrences <= 0 {
 		options.MinOccurrences = 1
