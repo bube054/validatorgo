@@ -44,5 +44,6 @@
     "scminput": false,
     "javascript": true
   },
-  "github.copilot.editor.enableAutoCompletions": true
+  "github.copilot.editor.enableAutoCompletions": true,
+  "window.zoomLevel": 1.5
 }

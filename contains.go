@@ -27,15 +27,15 @@ type ContainsOpt struct {
 //
 //	ok := validatorgo.Contains("hello world", "earth", ContainsOpt{})
 //	fmt.Println(ok) // false
-func Contains(str, seed string, options ContainsOpt) bool {
-	if options.MinOccurrences <= 0 {
-		options.MinOccurrences = defaultContainsMinOccurrence
+func Contains(str, seed string, opts ContainsOpt) bool {
+	if opts.MinOccurrences <= 0 {
+		opts.MinOccurrences = defaultContainsMinOccurrence
 	}
 
-	if options.IgnoreCase {
+	if opts.IgnoreCase {
 		strLowerCase, seedLowerCase := strings.ToLower(str), strings.ToLower(seed)
-		return strings.Contains(strLowerCase, seedLowerCase) && strings.Count(strLowerCase, seedLowerCase) >= options.MinOccurrences
+		return strings.Contains(strLowerCase, seedLowerCase) && strings.Count(strLowerCase, seedLowerCase) >= opts.MinOccurrences
 	} else {
-		return strings.Contains(str, seed) && strings.Count(str, seed) >= options.MinOccurrences
+		return strings.Contains(str, seed) && strings.Count(str, seed) >= opts.MinOccurrences
 	}
 }

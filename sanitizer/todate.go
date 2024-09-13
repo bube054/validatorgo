@@ -1,4 +1,4 @@
-package sanitizers
+package sanitizer
 
 import "time"
 

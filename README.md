@@ -40,7 +40,7 @@ Simple example usage
 Here is a list of the validators currently available.
 | #  | Validator | Description |
 | --- | -------- | ----------- |
-| 1   | **[Contains(str string, seed string, options ContainsOpt)](https://github.com/bube054/validatorgo#Contains)** | A validator that checks if a string contains a seed. `ContainsOpt` defaults to `{ IgnoreCase: false, MinOccurrences: 1 }`. <br /> **[ContainsOpt](https://github.com/bube054/validatorgo#ContainsOpts):** <br /> - `IgnoreCase`: Ignore case during comparison (default: `false`). <br /> - `MinOccurrences`: Minimum number of occurrences for the seed in the string (default: `1`). |
+| 1   | **[Contains(str, seed string, opts ContainsOpt)](https://github.com/bube054/validatorgo#Contains)** | A validator that checks if a string contains a seed. `ContainsOpt` defaults to `{ IgnoreCase: false, MinOccurrences: 1 }`. <br /> **[ContainsOpt](https://github.com/bube054/validatorgo#ContainsOpts):** <br /> - `IgnoreCase`: Ignore case during comparison (default: `false`). <br /> - `MinOccurrences`: Minimum number of occurrences for the seed in the string (default: `1`). |
 | 2   | **[Equals(str string, comparison string) bool)](https://github.com/bube054/validatorgo#Equals)** | A validator that checks if the string matches the comparison. |
 | 3   | **[IsAbaRouting(str string)](https://github.com/bube054/validatorgo#IsAbaRouting)** | A validator that checks if the string is an ABA routing number for US bank account / cheque. |
 | 4   | **[IsAlpha(str string, opts IsAlphaOpts)](https://github.com/bube054/validatorgo#IsAlpha)** | A validator that checks if the string is an ABA routing number for US bank account / cheque. |

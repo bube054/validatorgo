@@ -1,4 +1,4 @@
-package sanitizers
+package sanitizer
 
 import (
 	normalizer "github.com/dimuska139/go-email-normalizer/v2"

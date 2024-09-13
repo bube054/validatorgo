@@ -1,4 +1,4 @@
-package sanitizers
+package sanitizer
 
 // A sanitizer that converts the input string to a boolean.
 // Everything except for '0', 'false' and '' returns true.

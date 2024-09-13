@@ -3,7 +3,7 @@ package validatorgo
 import (
 	"time"
 
-	"github.com/bube054/validatorgo/sanitizers"
+	"github.com/bube054/validatorgo/sanitizer"
 )
 
 // A validator that checks if the string is a date that is before the specified date.
@@ -16,14 +16,14 @@ import (
 //	ok = govalidator.IsBefore("2020-04-03", "")
 //	fmt.Println(ok) // true
 func IsBefore(str string, comparisonDate string) bool {
-	date1 := sanitizers.ToDate(str)
+	date1 := sanitizer.ToDate(str)
 
 	var date2 *time.Time
 	if comparisonDate == "" {
 		now := time.Now()
 		date2 = &now
 	} else {
-		date2 = sanitizers.ToDate(comparisonDate)
+		date2 = sanitizer.ToDate(comparisonDate)
 	}
 
 	if date1 == nil || date2 == nil {
