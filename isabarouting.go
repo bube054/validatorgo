@@ -9,16 +9,18 @@ import (
 //
 //	ok := govalidator.IsAbaRouting("123456789")
 //	fmt.Println(ok) // false
-//	ok = govalidator.IsAbaRouting("021000021")
+//	ok := govalidator.IsAbaRouting("021000021")
 //	fmt.Println(ok) // true
 func IsAbaRouting(str string) bool {
-	if utf8.RuneCountInString(str) != 9 || !IsNumeric(str, IsNumericOpts{NoSymbols: true}) {
+	strWithoutDashes := stripDashesAndSpaces(str)
+
+	if utf8.RuneCountInString(strWithoutDashes) != 9 || !IsNumeric(strWithoutDashes, IsNumericOpts{NoSymbols: true}) {
 		return false
 	}
 
 	digits := make([]int, 9)
 
-	for i, char := range str {
+	for i, char := range strWithoutDashes {
 		digit, err := strconv.Atoi(string(char))
 		if err != nil {
 			return false

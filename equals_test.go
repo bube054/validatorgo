@@ -9,18 +9,8 @@ func TestEquals(t *testing.T) {
 		param2 string
 		want   bool
 	}{
-		{
-			name:   "1",
-			param1: "Hello",
-			param2: "Hello",
-			want:   true,
-		},
-		{
-			name:   "2",
-			param1: "Hello",
-			param2: "Hello!",
-			want:   false,
-		},
+		{name: "Valid equals", param1: "Hello", param2: "Hello", want: true}, 
+		{name: "Valid not equals", param1: "Hello", param2: "World", want: false},
 	}
 
 	for _, test := range tests {
