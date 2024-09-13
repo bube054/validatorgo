@@ -3,7 +3,7 @@ package validatorgo
 import (
 	"time"
 
-	"github.com/bube054/govalidator/sanitizers"
+	"github.com/bube054/validatorgo/sanitizers"
 )
 
 // A validator that checks if the string is a date that is after the specified date.
