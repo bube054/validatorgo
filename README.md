@@ -5,8 +5,8 @@
 A library of string validators and sanitizers, based on the js library [validator.js](https://github.com/validatorjs/validator.js)
 
 ## Rationale
-Why not use popular go libraries like [Package validator](https://github.com/go-playground/validator) or [govalidator](https://github.com/asaskevich/govalidator)? Because they focus on validating structs rather than standalone strings and do not have a robust library of validators as the original js [validator.js](https://github.com/validatorjs/validator.js) package its based on.
-I made this project so that can work that i can work on another go open source library called [ginvalidator](https://github.com/bube054/ginvalidator), a go version for the popular node/express library [express-validator](https://express-validator.github.io/docs/) . Seeing that the most popular libraries in the go ecosystem where either overkill, not as robust, or a combination of both, I decided to make my own library.
+Why not use popular go libraries like [Package validator](https://github.com/go-playground/validator) or [govalidator](https://github.com/asaskevich/govalidator)? Because they focus on validating structs rather than standalone strings and do not have a robust library of validators as the original js [validator.js](https://github.com/validatorjs/validator.js) package it was based on.
+I made this project to actually be a dependency of another go open source library called [ginvalidator](https://github.com/bube054/ginvalidator) used to validate http request, is also the go version of the popular node/express library [express-validator](https://express-validator.github.io/docs/). Seeing that the most popular libraries in the go ecosystem where either overkill, not as robust or not a good fit for my use case, I decided to make my own library.
 
 ## Installation
 Using go get.
@@ -27,7 +27,7 @@ If you are unhappy using the long validatorgo, you can do something like this.
     vgo "github.com/bube054/validatorgo"
   )
  ```
-Simple example usage
+Simple example
  ```go
   func main(){
     id := "5f2a6c69e1d7a4e0077b4e6b"
