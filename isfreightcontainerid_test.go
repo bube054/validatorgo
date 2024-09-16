@@ -8,17 +8,15 @@ func TestIsFreightContainerID(t *testing.T) {
 		param1 string
 		want   bool
 	}{
-		// { name: "Valid FreightContainerID", param1: "MSCU1234567", want:   true},
-		// {name: "Valid FreightContainerID", param1: "TGHU1234563", want: true},
-		// {name: "Valid FreightContainerID", param1: "TLLU2841316", want: true},
-		// {name: "Valid FreightContainerID", param1: "MAEU5612394", want: true},
-		// {name: "Valid FreightContainerID", param1: "OOLU4621759", want: true},
+    {name: "Valid container ID", param1: "ABCU1234567", want: true},
+    {name: "Valid container ID with Z category", param1: "XYZZ9876543", want: true},
 
-		// {name: "Inalid FreightContainerID", param1: "ABCD1234561", want: false},
-		// {name: "Inalid FreightContainerID", param1: "MSKU12345AB3", want: false},
-		// {name: "Inalid FreightContainerID", param1: "CMAU8765439", want: false},
-		// {name: "Inalid FreightContainerID", param1: "TGHU12345", want: false},
-		// {name: "Inalid FreightContainerID", param1: "XYZU987654A", want: false},
+    {name: "Invalid owner code (too short)", param1: "AB123456789", want: false},
+    {name: "Invalid category identifier", param1: "ABCX1234567", want: false},
+    {name: "Invalid serial number length", param1: "ABCJ12345", want: false},
+    {name: "Invalid check digit", param1: "ABCU123456", want: false},
+    {name: "Invalid characters in serial number", param1: "ABCU12A4567", want: false},
+    {name: "Empty string", param1: "", want: false},
 	}
 
 	for _, test := range tests {

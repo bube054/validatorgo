@@ -1,17 +1,16 @@
 package validatorgo
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
 type IsFloatOpts struct {
-	Min    float64
-	Max    float64
-	Gt     float64
-	Lt     float64
+	Min    *float64
+	Max    *float64
+	Gt     *float64
+	Lt     *float64
 	Locale string
 }
 
@@ -136,18 +135,20 @@ var floatDecimalFormats = map[string]string{
 const defaultIsFloatFormat = "dot_decimal_comma_thousands"
 
 // A validator that checks if the string is a float.
-// IsFloatOpts is a struct which can contain the fields Min, Max, Gt, and/or Lt to validate the float is within boundaries (e.g. { Min: 7.22, Max: 9.55 }) it also has locale as an option.
-// Min and Max are equivalent to 'greater or equal' and 'less or equal', respectively while Gt and Lt are their strict counterparts. It's either Min/Max or Gt/Lt.
-// locale determines the decimal separator and is one of ('ar', 'ar-AE', 'ar-BH', 'ar-DZ', 'ar-EG', 'ar-IQ', 'ar-JO', 'ar-KW', 'ar-LB', 'ar-LY', 'ar-MA', 'ar-QA', 'ar-QM', 'ar-SA', 'ar-SD', 'ar-SY', 'ar-TN', 'ar-YE', 'bg-BG', 'cs-CZ', 'da-DK', 'de-DE', 'en-AU', 'en-GB', 'en-HK', 'en-IN', 'en-NZ', 'en-US', 'en-ZA', 'en-ZM', 'eo', 'es-ES', 'fr-CA', 'fr-FR', 'hu-HU', 'it-IT', 'nb-NO', 'nl-NL', 'nn-NO', 'pl-PL', 'pt-BR', 'pt-PT', 'ru-RU', 'sl-SI', 'sr-RS', 'sr-RS@latin', 'sv-SE', 'tr-TR', 'uk-UA').
+//
+// IsFloatOpts is a struct which can contain the fields Min, Max, Gt, and/or Lt to validate the float is within boundaries it also has Locale as an option.
+//
+// Min and Max: are equivalent to 'greater or equal' and 'less or equal'.
+//
+// Gt and Lt: are their strict counterparts.
+//
+// Locale determines the decimal separator and is one of ('ar', 'ar-AE', 'ar-BH', 'ar-DZ', 'ar-EG', 'ar-IQ', 'ar-JO', 'ar-KW', 'ar-LB', 'ar-LY', 'ar-MA', 'ar-QA', 'ar-QM', 'ar-SA', 'ar-SD', 'ar-SY', 'ar-TN', 'ar-YE', 'bg-BG', 'cs-CZ', 'da-DK', 'de-DE', 'en-AU', 'en-GB', 'en-HK', 'en-IN', 'en-NZ', 'en-US', 'en-ZA', 'en-ZM', 'eo', 'es-ES', 'fr-CA', 'fr-FR', 'hu-HU', 'it-IT', 'nb-NO', 'nl-NL', 'nn-NO', 'pl-PL', 'pt-BR', 'pt-PT', 'ru-RU', 'sl-SI', 'sr-RS', 'sr-RS@latin', 'sv-SE', 'tr-TR', 'uk-UA').
+//
+//	ok := validatorgo.IsFloat("123.45",  validatorgo.IsFloatOpts{})
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsFloat("123", validatorgo.IsFloatOpts{})
+//	fmt.Println(ok) // false
 func IsFloat(str string, opts IsFloatOpts) bool {
-	if opts.Min > opts.Max {
-		opts.Min, opts.Max = opts.Max, opts.Min
-	}
-
-	if opts.Lt > opts.Gt {
-		opts.Lt, opts.Gt = opts.Gt, opts.Lt
-	}
-
 	format, ok := floatDecimalFormats[opts.Locale]
 
 	if !ok {
@@ -165,17 +166,23 @@ func IsFloat(str string, opts IsFloatOpts) bool {
 
 	re := floatFormats[format]
 
-	fmt.Println(str, parsableFlt, format)
+	inRange := true
 
-	if opts.Max != 0 {
-		fmt.Println("USES MINMAX")
-		return re.MatchString(str) && flt >= opts.Min && flt <= opts.Max
+	if opts.Min != nil {
+		inRange = flt >= *opts.Min && inRange
 	}
 
-	if opts.Gt != 0 {
-		fmt.Println("USES GTLT")
-		return re.MatchString(str) && flt > opts.Lt && flt < opts.Gt
+	if opts.Max != nil {
+		inRange = flt <= *opts.Max && inRange
 	}
 
-	return re.MatchString(str)
+	if opts.Lt != nil {
+		inRange = flt < *opts.Lt && inRange
+	}
+
+	if opts.Gt != nil {
+		inRange = flt > *opts.Gt && inRange
+	}
+
+	return re.MatchString(str) && inRange
 }

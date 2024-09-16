@@ -18,7 +18,12 @@ type IsFQDNopts struct {
 }
 
 // A validator that checks if the string is a fully qualified domain name (e.g. domain.com).
-// If allow_wildcard is set to true, the validator will allow domain starting with *. (e.g. *.example.com or *.shop.example.com).
+//
+// IsFQDNopts is a struct which defaults to { RequireTld: false, AllowUnderscores: false, AllowTrailingDot: false, AllowNumericTld: false, allow_wildcard: false, IgnoreMaxLength: false }.
+//	ok := validatorgo.IsFQDN("localhost",  validatorgo.IsFQDNOpts{})
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsFQDN("example..com", validatorgo.IsFQDNOpts{})
+//	fmt.Println(ok) // false
 func IsFQDN(str string, opts IsFQDNopts) bool {
 	ignMaxLength := true
 	len := utf8.RuneCountInString(str)

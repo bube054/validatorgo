@@ -22,17 +22,24 @@ type IsEmailOpts struct {
 }
 
 // A validator that checks if the string is an email.
+//
 // IsEmailOpts is a struct which defaults to { AllowDisplayName: false, RequireDisplayName: false, AllowUTF8LocalPart: true, RequireTld: true, AllowIpDomain: false, allow_underscores: false, DomainSpecificValidation: false, BlacklistedChars: ”, HostBlacklist: [] }.
-// If AllowDisplayName is set to true, the validator will also match Display Name <email-address>.
-// If RequireDisplayName is set to true, the validator will reject strings without the format Display Name <email-address>.
-// If AllowUTF8LocalPart is set to false, the validator will not allow any non-English UTF8 character in email address' local part.
-// If RequireTld is set to false, email addresses without a TLD in their domain will also be matched.
-// If IgnoreMaxLength is set to true, the validator will not check for the standard max length of an email.
-// If AllowIpDomain is set to true, the validator will allow IP addresses in the host part.
-// If DomainSpecificValidation is true, some additional validation will be enabled, e.g. disallowing certain syntactically valid email addresses that are rejected by Gmail.
-// If BlacklistedChars receives a string, then the validator will reject emails that include any of the characters in the string, in the name part.
-// If HostBlacklist is set to an array of strings and the part of the email after the @ symbol matches one of the strings defined in it, the validation fails.
-// If HostWhitelist is set to an array of strings and the part of the email after the @ symbol matches none of the strings defined in it, the validation fails.
+//
+// AllowDisplayName: if set to true, the validator will also match Display Name <email-address>.
+// RequireDisplayName: if set to true, the validator will reject strings without the format Display Name <email-address>.
+// AllowUTF8LocalPart: if set to false, the validator will not allow any non-English UTF8 character in email address' local part.
+// RequireTld: if set to false, email addresses without a TLD in their domain will also be matched.
+// IgnoreMaxLength: if set to true, the validator will not check for the standard max length of an email.
+// AllowIpDomain: if set to true, the validator will allow IP addresses in the host part.
+// DomainSpecificValidation: is true, some additional validation will be enabled, e.g. disallowing certain syntactically valid email addresses that are rejected by Gmail.
+// BlacklistedChars: receives a string, then the validator will reject emails that include any of the characters in the string, in the name part.
+// HostBlacklist: if set to an array of strings and the part of the email after the @ symbol matches one of the strings defined in it, the validation fails.
+// HostWhitelist: if set to an array of strings and the part of the email after the @ symbol matches none of the strings defined in it, the validation fails.
+//
+//	ok := validatorgo.IsEmail("test@example.com", validatorgo.IsEmailOpts{})
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsEmail("user.example.com", validatorgo.IsEmailOpts{})
+//	fmt.Println(ok) // false
 func IsEmail(str string, opts IsEmailOpts) bool {
 	// Basic email regex, allowing for UTF-8 if specified
 	var emailRegex *regexp.Regexp

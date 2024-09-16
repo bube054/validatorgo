@@ -47,52 +47,51 @@ var alphaFreightNumVal = map[string]int{
 	"9": 9,
 }
 
-// A validator that checks alias for IsISO6346, check if the string is a valid ISO 6346 shipping container identification.
+// A validator that checks alias for IsISO6346, check if the string is a valid [ISO 6346] shipping container identification.
+//
+//	ok := validatorgo.IsFreightContainerID("ABCU1234567")
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsFreightContainerID("AB123456789")
+//	fmt.Println(ok) // false
+//
+// [ISO 6346]: https://en.wikipedia.org/wiki/ISO_6346
 func IsFreightContainerID(str string) bool {
-	len := utf8.RuneCountInString(str)
-	if len != 11 {
+	// Check if length is 11
+	if utf8.RuneCountInString(str) != 11 {
 		return false
 	}
 
 	re := regexp.MustCompile(`^([A-Z]{3})([UJZ])([0-9]{6})([0-9])$`)
 	match := re.MatchString(str)
-
 	if !match {
 		return false
 	}
 
 	sum := 0
-	for ind, char := range str {
-		if ind > 9 {
-			break
-		}
-
+	for ind, char := range str[:10] {
 		wgh := int(math.Pow(2.0, float64(9-ind)))
-		num, ok := alphaFreightNumVal[string(char)]
+		charStr := string(char)
+		num, ok := alphaFreightNumVal[charStr]
 
 		if !ok {
 			return false
 		}
-		fmt.Println(wgh * num)
+		fmt.Printf("Char: %v, Weight: %v, Num: %v\n", charStr, wgh, num)
 		sum += wgh * num
 	}
 
 	grps := re.FindStringSubmatch(str)
-	checkDig := grps[4]
+	checkDigit := grps[4] // Extract the check digit
 	rem := sum % 11
-	fmt.Println("GROUPS", grps)
-	fmt.Println("CHECKDIG", checkDig)
-	fmt.Println("SUM", sum)
-	fmt.Println("REM", rem)
 
-	if rem == 10 && checkDig == "0" {
+	if rem == 10 && checkDigit == "0" {
 		return true
 	}
 
-	checkDigInt, err := strconv.Atoi(checkDig)
+	checkDigitInt, err := strconv.Atoi(checkDigit)
 	if err != nil {
 		return false
 	}
 
-	return checkDigInt == rem
+	return checkDigitInt == rem
 }

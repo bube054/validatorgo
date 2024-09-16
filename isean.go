@@ -4,7 +4,14 @@ import (
 	"strconv"
 )
 
-// IsEAN checks if the string is a valid EAN (European Article Number).
+// IsEAN checks if the string is a valid [EAN] (European Article Number).
+//
+//	ok := validatorgo.IsDecimal("4006381333931")
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsDecimal("123456789012")
+//	fmt.Println(ok) // false
+//
+// [EAN]: https://en.wikipedia.org/wiki/International_Article_Number
 func IsEAN(str string) bool {
 	length := len(str)
 	if length != 8 && length != 13 {
