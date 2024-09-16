@@ -4,10 +4,10 @@ import (
 	"regexp"
 )
 
-// IsAlphanumericOpts is used to configure IsAlpha
+// IsAlphanumericOpts is used to configure IsAlphanumeric
 type IsAlphanumericOpts struct {
-	Ignore string
-	Locale string
+	Ignore string // string to be ignored
+	Locale string // a locale
 }
 
 // writingSystemAlphaNumRegex is the set of common writing systems and their validating alphanumeric regex
@@ -36,20 +36,20 @@ var writingSystemAlphaNumRegex = map[string]string{
 }
 
 // A validator that checks if the string contains only letters and numbers (a-zA-Z0-9).
-// locale is one of ('ar', 'ar-AE', 'ar-BH', 'ar-DZ', 'ar-EG', 'ar-IQ', 'ar-JO', 'ar-KW', 'ar-LB', 'ar-LY', 'ar-MA', 'ar-QA', 'ar-QM', 'ar-SA', 'ar-SD', 'ar-SY', 'ar-TN', 'ar-YE', 'bg-BG', 'bn', 'cs-CZ', 'da-DK', 'de-DE', 'el-GR', 'en-AU', 'en-GB', 'en-HK', 'en-IN', 'en-NZ', 'en-US', 'en-ZA', 'en-ZM', 'eo', 'es-ES', 'fa-IR', 'fi-FI', 'fr-CA', 'fr-FR', 'he', 'hi-IN', 'hu-HU', 'it-IT', 'kk-KZ', 'ko-KR', 'ja-JP', 'ku-IQ', 'nb-NO', 'nl-NL', 'nn-NO', 'pl-PL', 'pt-BR', 'pt-PT', 'ru-RU', 'si-LK', 'sl-SI', 'sk-SK', 'sr-RS', 'sr-RS@latin', 'sv-SE', 'th-TH', 'tr-TR', 'uk-UA') and defaults to en-US. Locale list is validator.isAlphaLocales. options is an optional object that can be supplied with the following key(s): ignore is the string to be ignored e.g. " -" will ignore spaces and -'s.
 //
-//	isAlpha := govalidator.IsAlphanumeric("helloWORLD", govalidator.IsAlphanumericOpts{})
+// IsAlphaOpts is an optional struct that can be supplied with the following key(s):
+//
+// Ignore: is the string to be ignored e.g. " -" will ignore spaces and -'s.
+//
+// locale is one of ('ar', 'ar-AE', 'ar-BH', 'ar-DZ', 'ar-EG', 'ar-IQ', 'ar-JO', 'ar-KW', 'ar-LB', 'ar-LY', 'ar-MA', 'ar-QA', 'ar-QM', 'ar-SA', 'ar-SD', 'ar-SY', 'ar-TN', 'ar-YE', 'bn', 'bg-BG', 'cs-CZ', 'da-DK', 'de-DE', 'el-GR', 'en-AU', 'en-GB', 'en-HK', 'en-IN', 'en-NZ', 'en-US', 'en-ZA', 'en-ZM', 'eo', 'es-ES', 'fa-IR', 'fi-FI', 'fr-CA', 'fr-FR', 'he', 'hi-IN', 'hu-HU', 'it-IT', 'kk-KZ', 'ko-KR', 'ja-JP','ku-IQ', 'nb-NO', 'nl-NL', 'nn-NO', 'pl-PL', 'pt-BR', 'pt-PT', 'ru-RU', 'si-LK', 'sl-SI', 'sk-SK', 'sr-RS', 'sr-RS@latin', 'sv-SE', 'th-TH', 'tr-TR', 'uk-UA') and defaults to en-US. 
+//
+//	isAlpha := validatorgo.IsAlphanumeric("hello123", validatorgo.IsAlphanumericOpts{})
 //	fmt.Println(isAlpha) // true
-//	isAlpha := govalidator.IsAlphanumeric("7889gygu", govalidator.IsAlphanumericOpts{Locale: "bg-BG"})
-//	fmt.Println(isAlpha) // true
-//	isAlpha := govalidator.IsAlphanumeric("1Hello23", govalidator.IsAlphanumericOpts{Ignore: "^"})
-//	fmt.Println(isAlpha) // true
-//	isAlpha := govalidator.IsAlphanumeric("Привет89a", govalidator.IsAlphanumericOpts{Ignore: "89a", Locale: "bg-BG"})
-//	fmt.Println(isAlpha) // true
+//	isAlpha := validatorgo.IsAlphanumeric("hello!", validatorgo.IsAlphanumericOpts{})
+//	fmt.Println(isAlpha) // false
 func IsAlphanumeric(str string, opts IsAlphanumericOpts) bool {
 	var (
 		re                *regexp.Regexp
-		defLocWrtSys      = "latin"
 		lenClsCharFromEnd = 3
 	)
 
@@ -60,7 +60,7 @@ func IsAlphanumeric(str string, opts IsAlphanumericOpts) bool {
 	if opts.Ignore == "" && opts.Locale != "" {
 		wrtSys, ok := localeWritingSystems[opts.Locale]
 		if !ok {
-			wrtSys = defLocWrtSys
+			return false
 		}
 		re = regexp.MustCompile(writingSystemAlphaNumRegex[wrtSys])
 	}
@@ -78,7 +78,7 @@ func IsAlphanumeric(str string, opts IsAlphanumericOpts) bool {
 		charsToIgn := escapeRegexChars(opts.Ignore)
 		wrtSys, ok := localeWritingSystems[opts.Locale]
 		if !ok {
-			wrtSys = defLocWrtSys
+			return false
 		}
 		wrtSysRe := writingSystemAlphaNumRegex[wrtSys]
 		divLen := len(wrtSysRe) - lenClsCharFromEnd

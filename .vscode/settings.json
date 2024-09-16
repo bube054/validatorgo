@@ -45,5 +45,5 @@
     "javascript": true
   },
   "github.copilot.editor.enableAutoCompletions": true,
-  "window.zoomLevel": 1.5
+  "window.zoomLevel": 0,
 }

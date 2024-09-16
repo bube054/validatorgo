@@ -9,19 +9,29 @@ func TestIsMimeType(t *testing.T) {
 		want   bool
 	}{
 		// Valid mime types
-		{name: "Valid MIME Type - JSON", param1: "application/json", want: true},
-		{name: "Valid MIME Type - PNG Image", param1: "image/png", want: true},
-		{name: "Valid MIME Type - HTML Text", param1: "text/html", want: true},
-		{name: "Valid MIME Type - MPEG Audio", param1: "audio/mpeg", want: true},
-		{name: "Valid MIME Type - MP4 Video", param1: "video/mp4", want: true},
-		{name: "Valid MIME Type - Excel Spreadsheet", param1: "application/vnd.ms-excel", want: true},
+		{name: "Valid text MIME type", param1: "text/plain", want: true},
+		{name: "Valid image MIME type", param1: "image/jpeg", want: true},
+		{name: "Valid application MIME type", param1: "application/json", want: true},
+		{name: "Valid audio MIME type", param1: "audio/mpeg", want: true},
+		{name: "Valid video MIME type", param1: "video/mp4", want: true},
+		{name: "Vendor-specific MIME type", param1: "application/vnd.ms-excel", want: true},
+		{name: "Vendor-specific with personal prefix", param1: "application/x-my-custom", want: true},
+		{name: "MIME type with charset", param1: "text/html; charset=UTF-8", want: true},
+		{name: "MIME type with boundary", param1: "multipart/form-data; boundary=something", want: true},
+		{name: "MIME type with plus symbol", param1: "application/ld+json", want: true},
+		{name: "MIME type with dot", param1: "image/vnd.adobe.photoshop", want: true},
+
 		// Invalid mime types
-		{name: "Invalid MIME Type - Trailing Slash", param1: "application/json/", want: false},
-		{name: "Invalid MIME Type - Missing Subtype", param1: "text", want: false},
-		{name: "Invalid MIME Type - Incomplete Image Type", param1: "image", want: false},
-		{name: "Invalid MIME Type - Incorrect Format (Dash)", param1: "audio-mpeg", want: false},
-		{name: "Invalid MIME Type - Invalid Character", param1: "application/vnd.ms@excel", want: false},
-		{name: "Invalid MIME Type - Empty String", param1: "", want: false},
+		{name: "Missing slash", param1: "textplain", want: false},
+		{name: "Multiple slashes", param1: "text//plain", want: false},
+		{name: "Invalid characters in type", param1: "text/pla!n", want: false},
+		{name: "Invalid characters in subtype", param1: "image/jp@g", want: false},
+		{name: "Missing type", param1: "/plain", want: false},
+		{name: "Missing subtype", param1: "image/", want: false},
+		{name: "Invalid parameter format", param1: "text/html;charset", want: false},
+		{name: "Malformed parameter key-value", param1: "application/json; charset", want: false},
+		{name: "Extra semicolon", param1: "application/json;", want: false},
+		{name: "Non-alphanumeric subtype", param1: "application/123", want: false},
 	}
 
 	for _, test := range tests {

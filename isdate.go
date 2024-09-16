@@ -4,11 +4,13 @@ import (
 	"regexp"
 )
 
+// IsDateOpts is used to configure IsDate
 type IsDateOpts struct {
 	Format     string
 	StrictMode bool
 }
 
+// IsDate formats
 const (
 	ISO8601       = "2006-01-02"              // YYYY-MM-DD
 	USFormat      = "01/02/2006"              // MM/DD/YYYY
@@ -22,6 +24,7 @@ const (
 	UnixTimestamp = "2006-01-02 15:04:05"     // Full date and time
 )
 
+// dateFormatRegex is the set of date formats and their validating regex
 var dateFormatRegex = map[string]*regexp.Regexp{
 	ISO8601:       regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`),                   // YYYY-MM-DD
 	USFormat:      regexp.MustCompile(`^\d{2}/\d{2}/\d{4}$`),                   // MM/DD/YYYY
@@ -46,14 +49,24 @@ func dateMatchesAnyFormat(str string) bool {
 }
 
 // A Validator that checks if the string is a valid date. e.g. 2002-07-15.
-// ISO8601 is a struct which can contain the keys format, strictMode.
-// format is a string and defaults to ginvalidator.ISO8601 if not provided or found.
-// strictMode is a boolean and defaults to false. If strictMode is set to true, the validator will reject strings different from format.
+//
+// IsDateOpts is a struct which can contain the keys Format, StrictMode.
+//
+// Format: is a string and defaults to validatorgo.ISO8601 if "any" or no value is provided.
+//
+// StrictMode: is a boolean and defaults to false. If StrictMode is set to true, the validator will reject strings different from Format.
+//
+//	ok := validatorgo.IsDate("2006-01-02", validatorgo.IsDateOpts{})
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsDate("01/023/2006", validatorgo.IsDateOpts{})
+//	fmt.Println(ok) // false
 func IsDate(str string, opts IsDateOpts) bool {
 	switch opts.Format {
 	case ISO8601, USFormat, EUFormat, JapanFormat, LongForm, ShortForm, NoDelim, WeekDay, YearMonth, UnixTimestamp:
-	default:
+	case "", "any":
 		opts.Format = ISO8601
+	default:
+		return false
 	}
 
 	if opts.StrictMode {

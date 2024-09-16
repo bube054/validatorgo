@@ -4,7 +4,7 @@ import "regexp"
 
 // IsCreditCardOpts is used to configure IsCreditCard
 type IsCreditCardOpts struct {
-	Provider string
+	Provider string // credit card issuer
 }
 
 var creditCardProviderRegex = map[string]string{
@@ -27,12 +27,24 @@ var creditCardProviderRegex = map[string]string{
 }
 
 // A validator that checks if the string is a credit card number.
-// options is an struct that can be supplied with the following key(s): Provider is a key whose value should be a string, and defines the company issuing the credit card.
+// 
+// IsCreditCardOpts is an struct that can be supplied with the following key(s): 
+//
+// Provider: is a key whose value should be a string, and defines the company issuing the credit card.
 // Valid values include amex, bcglobal, carteblanche, dinersclub, discover, instapayment, jcb, koreanlocal, laser, maestro, mastercard, solo, switch, unionpay, visa, visamastercard or blank will check for any provider.
+//
+//	ok := validatorgo.IsCreditCard("378282246310005", validatorgo.IsCreditCardOpts{Provider: "amex"})
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsCreditCard("37828224631000", validatorgo.IsCreditCardOpts{Provider: "amex"})
+//	fmt.Println(ok) // false
 func IsCreditCard(str string, opts IsCreditCardOpts) bool {
 	reStr, ok := creditCardProviderRegex[opts.Provider]
 
 	if !ok {
+		if opts.Provider != "" {
+			return false
+		}
+
 		for _, val := range creditCardProviderRegex {
 			if isVal := regexp.MustCompile(val).MatchString(str); isVal {
 				return true

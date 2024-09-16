@@ -174,8 +174,11 @@ const (
 )
 
 // A validator that check if the string represents a decimal number, such as 0.1, .3, 1.1, 1.00003, 4.0, etc.
+//
 // IsDecimalOpts is a struct which defaults to {ForceDecimal: false, DecimalDigits: {Min: 1, Max: 10}, locale: 'en-US'}, if any are invalid or logically impossible (Min greater than Max).
+//
 // locale determines the decimal separator and is one of ('ar', 'ar-AE', 'ar-BH', 'ar-DZ', 'ar-EG', 'ar-IQ', 'ar-JO', 'ar-KW', 'ar-LB', 'ar-LY', 'ar-MA', 'ar-QA', 'ar-QM', 'ar-SA', 'ar-SD', 'ar-SY', 'ar-TN', 'ar-YE', 'bg-BG', 'cs-CZ', 'da-DK', 'de-DE', 'el-GR', 'en-AU', 'en-GB', 'en-HK', 'en-IN', 'en-NZ', 'en-US', 'en-ZA', 'en-ZM', 'eo', 'es-ES', 'fa', 'fa-AF', 'fa-IR', 'fr-FR', 'fr-CA', 'hu-HU', 'id-ID', 'it-IT', 'ku-IQ', 'nb-NO', 'nl-NL', 'nn-NO', 'pl-PL', 'pl-Pl', 'pt-BR', 'pt-PT', 'ru-RU', 'sl-SI', 'sr-RS', 'sr-RS@latin', 'sv-SE', 'tr-TR', 'uk-UA', 'vi-VN').
+//
 // ForceDecimal simply means a decimal must be present "123" will not pass but "123.45" will pass
 func IsDecimal(str string, opts IsDecimalOpts) bool {
 	if opts.DecimalDigits.Min <= 0 {

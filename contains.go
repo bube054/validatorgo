@@ -6,7 +6,6 @@ import "strings"
 const defaultContainsMinOccurrence = 1
 
 // ContainsOpt is used to configure Contains
-// defaults to { IgnoreCase: false, MinOccurrences: 1 }.
 type ContainsOpt struct {
 	IgnoreCase     bool // ignore case when doing comparison, default false.
 	MinOccurrences int  // minimum number of occurrences for the seed in the string. Defaults to 1.

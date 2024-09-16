@@ -1,10 +1,17 @@
 package validatorgo
 
-import "regexp"
-
 // A validator that checks if the string contains ASCII chars only.
-//	ok := govalidator.IsAscii("Hello")
+//
+//	ok := validatorgo.IsAscii("Hello")
 //	fmt.Println(ok) // true
+//	ok := validatorgo.IsAscii("こんにちは")
+//	fmt.Println(ok) // false
 func IsAscii(str string) bool {
-	return regexp.MustCompile("^[ -~]+$").MatchString(str)
+	for _, char := range str {
+		if !(char >= 0 && char <= 127) {
+			return false
+		}
+	}
+
+	return true
 }

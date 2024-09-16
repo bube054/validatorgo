@@ -1,6 +1,7 @@
 package validatorgo
 
 import (
+	"fmt"
 	"regexp"
 	"strconv"
 )
@@ -43,72 +44,74 @@ func getMinDigits(digits []int) string {
 }
 
 // A validator that checks if the string is a valid currency amount.
-// options is a struct which defaults to { Symbol: '$', RequireSymbol: false, AllowSpaceAfterSymbol: false, SymbolAfterDigits: false, AllowNegatives: true, ParensForNegatives: false, NegativeSignBeforeDigits: false, NegativeSignAfterDigits: false, AllowNegativeSignPlaceholder: false, ThousandsSeparator: ',', DecimalSeparator: '.', AllowDecimal: true, RequireDecimal: false, DigitsAfterDecimal: [2], AllowSpaceAfterDigits: false }.
-// Note: The array digits_after_decimal is filled with the exact number of digits allowed not a range, for example a range 1 to 3 will be given as [1, 2, 3].
-
+//
+// IsCurrencyOpts is a struct which defaults to { Symbol: '$', RequireSymbol: false, AllowSpaceAfterSymbol: false, SymbolAfterDigits: false, AllowNegatives: true, ParensForNegatives: false, NegativeSignBeforeDigits: false, NegativeSignAfterDigits: false, AllowNegativeSignPlaceholder: false, ThousandsSeparator: ',', DecimalSeparator: '.', AllowDecimal: true, RequireDecimal: false, DigitsAfterDecimal: [2], AllowSpaceAfterDigits: false }.
+// Note: The slice DigitsAfterDecimal is filled with the exact number of digits allowed not a range, for example a range 1 to 3 will be given as [1, 2, 3].
+//
+//	ok := validatorgo.IsCurrency("£10.50", validatorgo.IsCurrencyOpts{Symbol: "£"})
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsCurrency("£10.50", validatorgo.IsCurrencyOpts{Symbol: "$"})
+//	fmt.Println(ok) // false
 func IsCurrency(str string, opts IsCurrencyOpts) bool {
-	// Build the regex pattern based on options
-	symbol := regexp.QuoteMeta(opts.Symbol)
-	decimalSeparator := regexp.QuoteMeta(opts.DecimalSeparator)
-	thousandSeparator := regexp.QuoteMeta(opts.ThousandSeparator)
+	escOpsSym := regexp.QuoteMeta(opts.Symbol)
 
-	symbolPattern := ""
+	var reqSymReStr = "?"
+
 	if opts.RequireSymbol {
-		symbolPattern = symbol
-		if opts.AllowSpaceAfterSymbol {
-			symbolPattern += "\\s?"
-		}
-	} else {
-		symbolPattern = symbol + "?\\s*"
+		reqSymReStr = ""
 	}
 
-	negativesPattern := ""
-	if opts.AllowNegatives {
-		if opts.ParensForNegatives {
-			negativesPattern = "\\(?"
-		} else if opts.NegativeSignBeforeDigits {
-			negativesPattern = "[-"
-		}
+	alwSpcAftSymStr := ""
+
+	if opts.AllowSpaceAfterSymbol {
+		alwSpcAftSymStr = " ?"
 	}
 
-	if opts.AllowNegativeSignPlaceholder {
-		negativesPattern += " ?"
-	} else if opts.NegativeSignAfterDigits {
-		negativesPattern = ""
+	re, err := regexp.Compile(fmt.Sprintf(`^(\(?)([+-]?(%s%s)%s[\d\,\.]*)(\)?)$`, escOpsSym, reqSymReStr, alwSpcAftSymStr))
+
+	if err != nil {
+		fmt.Println("re did not compile for reSym", err)
+		return false
 	}
 
-	if opts.ParensForNegatives {
-		negativesPattern += "\\)?"
+	capGrp := re.FindStringSubmatch(str)
+
+	if len(capGrp) == 0 {
+		fmt.Println("re did not match for reSym", re.String())
+		return false
 	}
 
-	decimalPattern := ""
-	if opts.AllowDecimal {
-		decimalPattern = decimalSeparator + "\\d{1," + getMaxDigits(opts.DigitsAfterDecimal) + "}"
-		if opts.RequireDecimal {
-			decimalPattern = decimalSeparator + "\\d{" + getMinDigits(opts.DigitsAfterDecimal) + "," + getMaxDigits(opts.DigitsAfterDecimal) + "}"
-		}
-	} else {
-		decimalPattern = ""
-	}
+	// // check whether bracket match
+	// lb, rb := capGrp[1], capGrp[4]
+	// if lb != "" || rb != "" {
+	// 	corBra := lb == "(" && rb == ")"
+		
+	// 	if !corBra {
+	// 		fmt.Println("improper bracket format")
+	// 		return false
+	// 	}
+	// }
 
-	thousandsPattern := ""
-	if thousandSeparator != "" {
-		thousandsPattern = "(?:(?:\\d{1,3}(?:\\" + thousandSeparator + "\\d{3})*)|\\d+)"
-	} else {
-		thousandsPattern = "\\d+"
-	}
+	// // check whether symbols match
+	// strSym := capGrp[3]
+	// if strSym != opts.Symbol {
+	// 	fmt.Println("symbols do not match")
+	// 	return false
+	// }
 
-	suffix := ""
-	if opts.SymbolAfterDigits {
-		suffix = symbol
-	}
+	// fmt.Println(1, capGrp[0])
+	// fmt.Println(2, capGrp[1])
+	// fmt.Println(3, capGrp[2])
+	// fmt.Println(4, capGrp[3])
+	// fmt.Println(5, capGrp[4])
+	// fmt.Println(reSymCap, len(reSymCap))
 
-	if opts.AllowSpaceAfterDigits {
-		suffix += "\\s*"
-	}
+	// if !reSym.MatchString(str) {
+	// 	fmt.Println("re did not match for reSym", reSym.String())
+	// 	return false
+	// }
 
-	pattern := "^" + symbolPattern + negativesPattern + thousandsPattern + decimalPattern + negativesPattern + suffix + "$"
-
-	re := regexp.MustCompile(pattern)
-	return re.MatchString(str)
+	fmt.Println(re.String())
+	// fmt.Println(reSym.Find)
+	return true
 }

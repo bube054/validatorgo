@@ -16,30 +16,15 @@ func TestIsByteLength(t *testing.T) {
 		param2 IsByteLengthOpts
 		want   bool
 	}{
-		{
-			name:   "Is greater or equals to min",
-			param1: "We♥Go",
-			param2: IsByteLengthOpts{Min: 5},
-			want:   true,
-		},
-		{
-			name:   "Is not greater or equals to min",
-			param1: "We♥Go",
-			param2: IsByteLengthOpts{Min: 8},
-			want:   false,
-		},
-		{
-			name:   "Is greater or equals to min and less than or equals max",
-			param1: "We♥Go",
-			param2: IsByteLengthOpts{Min: 5, Max: &max1},
-			want:   true,
-		},
-		{
-			name:   "Is not greater or equals to min and less than or equals max",
-			param1: "We♥Go",
-			param2: IsByteLengthOpts{Min: 8, Max: &max2},
-			want:   false,
-		},
+		// Valid test cases
+		{name: "Is greater or equals to min", param1: "We♥Go", param2: IsByteLengthOpts{Min: 5}, want: true},
+		{name: "Is greater or equals to min and less than or equals max", param1: "We♥Go", param2: IsByteLengthOpts{Min: 5, Max: &max1}, want: true},
+		{name: "Valid string with exact min length", param1: "Hello", param2: IsByteLengthOpts{Min: 5}, want: true},
+
+		// Invalid test cases
+		{name: "Is not greater or equals to min", param1: "We♥Go", param2: IsByteLengthOpts{Min: 8}, want: false},
+		{name: "Is not greater or equals to min and less than or equals max", param1: "We♥Go", param2: IsByteLengthOpts{Min: 8, Max: &max2}, want: false},
+		{name: "Invalid string, exceeds max length", param1: "We♥Golang", param2: IsByteLengthOpts{Min: 1, Max: &max1}, want: false},
 	}
 
 	for _, test := range tests {
