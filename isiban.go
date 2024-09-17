@@ -84,9 +84,14 @@ var ibanRegex = map[string]*regexp.Regexp{
 }
 
 // A validator that checks if the string is an IBAN (International Bank Account Number).
-// these are the allowed country codes ('AD','AE','AL','AT','AZ','BA','BE','BG','BH','BR','BY','CH','CR','CY','CZ','DE','DK','DO','EE','EG','ES','FI','FO','FR','GB','GE','GI','GL','GR','GT','HR','HU','IE','IL','IQ','IR','IS','IT','JO','KW','KZ','LB','LC','LI','LT','LU','LV','MC','MD','ME','MK','MR','MT','MU','MZ','NL','NO','PK','PL','PS','PT','QA','RO','RS','SA','SC','SE','SI','SK','SM','SV','TL','TN','TR','UA','VA','VG','XK').
-// Abeg no checksum 😭😭😭😭
-func IsIBAN(str string, countryCode string) bool {
+//
+// these are the allowed country codes ('AD','AE','AL','AT','AZ','BA','BE','BG','BH','BR','BY','CH','CR','CY','CZ','DE','DK','DO','EE','EG','ES','FI','FO','FR','GB','GE','GI','GL','GR','GT','HR','HU','IE','IL','IQ','IR','IS','IT','JO','KW','KZ','LB','LC','LI','LT','LU','LV','MC','MD','ME','MK','MR','MT','MU','MZ','NL','NO','PK','PL','PS','PT','QA','RO','RS','SA','SC','SE','SI','SK','SM','SV','TL','TN','TR','UA','VA','VG','XK'). No checksum are calculated.
+//
+//	ok := validatorgo.IsIBAN("DE75512108001245126199", "DE")
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsIBAN("DE75512108001245126100", "DE")
+//	fmt.Println(ok) // false
+func IsIBAN(str, countryCode string) bool {
 	re, exist := ibanRegex[countryCode]
 
 	if !exist {

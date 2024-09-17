@@ -5,14 +5,22 @@ import (
 	"strings"
 )
 
+// A validator that checks if the string is an IP Range (version 4 or 6). If version is not provide, both versions "4" and "6" will be checked.
+//
+//	ok := validatorgo.IsIP("192.168.0.0/24", "4")
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsIP("192.168.0.0/33", "4")
+//	fmt.Println(ok) // false
 func IsIPRange(str, version string) bool {
 	switch version {
 	case "4":
 		return isValidIPv4Range(str)
 	case "6":
 		return isValidIPv6Range(str)
-	default:
+	case "":
 		return isValidIPv4Range(str) || isValidIPv6Range(str)
+	default:
+		return false
 	}
 }
 

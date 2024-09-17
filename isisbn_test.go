@@ -16,8 +16,8 @@ func TestIsValidISBN(t *testing.T) {
 		{name: "Is valid ISBN v13", param1: "978-0-7167-0344-0", param2: "13", want: true},
 		{name: "Is invalid ISBN v13", param1: "978-9-7167-0344-0", param2: "13", want: false},
 		// not v10 or v13
-		{name: "Version is 6", param1: "978-0-7167-0344-0", param2: "6", want: true},
-		{name: "Version is any", param1: "0-7167-0344-0", param2: "any", want: true},
+		{name: "Version is not provided", param1: "978-0-7167-0344-0", param2: "", want: true},
+		{name: "Version is also not provided", param1: "0-7167-0344-0", param2: "", want: true},
 	}
 
 	for _, test := range tests {

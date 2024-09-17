@@ -3,13 +3,24 @@ package validatorgo
 import (
 	// "fmt"
 	"strconv"
-	"strings"
 )
 
-// A validator that checks if the string is an ISBN.
-// version: ISBN version to compare to. Accepted values are '10' and '13'. If none provided, both will be tested.
+// A validator that checks if the string is an [ISBN].
+//
+// version: ISBN version to compare to. Accepted values are "10" and "13". If none provided, both will be tested.
+//
+//	ok := validatorgo.IsISBN("0-7167-0344-0", "10")
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsISBN("0-7168-0344-0", "10")
+//	fmt.Println(ok) // false
+//
+// [ISBN]: https://en.wikipedia.org/wiki/ISBN
 func IsISBN(str, version string) bool {
 	strNum := stripDashesAndSpaces(str)
+
+	if version != "10" && version != "13" && version != "" {
+		return false
+	}
 
 	if version == "10" {
 		return valIsISBNv10(strNum)
@@ -74,23 +85,4 @@ func valIsISBNv13(str string) bool {
 	rem := sum % 10
 
 	return rem == 0
-}
-
-func stripDashesAndSpaces(str string) string {
-	strWthOutDashes := strings.ReplaceAll(str, "-", "")
-	strWthOutSpacesAndDashes := strings.ReplaceAll(strWthOutDashes, " ", "")
-
-	return strWthOutSpacesAndDashes
-}
-
-func stripDashes(str string) string {
-	return strings.ReplaceAll(str, "-", "")
-}
-
-func stripSpaces(str string) string {
-	return strings.ReplaceAll(str, " ", "")
-}
-
-func stripHyphens(str string) string {
-	return strings.ReplaceAll(str, "-", "")
 }

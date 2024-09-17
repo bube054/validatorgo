@@ -20,7 +20,13 @@ var hashAlgoRegex = map[string]*regexp.Regexp{
 }
 
 // A validator that checks if the string is a hash of type algorithm.
-// Algorithm is one of ('crc32', 'crc32b', 'md4', 'md5', 'ripemd128', 'ripemd160', 'sha1', 'sha256', 'sha384', 'sha512', 'tiger128', 'tiger160', 'tiger192'), no checksum.
+//
+// Algorithm is one of ('crc32', 'crc32b', 'md4', 'md5', 'ripemd128', 'ripemd160', 'sha1', 'sha256', 'sha384', 'sha512', 'tiger128', 'tiger160', 'tiger192'), No checksum are calculated.
+//
+//	ok := validatorgo.IsHash("d202ef8d", "crc32")
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsHash("d202ef8", "crc32")
+//	fmt.Println(ok) // false
 func IsHash(str, algorithm string) bool {
 	re, exist := hashAlgoRegex[algorithm]
 

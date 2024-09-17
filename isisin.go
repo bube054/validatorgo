@@ -10,6 +10,11 @@ var inc = [2][10]int{
 }
 
 // A validator that checks if the string is an ISIN (stock/security identifier).
+//
+//	ok := validatorgo.IsISIN("US0378331005")
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsISIN("US0373831005")
+//	fmt.Println(ok) // false
 func IsISIN(str string) bool {
 	if !r.MatchString(str) {
 		return false

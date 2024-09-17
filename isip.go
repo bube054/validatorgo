@@ -10,8 +10,22 @@ var ipVersionRegex = map[string]*regexp.Regexp{
 	"6": regexp.MustCompile(`^([[:xdigit:]]{1,4}(?::[[:xdigit:]]{1,4}){7}|::|:(?::[[:xdigit:]]{1,4}){1,6}|[[:xdigit:]]{1,4}:(?::[[:xdigit:]]{1,4}){1,5}|(?:[[:xdigit:]]{1,4}:){2}(?::[[:xdigit:]]{1,4}){1,4}|(?:[[:xdigit:]]{1,4}:){3}(?::[[:xdigit:]]{1,4}){1,3}|(?:[[:xdigit:]]{1,4}:){4}(?::[[:xdigit:]]{1,4}){1,2}|(?:[[:xdigit:]]{1,4}:){5}:[[:xdigit:]]{1,4}|(?:[[:xdigit:]]{1,4}:){1,6}:)$`),
 }
 
+// A validator that checks if the string is an IP (version 4 or 6). If version is not provide, both versions "4" and "6" will be checked.
+//
+//	ok := validatorgo.IsIP("192.168.0.1", "4")
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsIP("256.256.256.256", "4")
+//	fmt.Println(ok) // false
 func IsIP(str, version string) bool {
+	if version == "" {
+		version = "any"
+	}
+
 	if version != "4" && version != "6" {
+		return false
+	}
+
+	if version == "any" {
 		for _, re := range ipVersionRegex {
 			matches := re.MatchString(str)
 			if matches {

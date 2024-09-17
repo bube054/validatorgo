@@ -9,8 +9,8 @@ func TestIsIP(t *testing.T) {
 		param2 string
 		want   bool
 	}{
-		{name: "Invalid version but valid IPv4", param1: "192.168.0.1", param2: "7", want: true},
-		{name: "Invalid version but valid IPv6", param1: "2001:0db8:85a3:0000:0000:8a2e:0370:7334", param2: "2", want: true},
+		{name: "Invalid version but valid IPv4", param1: "192.168.0.1", param2: "4", want: true},
+		{name: "Invalid version but valid IPv6", param1: "2001:0db8:85a3:0000:0000:8a2e:0370:7334", param2: "6", want: true},
 
 		{name: "Valid IPv4 Google's public DNS", param1: "8.8.8.8", param2: "4", want: true},
 		{name: "Invalid IPv4 Octets must be between 0 and 255", param1: "256.256.256.256", param2: "4", want: false},

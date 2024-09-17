@@ -25,14 +25,27 @@ var identityCardLocaleRegex = map[string]*regexp.Regexp{
 }
 
 // A validator that checks if the string is a valid identity card code.
-// locale is one of ['LK', 'PL', 'ES', 'FI', 'IN', 'IT', 'IR', 'MZ', 'NO', 'TH', 'zh-TW', 'he-IL', 'ar-LY', 'ar-TN', 'zh-CN', 'zh-HK', 'PK'] OR 'any'. If 'any' is used, function will check if any of the locales match.
-// Defaults to 'any' if locale not found. No checksums.
+//
+// locale is one of ['LK', 'PL', 'ES', 'FI', 'IN', 'IT', 'IR', 'MZ', 'NO', 'TH', 'zh-TW', 'he-IL', 'ar-LY', 'ar-TN', 'zh-CN', 'zh-HK', 'PK'] OR "any". If "any" is used, function will check if any of the locales match. Defaults to "any" if locale not present. No checksums calculated.
+//
+//	ok := validatorgo.IsIdentityCard("123456789V", "LK")
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsIdentityCard("12345678X", "LK")
+//	fmt.Println(ok) // false
 func IsIdentityCard(str, locale string) bool {
+	if locale == "" {
+		locale = "any"
+	}
+
 	re, ok := identityCardLocaleRegex[locale]
 
 	if ok {
 		return re.MatchString(str)
 	} else {
+		if locale != "any" {
+			return false
+		}
+
 		for _, reg := range identityCardLocaleRegex {
 			matches := reg.MatchString(str)
 			if matches {
