@@ -10,7 +10,7 @@ I made this project to actually be a dependency of another go open source librar
 
 ## Installation
 Using go get.
- ```go
+ ```
   go get github.com/bube054/validatorgo
  ```
 Then import the package into your own code.
