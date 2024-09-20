@@ -22,7 +22,14 @@ var AllISO4217Codes = [...]string{
 	"YER", "ZAR", "ZMW", "ZWL",
 }
 
-// A validator that checks if the string is a valid ISO 4217 officially assigned currency code.
+// A validator that checks if the string is a valid [ISO 4217] officially assigned currency code.
+//
+//	ok := validatorgo.IsIso4217("AED")
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsIso4217("AE")
+//	fmt.Println(ok) // false
+//
+// [ISO 4217]: https://en.wikipedia.org/wiki/ISO_4217
 func IsIso4217(str string) bool {
 	return IsIn(str, AllISO4217Codes[:])
 }

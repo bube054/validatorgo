@@ -6,10 +6,12 @@ import "encoding/json"
 // AllowPrimitives bool
 // }
 
-// A validator that checks if the string is valid JSON (note: uses json.Valid).
+// A validator that checks if the string is valid JSON (note: uses json.Valid()).
+//
+//	ok := validatorgo.IsJSON(`{"name": "John", "age": 30, "city": "New York"}`)
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsJSON(`{'name': 'John', 'age': 30}`)
+//	fmt.Println(ok) // false
 func IsJSON(str string) bool {
-	// var js json.RawMessage
-
-	// return json.Unmarshal([]byte(str), &js) == nil
 	return json.Valid([]byte(str))
 }

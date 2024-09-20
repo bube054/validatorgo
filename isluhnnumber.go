@@ -2,7 +2,14 @@ package validatorgo
 
 import "strconv"
 
-// A validator that checks if the string passes the Luhn algorithm check.
+// A validator that checks if the string passes the [Luhn algorithm] check.
+//
+//	ok := validatorgo.IsLuhnNumber("4532015112830366")
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsLuhnNumber("4532015112830367")
+//	fmt.Println(ok) // false
+//
+// [Luhn algorithm]: https://en.wikipedia.org/wiki/Luhn_algorithm
 func IsLuhnNumber(str string) bool {
 	var (
 		len      = len(str)
@@ -30,16 +37,4 @@ func IsLuhnNumber(str string) bool {
 	}
 
 	return sum%10 == 0
-}
-
-// digitSum returns the sum of digits in an int.
-func digitSum(i int) (sum int) {
-	for {
-		sum += i % 10
-		i /= 10
-		if i == 0 {
-			break
-		}
-	}
-	return
 }

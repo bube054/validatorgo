@@ -4,13 +4,21 @@ import (
 	"regexp"
 )
 
+// IsLatLongOpts is used to configure IsLatLong
 type IsLatLongOpts struct {
-	CheckDMS bool
+	CheckDMS bool // checks DMS(degrees, minutes, and seconds)
 }
 
 // A validator that checks if the string is a valid latitude-longitude coordinate in the format lat,long or lat, long.
-// options is an object that defaults to { CheckDMS: false }.
+//
+// IsLatLongOpts is a struct that defaults to { CheckDMS: false }.
+//
 // Pass CheckDMS as true to validate DMS(degrees, minutes, and seconds) latitude-longitude format.
+//
+//	ok := validatorgo.IsLatLong("40.730610,-73.935242" , validatorgo.IsLatLongOpts{})
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsLatLong("91,181" , validatorgo.IsLatLongOpts{})
+//	fmt.Println(ok) // false
 func IsLatLong(str string, opts IsLatLongOpts) bool {
 	var re *regexp.Regexp
 	if opts.CheckDMS {

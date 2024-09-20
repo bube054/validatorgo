@@ -28,3 +28,15 @@ func stripSpaces(str string) string {
 func stripHyphens(str string) string {
 	return strings.ReplaceAll(str, "-", "")
 }
+
+// digitSum returns the sum of digits in an int.
+func digitSum(i int) (sum int) {
+	for {
+		sum += i % 10
+		i /= 10
+		if i == 0 {
+			break
+		}
+	}
+	return
+}

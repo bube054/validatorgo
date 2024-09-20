@@ -6,14 +6,24 @@ import (
 	"strconv"
 )
 
+// IsISSNOpts is used to configure IsISSN
 type IsISSNOpts struct {
-	RequireHyphen bool
-	CaseSensitive bool
+	RequireHyphen bool // requires a hyphen
+	CaseSensitive bool // must be exact case
 }
 
-// A validator that checks if the string is an ISSN.
+// A validator that checks if the string is an [ISSN].
+//
 // IsISSNOpts is a struct which defaults to { CaseSensitive: false, RequireHyphen: false }.
-// If CaseSensitive is true, ISSNs with a lowercase 'x' as the check digit are rejected.
+//
+// If CaseSensitive is true, ISSNs with a lowercase "x" as the check digit are rejected.
+//
+//	ok := validatorgo.IsISSN("0378-5955", validatorgo.IsISSNOpts{})
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsISSN("1234567", validatorgo.IsISSNOpts{})
+//	fmt.Println(ok) // false
+//
+// [ISSN]: https://en.wikipedia.org/wiki/International_Standard_Serial_Number
 func IsISSN(str string, opts IsISSNOpts) bool {
 	var reqHypStr string
 	if !opts.RequireHyphen {

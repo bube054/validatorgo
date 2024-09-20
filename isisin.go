@@ -9,12 +9,14 @@ var inc = [2][10]int{
 	{0, 2, 4, 6, 8, 1, 3, 5, 7, 9},
 }
 
-// A validator that checks if the string is an ISIN (stock/security identifier).
+// A validator that checks if the string is an [ISIN] (stock/security identifier).
 //
 //	ok := validatorgo.IsISIN("US0378331005")
 //	fmt.Println(ok) // true
 //	ok := validatorgo.IsISIN("US0373831005")
 //	fmt.Println(ok) // false
+//
+// [ISIN]: https://en.wikipedia.org/wiki/International_Securities_Identification_Number
 func IsISIN(str string) bool {
 	if !r.MatchString(str) {
 		return false
