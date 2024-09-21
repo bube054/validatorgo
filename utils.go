@@ -1,8 +1,15 @@
 package validatorgo
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 func ptr(i uint) *uint {
+	return &i
+}
+
+func intPtr(i int) *int {
 	return &i
 }
 
@@ -39,4 +46,41 @@ func digitSum(i int) (sum int) {
 		}
 	}
 	return
+}
+
+func validYearMonthDay(year, month, day string) bool {
+	yr, err := strconv.Atoi(year)
+
+	if err != nil {
+		return false
+	}
+
+	mn, err := strconv.Atoi(month)
+
+	if err != nil {
+		return false
+	}
+
+	dy, err := strconv.Atoi(day)
+
+	if err != nil {
+		return false
+	}
+
+	monthLength := []int{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
+
+	// Adjust for leap years
+	if yr%400 == 0 || (yr%100 != 0 && yr%4 == 0) {
+		monthLength[1] = 29
+	}
+
+	if !(mn > 0 && mn < 13) {
+		return false
+	}
+
+	if dy < 0 || dy > monthLength[mn-1] {
+		return false
+	}
+
+	return true
 }

@@ -2,7 +2,6 @@ package validatorgo
 
 import (
 	"regexp"
-	"strconv"
 )
 
 // IsISO8601Opts is used to configure IsISO8601
@@ -41,39 +40,9 @@ func IsISO8601(str string, opts IsISO8601Opts) bool {
 	}
 
 	if opts.Strict {
-		year, err := strconv.Atoi(capGrps[1])
+		year, month, day := capGrps[1], capGrps[3], capGrps[5]
 
-		if err != nil {
-			return false
-		}
-
-		month, err := strconv.Atoi(capGrps[3])
-
-		if err != nil {
-			return false
-		}
-
-		day, err := strconv.Atoi(capGrps[5])
-
-		if err != nil {
-			return false
-		}
-
-		monthLength := []int{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
-
-		// Adjust for leap years
-		if year%400 == 0 || (year%100 != 0 && year%4 == 0) {
-			monthLength[1] = 29
-		}
-
-		if !(month > 0 && month < 13) {
-			return false
-		}
-
-		if day < 0 || day > monthLength[month-1] {
-			return false
-		}
-
+		return validYearMonthDay(year, month, day)
 	}
 
 	return true

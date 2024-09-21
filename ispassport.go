@@ -67,7 +67,13 @@ var countryCodePassportNumberRegex = map[string]*regexp.Regexp{
 }
 
 // A validator that checks if the string is a valid passport number.
-// countryCode is one of ['AM', 'AR', 'AT', 'AU', 'AZ', 'BE', 'BG', 'BY', 'BR', 'CA', 'CH', 'CN', 'CY', 'CZ', 'DE', 'DK', 'DZ', 'EE', 'ES', 'FI', 'FR', 'GB', 'GR', 'HR', 'HU', 'IE', 'IN', 'IR', 'ID', 'IS', 'IT', 'JM', 'JP', 'KR', 'KZ', 'LI', 'LT', 'LU', 'LV', 'LY', 'MT', 'MX', 'MY', 'MZ', 'NL', 'NZ', 'PH', 'PK', 'PL', 'PT', 'RO', 'RU', 'SE', 'SL', 'SK', 'TH', 'TR', 'UA', 'US', 'ZA']. Locale list is validator.passportNumberLocales.
+//
+// countryCode is one of ("AM", "AR", "AT", "AU", "AZ", "BE", "BG", "BY", "BR", "CA", "CH", "CN", "CY", "CZ", "DE", "DK", "DZ", "EE", "ES", "FI", "FR", "GB", "GR", "HR", "HU", "IE", "IN", "IR", "ID", "IS", "IT", "JM", "JP", "KR", "KZ", "LI", "LT", "LU", "LV", "LY", "MT", "MX", "MY", "MZ", "NL", "NZ", "PH", "PK", "PL", "PT", "RO", "RU", "SE", "SL", "SK", "TH", "TR", "UA", "US", "ZA").
+//
+//	ok := validatorgo.IsPassportNumber("123456789", "US")
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsPassportNumber("A12345678", "US")
+//	fmt.Println(ok) // false
 func IsPassportNumber(str, countryCode string) bool {
 	re, exists := countryCodePassportNumberRegex[countryCode]
 

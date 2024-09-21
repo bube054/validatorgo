@@ -210,16 +210,17 @@ var codeNumericFormats = map[string]int{
 // }
 
 // A validator that check if a string is a number.
-// options is an struct which defaults to { NoSymbols: false, Locale: ""}.
-// If NoSymbols is true, the validator will reject numeric strings that feature a symbol (e.g. +, -, or .).
-// Locale determines the numeric format and is one of ('ar', 'ar-AE', 'ar-BH', 'ar-DZ', 'ar-EG', 'ar-IQ', 'ar-JO', 'ar-KW', 'ar-LB', 'ar-LY', 'ar-MA', 'ar-QA', 'ar-QM', 'ar-SA', 'ar-SD', 'ar-SY', 'ar-TN', 'ar-YE', 'bg-BG', 'cs-CZ', 'da-DK', 'de-DE', 'en-AU', 'en-GB', 'en-HK', 'en-IN', 'en-NZ', 'en-US', 'en-ZA', 'en-ZM', 'eo', 'es-ES', 'fr-FR', 'fr-CA', 'hu-HU', 'it-IT', 'nb-NO', 'nl-NL', 'nn-NO', 'pl-PL', 'pt-BR', 'pt-PT', 'ru-RU', 'sl-SI', 'sr-RS', 'sr-RS@latin', 'sv-SE', 'tr-TR', 'uk-UA'). If Locale is present but not in this list, Locale will default to en-US.
 //
-//	isNumber := govalidator.IsNumeric("+123.45", govalidator.IsNumericOpts{NoSymbols: true, Locale: ""})
-//	fmt.Println(isNumber) // false
-//	isNumber = govalidator.IsNumeric("-123.45", govalidator.IsNumericOpts{NoSymbols: false, Locale: ""})
-//	fmt.Println(isNumber) // true
-//	isNumber = govalidator.IsNumeric("+123.45", govalidator.IsNumericOpts{Locale: "en"})
-//	fmt.Println(isNumber) // true
+// IsNumericOpts is a struct which defaults to { NoSymbols: false, Locale: ""}.
+//
+// If NoSymbols is true, the validator will reject numeric strings that feature a symbol (e.g. +, -, or .).
+//
+// Locale determines the numeric format and is one of ("ar", "ar-AE", "ar-BH", "ar-DZ", "ar-EG", "ar-IQ", "ar-JO", "ar-KW", "ar-LB", "ar-LY", "ar-MA", "ar-QA", "ar-QM", "ar-SA", "ar-SD", "ar-SY", "ar-TN", "ar-YE", "bg-BG", "cs-CZ", "da-DK", "de-DE", "en-AU", "en-GB", "en-HK", "en-IN", "en-NZ", "en-US", "en-ZA", "en-ZM", "eo", "es-ES", "fr-FR", "fr-CA", "hu-HU", "it-IT", "nb-NO", "nl-NL", "nn-NO", "pl-PL", "pt-BR", "pt-PT", "ru-RU", "sl-SI", "sr-RS", "sr-RS@latin", "sv-SE", "tr-TR", "uk-UA"). Locale will default to "en-US" if not present.
+//
+//	ok = validatorgo.IsNumeric("12345", validatorgo.IsNumericOpts{})
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsNumeric("12.34.56", validatorgo.IsNumericOpts{})
+//	fmt.Println(ok) // false
 func IsNumeric(str string, opts IsNumericOpts) bool {
 	var re *regexp.Regexp
 
