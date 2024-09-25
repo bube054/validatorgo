@@ -1,14 +1,16 @@
 package validatorgo
 
-import "regexp"
-
 // A validator that checks if the string contains any half-width chars.
 //
-//	ok := validatorgo.IsHalfWidth("Hello, ｶﾀｶﾅ")
+//	ok := validatorgo.IsHalfWidth("abc123")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsHalfWidth("Hello, World!")
+//	ok := validatorgo.IsHalfWidth("漢字テスト")
 //	fmt.Println(ok) // false
 func IsHalfWidth(str string) bool {
-	halfWidthRegex := regexp.MustCompile(`[\x{FF61}-\x{FFDC}\x{FFE8}-\x{FFEE}]`)
-	return halfWidthRegex.MatchString(str)
+	for _, char := range str {
+		if char >= '\u0020' && char <= '\u007E' { // ASCII (half-width characters)
+			return true
+		}
+	}
+	return false
 }

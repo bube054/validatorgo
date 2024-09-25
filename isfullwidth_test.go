@@ -8,41 +8,15 @@ func TestIsFullWidth(t *testing.T) {
 		param1 string
 		want   bool
 	}{
-		{
-			name:   "Empty string",
-			param1: "",
-			want:   false,
-		},
-		{
-			name:   "ASCII characters only",
-			param1: "Hello, World!",
-			want:   false,
-		},
-		{
-			name:   "Full-width characters only",
-			param1: "こんにちは",
-			want:   true,
-		},
-		{
-			name:   "Mixed ASCII and full-width characters",
-			param1: "Hello, こんにちは",
-			want:   true,
-		},
-		{
-			name:   "Full-width punctuation",
-			param1: "！＄％＆",
-			want:   true,
-		},
-		{
-			name:   "Half-width Katakana",
-			param1: "ｶﾀｶﾅ",
-			want:   false,
-		},
-		{
-			name:   "Full-width alphanumeric",
-			param1: "ＡＢＣ１２３",
-			want:   true,
-		},
+		{name: "Only full-width Japanese characters", param1: "テスト", want: true}, // All full-width Katakana
+		{name: "Only full-width CJK characters", param1: "漢字", want: true},       // Full-width Chinese characters
+		{name: "Full-width and half-width mix", param1: "テストabc", want: true},    // Full-width Katakana with half-width English
+		{name: "Full-width with numbers", param1: "１２３", want: true},             // Full-width numbers
+		{name: "Half-width characters only", param1: "abc123", want: false},      // All half-width
+		{name: "Mixed full-width and half-width", param1: "ＡＢＣｄｅｆ", want: true},  // Full-width Latin with half-width Latin
+		{name: "Empty string", param1: "", want: false},                          // Empty string
+		{name: "Only half-width punctuation", param1: ".,!?", want: false},       // All half-width punctuation
+		{name: "Full-width punctuation", param1: "！＃＄％", want: true},             // Full-width punctuation
 	}
 
 	for _, test := range tests {

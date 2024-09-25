@@ -1,7 +1,6 @@
 package validatorgo
 
 import (
-	"fmt"
 	"unicode"
 )
 
@@ -13,12 +12,12 @@ const (
 	defaultStrongPasswordMinimumNumbers   int = 1
 	defaultStrongPasswordMinimumSymbols   int = 1
 
-	defaultStrongPasswordPointsPerUnique          int     = 1
+	defaultStrongPasswordPointsPerUnique          float64 = 1
 	defaultStrongPasswordPointsPerRepeat          float64 = 0.5
-	defaultStrongPasswordPointsForContainingLower int     = 10
-	defaultStrongPasswordPointsForContainingUpper int     = 10
-	defaultStrongPasswordPointsContainingNumber   int     = 10
-	defaultStrongPasswordPointsContainingSymbol   int     = 10
+	defaultStrongPasswordPointsForContainingLower float64 = 10
+	defaultStrongPasswordPointsForContainingUpper float64 = 10
+	defaultStrongPasswordPointsContainingNumber   float64 = 10
+	defaultStrongPasswordPointsContainingSymbol   float64 = 10
 )
 
 // IsStrongPasswordOpts is used to configure IsStrongPassword
@@ -29,12 +28,12 @@ type IsStrongPasswordOpts struct {
 	MinNumbers   *int // passwords minimum numbers
 	MinSymbols   *int // passwords minimum symbols
 
-	PointsPerUnique           *int     // minimum points per unique character
+	PointsPerUnique           *float64 // minimum points per unique character
 	PointsPerRepeat           *float64 // minimum points per repeated character
-	PointsForContainingLower  *int     // minimum points per lowercase character
-	PointsForContainingUpper  *int     // minimum points per uppercase character
-	PointsForContainingNumber *int     // minimum points per numeric character
-	PointsForContainingSymbol *int     // minimum points per special character
+	PointsForContainingLower  *float64 // minimum points per lowercase character
+	PointsForContainingUpper  *float64 // minimum points per uppercase character
+	PointsForContainingNumber *float64 // minimum points per numeric character
+	PointsForContainingSymbol *float64 // minimum points per special character
 }
 
 // uppLwrSpecNumChars is used to count/differentiate different classes of characters
@@ -47,51 +46,51 @@ type uppLwrSpecNumChars struct {
 	repeated  int
 }
 
-// A validator that checks if the string can be considered a strong password or not. Returns the validity and the score. Disregard score if password is not valid.
+// A validator that checks if the string can be considered a strong password or not. Returns the validity and the score.
 //
 // Default IsStrongPasswordOpts: { MinLength: 8, MinLowercase: 1, MinUppercase: 1, MinNumbers: 1, MinSymbols: 1,  PointsPerUnique: 1, PointsPerRepeat: 0.5, PointsForContainingLower: 10, PointsForContainingUpper: 10, PointsForContainingNumber: 10, PointsForContainingSymbol: 10 }
 //
 //	ok, score := validatorgo.IsStrongPassword("Password123!", validatorgo.IsStrongPasswordOpts{})
-//	fmt.Println(ok, score) // true, 1130
-//	ok, score := validatorgo.IsStrongPassword("Password123@", validatorgo.IsStrongPasswordOpts{})
-//	fmt.Println(ok, score) // false, 130
-func IsStrongPassword(str string, opts IsStrongPasswordOpts) (bool, int) {
+//	fmt.Println(ok, score) // true, 130.5
+//	ok, score := validatorgo.IsStrongPassword("P@ss1", validatorgo.IsStrongPasswordOpts{})
+//	fmt.Println(ok, score) // false, 53.50
+func IsStrongPassword(str string, opts IsStrongPasswordOpts) (bool, float64) {
 	optsWithDefaults := strongPasswordOptsToDefault(opts)
 
-	score := 0
+	score := 0.00
 	valid := true
+
+	ulsc := cntUppLwrSymNumChars(str)
+
+	// fmt.Printf("ulsc %+v\n", ulsc)
+	score += float64(ulsc.lowercase) * *optsWithDefaults.PointsForContainingLower // 7 * 10
+	score += float64(ulsc.uppercase) * *optsWithDefaults.PointsForContainingUpper // 1 * 10
+	score += float64(ulsc.numbers) * *optsWithDefaults.PointsForContainingNumber  // 3 * 10
+	score += float64(ulsc.symbol) * *optsWithDefaults.PointsForContainingSymbol   // 1 * 10
+	score += float64(ulsc.unique) * *optsWithDefaults.PointsPerUnique             // 10 * 1
+	score += float64(ulsc.repeated) * *optsWithDefaults.PointsPerRepeat           // 1 * 0.5
+
+	// fmt.Println("score", score)
 
 	if len(str) < *optsWithDefaults.MinLength {
 		return false, score
 	}
 
-	ulsc := cntUppLwrSymNumChars(str)
-
-	fmt.Printf("ulsc %+v\n", ulsc)
-
 	if ulsc.lowercase < *optsWithDefaults.MinLowercase {
 		return false, score
 	}
-	score += ulsc.lowercase * *optsWithDefaults.PointsForContainingLower // 7 * 10
 
 	if ulsc.uppercase < *optsWithDefaults.MinUppercase {
 		return false, score
 	}
-	score += ulsc.uppercase * *optsWithDefaults.PointsForContainingUpper // 1 * 10
 
 	if ulsc.numbers < *optsWithDefaults.MinNumbers {
 		return false, score
 	}
-	score += ulsc.numbers * *optsWithDefaults.PointsForContainingNumber // 3 * 10
 
 	if ulsc.symbol < *optsWithDefaults.MinSymbols {
 		return false, score
 	}
-	score += ulsc.symbol * *optsWithDefaults.PointsForContainingSymbol // 1 * 10
-
-	score += ulsc.unique * *optsWithDefaults.PointsPerUnique // 10 * 1
-
-	score += ulsc.repeated * int(*optsWithDefaults.PointsPerRepeat) // 1 * 0.5
 
 	return valid, score
 }
@@ -118,7 +117,7 @@ func strongPasswordOptsToDefault(opts IsStrongPasswordOpts) IsStrongPasswordOpts
 	}
 
 	if opts.PointsPerUnique == nil {
-		opts.PointsPerUnique = intPtr(defaultStrongPasswordPointsPerUnique)
+		opts.PointsPerUnique = floatPtr(defaultStrongPasswordPointsPerUnique)
 	}
 
 	if opts.PointsPerRepeat == nil {
@@ -126,19 +125,19 @@ func strongPasswordOptsToDefault(opts IsStrongPasswordOpts) IsStrongPasswordOpts
 	}
 
 	if opts.PointsForContainingLower == nil {
-		opts.PointsForContainingLower = intPtr(defaultStrongPasswordPointsForContainingLower)
+		opts.PointsForContainingLower = floatPtr(defaultStrongPasswordPointsForContainingLower)
 	}
 
 	if opts.PointsForContainingUpper == nil {
-		opts.PointsForContainingUpper = intPtr(defaultStrongPasswordPointsForContainingUpper)
+		opts.PointsForContainingUpper = floatPtr(defaultStrongPasswordPointsForContainingUpper)
 	}
 
 	if opts.PointsForContainingNumber == nil {
-		opts.PointsForContainingNumber = intPtr(defaultStrongPasswordPointsContainingNumber)
+		opts.PointsForContainingNumber = floatPtr(defaultStrongPasswordPointsContainingNumber)
 	}
 
 	if opts.PointsForContainingSymbol == nil {
-		opts.PointsForContainingSymbol = intPtr(defaultStrongPasswordPointsContainingSymbol)
+		opts.PointsForContainingSymbol = floatPtr(defaultStrongPasswordPointsContainingSymbol)
 	}
 
 	return opts

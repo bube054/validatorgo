@@ -1,6 +1,11 @@
 package validatorgo
 
 // A validator that checks if the string consists only of characters that appear in the whitelist chars.
+//
+//	ok := validatorgo.IsWhitelisted("stop", "post")
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsWhitelisted("bang", "take")
+//	fmt.Println(ok) // false
 func IsWhitelisted(str, chars string) bool {
 	charsM := make(map[string]int)
 

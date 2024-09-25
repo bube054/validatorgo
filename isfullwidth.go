@@ -1,14 +1,19 @@
 package validatorgo
 
-import "regexp"
-
 // A validator that checks if the string contains any full-width chars.
 //
-//	ok := validatorgo.IsFullWidth("ＡＢＣ１２３")
+//	ok := validatorgo.IsFullWidth("テスト")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsFullWidth("Hello, World!")
+//	ok := validatorgo.IsFullWidth("abc123")
 //	fmt.Println(ok) // false
 func IsFullWidth(str string) bool {
-	fullWidthRegex := regexp.MustCompile(`[^\x{0020}-\x{007E}\x{FF61}-\x{FF9F}\x{FFA0}-\x{FFDC}\x{FFE8}-\x{FFEE}]`)
-	return fullWidthRegex.MatchString(str)
+	for _, char := range str {
+		if (char >= '\uFF00' && char <= '\uFFEF') ||
+			(char >= '\u4E00' && char <= '\u9FFF') ||
+			(char >= '\u3040' && char <= '\u309F') ||
+			(char >= '\u30A0' && char <= '\u30FF') {
+			return true
+		}
+	}
+	return false
 }
