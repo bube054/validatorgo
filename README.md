@@ -138,10 +138,12 @@ Here is a list of the validators currently available.
 |  95  | **[Matches(str string, re *regexp.Regexp)](https://pkg.go.dev/github.com/bube054/validatorgo#IsWhitelisted)** | A validator that checks if the string matches the regex. |
 
 # Sanitizers
-Here is a list of the validators currently available.
+Here is a list of the sanitizers currently available.
 | # | Sanitizer |  description  | 
 |:-----|:--------:| :--------|
-|  |  | |
+| 1 | **[Blacklist(str, blacklistedChars string) string](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Blacklist)** | A sanitizer that removes characters that appear in the blacklist. <br/> blacklistedChars are strings that will be removed from the input string. |
+| 2 | **[Escape(str string) string](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Escape)** | A sanitizer that replaces <, >, &, ' and ". with HTML entities.|
+| 3 | **[Escape(str string) string](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Escape)** | A sanitizer that replaces <, >, &, ' and ". with HTML entities.|
 
 # Maintainers
 - [bube054](https://github.com/bube054) - Attah Gbubemi David (author)
