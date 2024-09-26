@@ -2,10 +2,12 @@ package sanitizer
 
 import "strconv"
 
-func ToFloat(str string) float64 {
-	feetFloat, _ := strconv.ParseFloat(str[:len(str)-1], 64)
+// A sanitizer that converts the input string to a float64 and also returns an error if the input is not a float.
+//
+//	flt := sanitizer.ToFloat("123.45")
+//	fmt.Println(flt) // 123.45
+func ToFloat(str string) (float64, error) {
+	float, err := strconv.ParseFloat(str, 64)
 
-	return feetFloat
+	return float, err
 }
-
-// fmt.Sprintf("%.2f", fResult)
