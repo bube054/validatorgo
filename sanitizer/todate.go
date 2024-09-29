@@ -6,7 +6,7 @@ import "time"
 //
 //	date := sanitizer.ToDate("Mon Jan  2 15:04:05 2006")
 //	dateAsStr := date.String()
-//	fmt.Println(dateAsStr) // 2006-01-02 15:04:05 +0000 UTC
+//	fmt.Println(dateAsStr) // "2006-01-02 15:04:05 +0000 UTC"
 func ToDate(str string) *time.Time {
 	layouts := []string{
 		time.ANSIC,

@@ -60,7 +60,7 @@ type NormalizeEmailOpts struct {
 // IcloudRemoveSubaddress: true: Normalizes addresses by removing "sub-addresses", which is the part following a "+" sign (e.g. "foo+bar@icloud.com" becomes "foo@icloud.com").
 //
 //	str := sanitizer.NormalizeEmail("Example@Example.com", &NormalizeEmailOpts{AllLowercase: true})
-//	fmt.Println(str) // example@example.com
+//	fmt.Println(str) // "example@example.com"
 func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 	normEmail := email
 

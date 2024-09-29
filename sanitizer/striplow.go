@@ -9,7 +9,7 @@ import (
 // If keepNewLines is true, newline characters are preserved (\n and \r, hex 0xA and 0xD).
 //
 //	str := sanitizer.StripLow("Hello\x00World", false)
-//	fmt.Println(str) // HelloWorld
+//	fmt.Println(str) // "HelloWorld"
 func StripLow(str string, keepNewLines bool) string {
 	var newStr strings.Builder
 
