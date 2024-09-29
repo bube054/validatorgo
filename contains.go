@@ -1,4 +1,4 @@
-// A go package for string validators and sanitizers.
+// A package for string validators.
 package validatorgo
 
 import "strings"

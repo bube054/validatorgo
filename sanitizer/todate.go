@@ -2,8 +2,11 @@ package sanitizer
 
 import "time"
 
-// A sanitizer that converts the input string to a pointer to time.Time, if the input is not of a time layout returns a nil pointer.
-// e.g Layout, ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, Kitchen, Stamp, StampMilli, StampMicro, StampNano, DateTime, DateOnly, TimeOnly
+// A sanitizer that converts the input string to a pointer to time.Time, if the input is not of a time layout returns a nil pointer. e.g (Layout, ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, Kitchen, Stamp, StampMilli, StampMicro, StampNano, DateTime, DateOnly, TimeOnly)
+//
+//	date := sanitizer.ToDate("Mon Jan  2 15:04:05 2006")
+//	dateAsStr := date.String()
+//	fmt.Println(dateAsStr) // "2006-01-02 15:04:05 +0000 UTC"
 func ToDate(str string) *time.Time {
 	layouts := []string{
 		time.ANSIC,
