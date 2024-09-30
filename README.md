@@ -165,7 +165,7 @@ Here is a list of the validators currently available.
 
 Here is a list of the sanitizers currently available.
 | # | Sanitizer | Description |
-|:-----|:--------:| :--------|
+|:----|:----------|:------------|
 | 1 | **[Blacklist(str, blacklistedChars string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Blacklist)** | A sanitizer that remove characters that appear in the blacklist. <br/> The characters are used in a RegExp and will escaped for you. |
 | 2 | **[Escape(str string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Escape)** | A sanitizer that replaces <, >, &, ' and ". with HTML entities.|
 | 3 | **[LTrim(str, chars string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#LTrim)** | A sanitizer that trims characters (whitespace by default) from the left-side of the input. |
