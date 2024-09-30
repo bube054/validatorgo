@@ -20,7 +20,7 @@ func TestWhitelist(t *testing.T) {
 		{name: "Whitelist letters with accents", param1: "Olá123 Mundo!", param2: "a-zA-ZáéíóúÁÉÍÓÚ", want: "OláMundo"},
 		{name: "Whitelist empty string", param1: "", param2: "a-zA-Z", want: ""},
 		{name: "Whitelist with no matching characters", param1: "123456789", param2: "a-zA-Z", want: ""},
-		{name: "Whitelist all characters", param1: "Hello World!", param2: `\.`, want: "Hello World!"},
+		{name: "Whitelist all characters", param1: "Hello World!", param2: `.`, want: "Hello World!"},
 	}
 
 	for _, test := range tests {

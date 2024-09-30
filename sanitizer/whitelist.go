@@ -6,11 +6,15 @@ import (
 
 // A sanitizer that removes characters that do not appear in the whitelist.
 //
-// The characters are used in a RegExp and so you will need to escape some chars, e.g. whitelist(input, '\\[\\]').
+// The characters are used in a RegExp and will escaped for you.
 //
-//	str := sanitizer.Whitelist("Hello World!", "!@#$%^&*()")
-//	fmt.Println(str) // "Hello World"
+//	str := sanitizer.Whitelist("Hello123 World!", "a-zA-Z")
+//	fmt.Println(str) // "HelloWorld"
 func Whitelist(str, whitelistedChars string) string {
+	if whitelistedChars == "." {
+		return str
+	}
+
 	re := regexp.MustCompile("[^" + regexp.QuoteMeta(whitelistedChars) + "]+")
 	return re.ReplaceAllString(str, "")
 }

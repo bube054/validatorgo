@@ -103,7 +103,7 @@ func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 	}
 
 	if opts.GmailRemoveDots && isGmail {
-		gLocal = Blacklist(gLocal, ".")
+		gLocal = strings.ReplaceAll(gLocal, ".", "")
 		normEmail = gLocal + "@" + gDomain
 	}
 
