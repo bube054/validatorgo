@@ -33,6 +33,8 @@ func TestNormalizeEmail(t *testing.T) {
 		{name: "Lowercase and remove iCloud subaddress", param1: "MyEmail+updates@iCloud.COM", param2: &NormalizeEmailOpts{IcloudLowercase: true, IcloudRemoveSubaddress: true}, want: "myemail@icloud.com"},
 		{name: "Lowercase all and remove Gmail subaddress", param1: "User123+info@Gmail.com", param2: &NormalizeEmailOpts{AllLowercase: true, GmailRemoveSubaddress: true}, want: "user123@gmail.com"},
 		{name: "Lowercase all and remove Outlook subaddress", param1: "John+Test@Outlook.com", param2: &NormalizeEmailOpts{AllLowercase: true, OutlookdotcomRemoveSubaddress: true}, want: "john@outlook.com"},
+
+		{name: "All default values used", param1: "John+Test@Outlook.com", param2: nil, want: "john@outlook.com"},
 	}
 
 	for _, test := range tests {
