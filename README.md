@@ -156,8 +156,8 @@ Here is a list of the validators currently available.
  )
 
  func main(){
-   str := sanitizer.NormalizeEmail("Example@Example.com", &NormalizeEmailOpts{AllLowercase: true})
-   fmt.Println(str) // "example@example.com"
+   str := sanitizer.Whitelist("Hello123 World!", "a-zA-Z")
+   fmt.Println(str) // "HelloWorld"
  }
 ```
 
@@ -166,7 +166,7 @@ Here is a list of the validators currently available.
 Here is a list of the sanitizers currently available.
 | # | Sanitizer | Description |
 |:-----|:--------:| :--------|
-| 1 | **[Blacklist(str, blacklistedChars string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Blacklist)** | A sanitizer that removes characters that appear in the blacklist. <br/> blacklistedChars are strings that will be removed from the input string. |
+| 1 | **[Blacklist(str, blacklistedChars string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Blacklist)** | A sanitizer that remove characters that appear in the blacklist. <br/> The characters are used in a RegExp and will escaped for you. |
 | 2 | **[Escape(str string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Escape)** | A sanitizer that replaces <, >, &, ' and ". with HTML entities.|
 | 3 | **[LTrim(str, chars string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#LTrim)** | A sanitizer that trims characters (whitespace by default) from the left-side of the input. |
 | 4 | **[NormalizeEmail(email string, opts \*NormalizeEmailOpts)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#NormalizeEmail)** | A sanitizer that canonicalizes an email address. (This doesn't validate that the input is an email, if you want to validate the email use `IsEmail` beforehand). <br/> `NormalizeEmailOpts` is a struct with the following keys and default values: <br/> `AllLowercase`: `true` - Transforms the local part (before the @ symbol) of all email addresses to lowercase. Please note that this may violate RFC 5321, which gives providers the possibility to treat the local part of email addresses in a case sensitive way (although in practice most - yet not all - providers don't). The domain part of the email address is always lowercased, as it is case insensitive per RFC 1035. <br/> `GmailLowercase`: `true` - Gmail addresses are known to be case-insensitive, so this switch allows lowercasing them even when AllLowercase is set to `false`. Please note that when AllLowercase is `true`, Gmail addresses are lowercased regardless of the value of this setting. <br/> `GmailRemoveDots`: true: Removes dots from the local part of the email address, as Gmail ignores them (e.g. "john.doe" and "johndoe" are considered equal). <br/> `GmailRemoveSubaddress`: `true`: Normalizes addresses by removing "sub-addresses", which is the part following a "+" sign (e.g. "foo+bar@gmail.com" becomes "foo@gmail.com"). <br/> `GmailConvertGooglemaildotcom`: true: Converts addresses with domain @googlemail.com to @gmail.com, as they're equivalent. <br/> `OutlookdotcomLowercase`: `true` - Outlook.com addresses (including Windows Live and Hotmail) are known to be case-insensitive, so this switch allows lowercasing them even when AllLowercase is set to `false`. Please note that when AllLowercase is `true`, Outlook.com addresses are lowercased regardless of the value of this setting. <br/> `OutlookdotcomRemoveSubaddress`: `true`: Normalizes addresses by removing "sub-addresses", which is the part following a "+" sign (e.g. "foo+bar@outlook.com" becomes "foo@outlook.com"). <br/> `YahooLowercase`: `true` - Yahoo Mail addresses are known to be case-insensitive, so this switch allows lowercasing them even when AllLowercase is set to `false`. Please note that when AllLowercase is `true`, Yahoo Mail addresses are lowercased regardless of the value of this setting. <br/> `YahooRemoveSubaddress`: `true`: Normalizes addresses by removing "sub-addresses", which is the part following a "-" sign (e.g. "foo-bar@yahoo.com" becomes "foo@yahoo.com"). <br/> `IcloudLowercase`: `true` - iCloud addresses (including MobileMe) are known to be case-insensitive, so this switch allows lowercasing them even when AllLowercase is set to false. Please note that when AllLowercase is true, iCloud addresses are lowercased regardless of the value of this setting. <br/> `IcloudRemoveSubaddress`: `true`: Normalizes addresses by removing "sub-addresses", which is the part following a "+" sign (e.g. "foo+bar@icloud.com" becomes "foo@icloud.com"). |
@@ -178,12 +178,11 @@ Here is a list of the sanitizers currently available.
 | 10 | **[ToInt(str string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#ToInt)** | A sanitizer that converts the input string to an int and also returns an error if the input is not a int. (Beware of octals) |
 | 11 | **[Trim(str, chars string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Trim)** | A sanitizer that trim characters (whitespace by default) from both sides of the input. |
 | 12 | **[Unescape(str string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Unescape)** | A sanitizer that replaces HTML encoded entities with <, >, &, ', ", `, \ and /. |
-| 13 | **[Unescape(str string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Unescape)** | A sanitizer that replaces HTML encoded entities with <, >, &, ', ", `, \ and /. |
+| 13 | **[Whitelist(str, whitelistedChars string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Whitelist)** | A sanitizer that removes characters that do not appear in the whitelist. <br/> The characters are used in a RegExp and will escaped for you. |
 
 # Maintainers
 
 - [bube054](https://github.com/bube054) - Attah Gbubemi David (author)
-- [Yusufsalami](https://github.com/Yusufsalami) - Yusuf Salami
 
 # Other related projects
 
