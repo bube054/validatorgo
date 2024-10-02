@@ -1,7 +1,13 @@
 package validatorgo
 
 import (
+	"fmt"
 	"regexp"
+)
+
+const (
+	isAlphanumericOptsDefaultIgnore string = ""
+	isAlphanumericOptsDefaultLocale string = "en-US"
 )
 
 // IsAlphanumericOpts is used to configure IsAlphanumeric
@@ -41,13 +47,17 @@ var writingSystemAlphaNumRegex = map[string]string{
 //
 // Ignore: is the string to be ignored e.g. " -" will ignore spaces and -'s.
 //
-// locale is one of ('ar', 'ar-AE', 'ar-BH', 'ar-DZ', 'ar-EG', 'ar-IQ', 'ar-JO', 'ar-KW', 'ar-LB', 'ar-LY', 'ar-MA', 'ar-QA', 'ar-QM', 'ar-SA', 'ar-SD', 'ar-SY', 'ar-TN', 'ar-YE', 'bn', 'bg-BG', 'cs-CZ', 'da-DK', 'de-DE', 'el-GR', 'en-AU', 'en-GB', 'en-HK', 'en-IN', 'en-NZ', 'en-US', 'en-ZA', 'en-ZM', 'eo', 'es-ES', 'fa-IR', 'fi-FI', 'fr-CA', 'fr-FR', 'he', 'hi-IN', 'hu-HU', 'it-IT', 'kk-KZ', 'ko-KR', 'ja-JP','ku-IQ', 'nb-NO', 'nl-NL', 'nn-NO', 'pl-PL', 'pt-BR', 'pt-PT', 'ru-RU', 'si-LK', 'sl-SI', 'sk-SK', 'sr-RS', 'sr-RS@latin', 'sv-SE', 'th-TH', 'tr-TR', 'uk-UA') and defaults to en-US. 
+// locale is one of ('ar', 'ar-AE', 'ar-BH', 'ar-DZ', 'ar-EG', 'ar-IQ', 'ar-JO', 'ar-KW', 'ar-LB', 'ar-LY', 'ar-MA', 'ar-QA', 'ar-QM', 'ar-SA', 'ar-SD', 'ar-SY', 'ar-TN', 'ar-YE', 'bn', 'bg-BG', 'cs-CZ', 'da-DK', 'de-DE', 'el-GR', 'en-AU', 'en-GB', 'en-HK', 'en-IN', 'en-NZ', 'en-US', 'en-ZA', 'en-ZM', 'eo', 'es-ES', 'fa-IR', 'fi-FI', 'fr-CA', 'fr-FR', 'he', 'hi-IN', 'hu-HU', 'it-IT', 'kk-KZ', 'ko-KR', 'ja-JP','ku-IQ', 'nb-NO', 'nl-NL', 'nn-NO', 'pl-PL', 'pt-BR', 'pt-PT', 'ru-RU', 'si-LK', 'sl-SI', 'sk-SK', 'sr-RS', 'sr-RS@latin', 'sv-SE', 'th-TH', 'tr-TR', 'uk-UA') and defaults to en-US.
 //
-//	isAlpha := validatorgo.IsAlphanumeric("hello123", validatorgo.IsAlphanumericOpts{})
+//	isAlpha := validatorgo.IsAlphanumeric("hello123", &validatorgo.IsAlphanumericOpts{})
 //	fmt.Println(isAlpha) // true
-//	isAlpha := validatorgo.IsAlphanumeric("hello!", validatorgo.IsAlphanumericOpts{})
+//	isAlpha := validatorgo.IsAlphanumeric("hello!", &validatorgo.IsAlphanumericOpts{})
 //	fmt.Println(isAlpha) // false
-func IsAlphanumeric(str string, opts IsAlphanumericOpts) bool {
+func IsAlphanumeric(str string, opts *IsAlphanumericOpts) bool {
+	if opts == nil {
+		opts = setIsAlphanumericOptsToDefault()
+	}
+
 	var (
 		re                *regexp.Regexp
 		lenClsCharFromEnd = 3
@@ -67,28 +77,28 @@ func IsAlphanumeric(str string, opts IsAlphanumericOpts) bool {
 
 	if opts.Ignore != "" && opts.Locale == "" {
 		charsToIgn := escapeRegexChars(opts.Ignore)
-		rec, err := regexp.Compile(`^[a-zA-z0-9` + charsToIgn + `]+$`)
-		if err != nil {
-			return false
-		}
+		rec := regexp.MustCompile(`^[a-zA-z0-9` + charsToIgn + `]+$`)
 		re = rec
 	}
 
 	if opts.Ignore != "" && opts.Locale != "" {
 		charsToIgn := escapeRegexChars(opts.Ignore)
-		wrtSys, ok := localeWritingSystems[opts.Locale]
-		if !ok {
-			return false
-		}
+		wrtSys := localeWritingSystems[opts.Locale]
 		wrtSysRe := writingSystemAlphaNumRegex[wrtSys]
 		divLen := len(wrtSysRe) - lenClsCharFromEnd
 		fstPrtRe, secPrtRe := wrtSysRe[:divLen], wrtSysRe[divLen:]
-		rec, err := regexp.Compile(fstPrtRe + charsToIgn + secPrtRe)
-		if err != nil {
-			return false
-		}
+		rec := regexp.MustCompile(fstPrtRe + charsToIgn + secPrtRe)
+		fmt.Println(rec.String())
 		re = rec
 	}
 
 	return re.MatchString(str)
+}
+
+func setIsAlphanumericOptsToDefault() (opts *IsAlphanumericOpts) {
+	opts = &IsAlphanumericOpts{}
+	opts.Ignore = isAlphanumericOptsDefaultIgnore
+	opts.Locale = isAlphanumericOptsDefaultLocale
+
+	return
 }
