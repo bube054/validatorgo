@@ -3,7 +3,10 @@ package validatorgo
 
 import "strings"
 
-const defaultContainsMinOccurrence = 1
+const (
+	containsOptsDefaultIgnoreCase bool = false
+	containsOptsDefaultMinOccurrences int  = 1
+)
 
 // ContainsOpt is used to configure Contains
 type ContainsOpt struct {
@@ -21,14 +24,13 @@ type ContainsOpt struct {
 //
 // MinOccurrences: Minimum number of occurrences for the seed in the string. Defaults to 1.
 //
-//	ok := validatorgo.Contains("hello world", "world", ContainsOpt{})
+//	ok := validatorgo.Contains("hello world", "world", &ContainsOpt{})
 //	fmt.Println(ok) // true
-//
-//	ok := validatorgo.Contains("hello world", "earth", ContainsOpt{})
+//	ok := validatorgo.Contains("hello world", "earth", &ContainsOpt{})
 //	fmt.Println(ok) // false
-func Contains(str, seed string, opts ContainsOpt) bool {
-	if opts.MinOccurrences <= 0 {
-		opts.MinOccurrences = defaultContainsMinOccurrence
+func Contains(str, seed string, opts *ContainsOpt) bool {
+	if opts == nil {
+		opts = setContainOptsToDefault()
 	}
 
 	if opts.IgnoreCase {
@@ -37,4 +39,12 @@ func Contains(str, seed string, opts ContainsOpt) bool {
 	} else {
 		return strings.Contains(str, seed) && strings.Count(str, seed) >= opts.MinOccurrences
 	}
+}
+
+func setContainOptsToDefault() (opts *ContainsOpt) {
+	opts = &ContainsOpt{}
+	opts.IgnoreCase = containsOptsDefaultIgnoreCase
+	opts.MinOccurrences = containsOptsDefaultMinOccurrences
+
+	return
 }

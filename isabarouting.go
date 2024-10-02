@@ -21,10 +21,11 @@ func IsAbaRouting(str string) bool {
 	digits := make([]int, 9)
 
 	for i, char := range strWithoutDashes {
-		digit, err := strconv.Atoi(string(char))
-		if err != nil {
-			return false
-		}
+		digit, _ := strconv.Atoi(string(char))
+		// err is ignore because we are assured IsNumericAbove to block all non numbers
+		// if err != nil {
+		// 	return false
+		// }
 		digits[i] = digit
 	}
 

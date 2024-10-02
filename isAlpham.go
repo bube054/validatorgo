@@ -5,6 +5,11 @@ import (
 	"strings"
 )
 
+const (
+	isAlphaOptsDefaultIgnore string = ""
+	isAlphaOptsDefaultLocale string = "en-US"
+)
+
 // IsAlphaOpts is used to configure IsAlpha
 type IsAlphaOpts struct {
 	Ignore string // string to be ignored
@@ -153,14 +158,17 @@ func escapeRegexChars(str string) string {
 //
 // Locale: one of ('ar', 'ar-AE', 'ar-BH', 'ar-DZ', 'ar-EG', 'ar-IQ', 'ar-JO', 'ar-KW', 'ar-LB', 'ar-LY', 'ar-MA', 'ar-QA', 'ar-QM', 'ar-SA', 'ar-SD', 'ar-SY', 'ar-TN', 'ar-YE', 'bg-BG', 'bn', 'cs-CZ', 'da-DK', 'de-DE', 'el-GR', 'en-AU', 'en-GB', 'en-HK', 'en-IN', 'en-NZ', 'en-US', 'en-ZA', 'en-ZM', 'eo', 'es-ES', 'fa-IR', 'fi-FI', 'fr-CA', 'fr-FR', 'he', 'hi-IN', 'hu-HU', 'it-IT', 'kk-KZ', 'ko-KR', 'ja-JP', 'ku-IQ', 'nb-NO', 'nl-NL', 'nn-NO', 'pl-PL', 'pt-BR', 'pt-PT', 'ru-RU', 'si-LK', 'sl-SI', 'sk-SK', 'sr-RS', 'sr-RS@latin', 'sv-SE', 'th-TH', 'tr-TR', 'uk-UA') and defaults to en-US if none is provided.
 //
-//	isAlpha := govalidator.IsAlpha("hello", govalidator.IsAlphaOpts{})
+//	isAlpha := govalidator.IsAlpha("hello", &govalidator.IsAlphaOpts{})
 //	fmt.Println(isAlpha) // true
-//	isAlpha := govalidator.IsAlpha("hello123", govalidator.IsAlphaOpts{})
+//	isAlpha := govalidator.IsAlpha("hello123", &govalidator.IsAlphaOpts{})
 //	fmt.Println(isAlpha) // false
-func IsAlpha(str string, opts IsAlphaOpts) bool {
+func IsAlpha(str string, opts *IsAlphaOpts) bool {
+	if opts == nil {
+		opts = setIsAlphaOptsToDefault()
+	}
+
 	var (
 		re                *regexp.Regexp
-		// defLocWrtSys      = "latin"
 		lenClsCharFromEnd = 3
 	)
 
@@ -171,7 +179,6 @@ func IsAlpha(str string, opts IsAlphaOpts) bool {
 	if opts.Ignore == "" && opts.Locale != "" {
 		wrtSys, ok := localeWritingSystems[opts.Locale]
 		if !ok {
-			// wrtSys = defLocWrtSys
 			return false
 		}
 		re = regexp.MustCompile(writingSystemAlphaRegex[wrtSys])
@@ -179,29 +186,27 @@ func IsAlpha(str string, opts IsAlphaOpts) bool {
 
 	if opts.Ignore != "" && opts.Locale == "" {
 		charsToIgn := escapeRegexChars(opts.Ignore)
-		rec, err := regexp.Compile(`^[a-zA-z` + charsToIgn + `]+$`)
-		if err != nil {
-			return false
-		}
+		rec := regexp.MustCompile(`^[a-zA-z` + charsToIgn + `]+$`)
 		re = rec
 	}
 
 	if opts.Ignore != "" && opts.Locale != "" {
 		charsToIgn := escapeRegexChars(opts.Ignore)
-		wrtSys, ok := localeWritingSystems[opts.Locale]
-		if !ok {
-			// wrtSys = defLocWrtSys
-			return false
-		}
+		wrtSys := localeWritingSystems[opts.Locale]
 		wrtSysRe := writingSystemAlphaRegex[wrtSys]
 		divLen := len(wrtSysRe) - lenClsCharFromEnd
 		fstPrtRe, secPrtRe := wrtSysRe[:divLen], wrtSysRe[divLen:]
-		rec, err := regexp.Compile(fstPrtRe + charsToIgn + secPrtRe)
-		if err != nil {
-			return false
-		}
+		rec := regexp.MustCompile(fstPrtRe + charsToIgn + secPrtRe)
 		re = rec
 	}
 
 	return re.MatchString(str)
+}
+
+func setIsAlphaOptsToDefault() (opts *IsAlphaOpts) {
+	opts = &IsAlphaOpts{}
+	opts.Ignore = isAlphaOptsDefaultIgnore
+	opts.Locale = isAlphaOptsDefaultLocale
+
+	return
 }
