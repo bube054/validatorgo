@@ -4,7 +4,7 @@ package validatorgo
 import "strings"
 
 const (
-	containsOptsDefaultIgnoreCase bool = false
+	containsOptsDefaultIgnoreCase     bool = false
 	containsOptsDefaultMinOccurrences int  = 1
 )
 
@@ -41,10 +41,9 @@ func Contains(str, seed string, opts *ContainsOpt) bool {
 	}
 }
 
-func setContainOptsToDefault() (opts *ContainsOpt) {
-	opts = &ContainsOpt{}
-	opts.IgnoreCase = containsOptsDefaultIgnoreCase
-	opts.MinOccurrences = containsOptsDefaultMinOccurrences
-
-	return
+func setContainOptsToDefault() *ContainsOpt {
+	return &ContainsOpt{
+		IgnoreCase:     containsOptsDefaultIgnoreCase,
+		MinOccurrences: containsOptsDefaultMinOccurrences,
+	}
 }

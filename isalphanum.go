@@ -95,10 +95,9 @@ func IsAlphanumeric(str string, opts *IsAlphanumericOpts) bool {
 	return re.MatchString(str)
 }
 
-func setIsAlphanumericOptsToDefault() (opts *IsAlphanumericOpts) {
-	opts = &IsAlphanumericOpts{}
-	opts.Ignore = isAlphanumericOptsDefaultIgnore
-	opts.Locale = isAlphanumericOptsDefaultLocale
-
-	return
+func setIsAlphanumericOptsToDefault() *IsAlphanumericOpts {
+	return &IsAlphanumericOpts{
+		Ignore: isAlphanumericOptsDefaultIgnore,
+		Locale: isAlphanumericOptsDefaultLocale,
+	}
 }

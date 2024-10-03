@@ -1,9 +1,31 @@
 package validatorgo
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
+)
+
+const (
+	isCurrencyOptsDefaultSymbol                string = "$"
+	isCurrencyOptsDefaultRequireSymbol         bool   = false
+	isCurrencyOptsDefaultAllowSpaceAfterSymbol bool   = false
+	isCurrencyOptsDefaultSymbolAfterDigits     bool   = false
+
+	isCurrencyOptsDefaultAllowNegatives               bool = true
+	isCurrencyOptsDefaultParensForNegatives           bool = false
+	isCurrencyOptsDefaultNegativeSignBeforeDigits     bool = false
+	isCurrencyOptsDefaultNegativeSignAfterDigits      bool = false
+	isCurrencyOptsDefaultAllowNegativeSignPlaceholder bool = false
+
+	isCurrencyOptsDefaultThousandSeparator     string = ","
+	isCurrencyOptsDefaultDecimalSeparator      string = "."
+	isCurrencyOptsDefaultAllowDecimal          bool   = true
+	isCurrencyOptsDefaultRequireDecimal        bool   = false
+	isCurrencyOptsDefaultAllowSpaceAfterDigits bool   = false
+)
+
+var (
+	isCurrencyOptsDefaultMaxDigitsAfterDecimal uint = 2
 )
 
 type IsCurrencyOpts struct {
@@ -25,93 +47,172 @@ type IsCurrencyOpts struct {
 	DecimalSeparator      string // 10.50
 	AllowDecimal          bool   // $10.00
 	RequireDecimal        bool   // $10.00
-	DigitsAfterDecimal    []int  // $10.50 []
+	MaxDigitsAfterDecimal uint   // $10.50
 	AllowSpaceAfterDigits bool   // '$ 10.50
-}
-
-func getMaxDigits(digits []int) string {
-	if len(digits) == 0 {
-		return "2"
-	}
-	return strconv.Itoa(digits[len(digits)-1])
-}
-
-func getMinDigits(digits []int) string {
-	if len(digits) == 0 {
-		return "0"
-	}
-	return strconv.Itoa(digits[0])
 }
 
 // A validator that checks if the string is a valid currency amount.
 //
-// IsCurrencyOpts is a struct which defaults to { Symbol: '$', RequireSymbol: false, AllowSpaceAfterSymbol: false, SymbolAfterDigits: false, AllowNegatives: true, ParensForNegatives: false, NegativeSignBeforeDigits: false, NegativeSignAfterDigits: false, AllowNegativeSignPlaceholder: false, ThousandsSeparator: ',', DecimalSeparator: '.', AllowDecimal: true, RequireDecimal: false, DigitsAfterDecimal: [2], AllowSpaceAfterDigits: false }.
-// Note: The slice DigitsAfterDecimal is filled with the exact number of digits allowed not a range, for example a range 1 to 3 will be given as [1, 2, 3].
+// IsCurrencyOpts is a struct which defaults to { Symbol: '$', RequireSymbol: false, AllowSpaceAfterSymbol: false, SymbolAfterDigits: false, AllowNegatives: true, ParensForNegatives: false, NegativeSignBeforeDigits: false, NegativeSignAfterDigits: false, AllowNegativeSignPlaceholder: false, ThousandsSeparator: ',', DecimalSeparator: '.', AllowDecimal: true, RequireDecimal: false, MaxDigitsAfterDecimal: 2, AllowSpaceAfterDigits: false }.
 //
-//	ok := validatorgo.IsCurrency("£10.50", validatorgo.IsCurrencyOpts{Symbol: "£"})
+//	ok := validatorgo.IsCurrency("$100,000.00", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsCurrency("£10.50", validatorgo.IsCurrencyOpts{Symbol: "$"})
+//	ok := validatorgo.IsCurrency("¥100", &validatorgo.IsCurrencyOpts{Symbol: "¥", RequireSymbol: true})
+//	fmt.Println(ok) // true
+//	ok := validatorgo.IsCurrency("100.50", &validatorgo.IsCurrencyOpts{Symbol: "$", RequireSymbol: true})
 //	fmt.Println(ok) // false
-func IsCurrency(str string, opts IsCurrencyOpts) bool {
-	escOpsSym := regexp.QuoteMeta(opts.Symbol)
-
-	var reqSymReStr = "?"
-
-	if opts.RequireSymbol {
-		reqSymReStr = ""
+func IsCurrency(str string, opts *IsCurrencyOpts) bool {
+	if opts == nil {
+		opts = setIsCurrencyOptsToDefault()
 	}
 
-	alwSpcAftSymStr := ""
+	escSymbol := regexp.QuoteMeta(opts.Symbol)
 
-	if opts.AllowSpaceAfterSymbol {
-		alwSpcAftSymStr = " ?"
+	if opts.ThousandSeparator == "" {
+		opts.ThousandSeparator = isCurrencyOptsDefaultThousandSeparator
 	}
+	escThSep := regexp.QuoteMeta(opts.ThousandSeparator)
 
-	re, err := regexp.Compile(fmt.Sprintf(`^(\(?)([+-]?(%s%s)%s[\d\,\.]*)(\)?)$`, escOpsSym, reqSymReStr, alwSpcAftSymStr))
+	if opts.DecimalSeparator == "" {
+		opts.DecimalSeparator = isCurrencyOptsDefaultDecimalSeparator
+	}
+	escDecSep := regexp.QuoteMeta(opts.DecimalSeparator)
+
+	decAftDigs := `(` + escDecSep + `\d{0,` + strconv.Itoa(int(opts.MaxDigitsAfterDecimal)) + `})?`
+
+	reStr := `^(\(?)(-?)(` + escSymbol + `?)(-?)(\s*)(\d{1,3})(` + escThSep + `\d{3})*` + decAftDigs + `(` + escSymbol + `?)([-\s]?)(\)?)$`
+	re, err := regexp.Compile(reStr)
 
 	if err != nil {
-		fmt.Println("re did not compile for reSym", err)
 		return false
 	}
 
 	capGrp := re.FindStringSubmatch(str)
+	// fmt.Println(re.String())
 
 	if len(capGrp) == 0 {
-		fmt.Println("re did not match for reSym", re.String())
 		return false
 	}
 
-	// // check whether bracket match
-	// lb, rb := capGrp[1], capGrp[4]
-	// if lb != "" || rb != "" {
-	// 	corBra := lb == "(" && rb == ")"
-		
-	// 	if !corBra {
-	// 		fmt.Println("improper bracket format")
-	// 		return false
-	// 	}
-	// }
+	// fmt.Println(capGrp, len(capGrp))
+	// fmt.Printf("%+v\n", opts)
 
-	// // check whether symbols match
-	// strSym := capGrp[3]
-	// if strSym != opts.Symbol {
-	// 	fmt.Println("symbols do not match")
-	// 	return false
-	// }
+	leftBrack := capGrp[1] // (
+	beg1Op := capGrp[2]    // -/+
+	begSym := capGrp[3]    // $/€...
+	beg2Op := capGrp[4]    // -/+
+	space := capGrp[5]     // " " or "	" or "		" ....
+	// intPart1 := capGrp[6]    // 100
+	// intPart2 := capGrp[7]    // ,000
+	decPart := capGrp[8]     // .50
+	endSym := capGrp[9]      // $/€...
+	endOp := capGrp[10]      // -/+ or a space
+	rightBrack := capGrp[11] // )
 
-	// fmt.Println(1, capGrp[0])
-	// fmt.Println(2, capGrp[1])
-	// fmt.Println(3, capGrp[2])
-	// fmt.Println(4, capGrp[3])
-	// fmt.Println(5, capGrp[4])
-	// fmt.Println(reSymCap, len(reSymCap))
+	if opts.RequireSymbol {
+		if begSym == "" && endSym == "" {
+			// fmt.Println("opts.RequireSymbol")
+			return false
+		}
+	}
 
-	// if !reSym.MatchString(str) {
-	// 	fmt.Println("re did not match for reSym", reSym.String())
-	// 	return false
-	// }
+	if !opts.AllowSpaceAfterSymbol {
+		if space != "" {
+			// fmt.Println("opts.AllowSpaceAfterSymbol")
+			return false
+		}
+	}
 
-	fmt.Println(re.String())
-	// fmt.Println(reSym.Find)
+	if opts.SymbolAfterDigits {
+		if endSym != opts.Symbol {
+			// fmt.Println("opts.SymbolAfterDigits 1")
+			return false
+		}
+	} else {
+		// fmt.Println("uvyctuyi")
+		if endSym == opts.Symbol {
+			// fmt.Println("opts.SymbolAfterDigits 2")
+			return false
+		}
+	}
+
+	if !opts.AllowNegatives {
+		if beg1Op == "-" || beg2Op == "-" || endOp == "-" {
+			// fmt.Println("opts.AllowNegatives")
+			return false
+		}
+	}
+
+	if opts.ParensForNegatives {
+		if leftBrack != "(" || rightBrack != ")" || beg1Op != "" || beg2Op != "" || endOp != "" {
+			// fmt.Println("opts.ParensForNegatives")
+			return false
+		}
+	}
+
+	if opts.NegativeSignBeforeDigits {
+		if beg1Op != "-" {
+			// fmt.Println("opts.NegativeSignBeforeDigits")
+			return false
+		}
+	}
+
+	if opts.NegativeSignAfterDigits {
+		if endOp != "-" {
+			// fmt.Println("opts.NegativeSignAfterDigits", beg2Op)
+			return false
+		}
+	}
+
+	if !opts.AllowNegativeSignPlaceholder {
+		if endOp != "" {
+			// fmt.Println("opts.AllowNegativeSignPlaceholder", beg2Op)
+			return false
+		}
+	}
+
+	if !opts.AllowDecimal {
+		if decPart != "" {
+			// fmt.Println("opts.AllowDecimal")
+			return false
+		}
+	}
+
+	if opts.RequireDecimal {
+		if decPart == "" {
+			// fmt.Println("opts.RequireDecimal", decPart)
+			return false
+		}
+	}
+
+	if !opts.AllowSpaceAfterDigits && endOp != "-" {
+		// fmt.Printf("`%s`\n", endOp)
+		if !IsEmpty(endOp, IsEmptyOpts{IgnoreWhitespace: false}) {
+			// fmt.Println("opts.AllowSpaceAfterDigits")
+			return false
+		}
+	}
 	return true
+}
+
+func setIsCurrencyOptsToDefault() *IsCurrencyOpts {
+	return &IsCurrencyOpts{
+		Symbol:                isCurrencyOptsDefaultSymbol,
+		RequireSymbol:         isCurrencyOptsDefaultRequireSymbol,
+		AllowSpaceAfterSymbol: isCurrencyOptsDefaultAllowSpaceAfterSymbol,
+		SymbolAfterDigits:     isCurrencyOptsDefaultSymbolAfterDigits,
+
+		AllowNegatives:               isCurrencyOptsDefaultAllowNegatives,
+		ParensForNegatives:           isCurrencyOptsDefaultParensForNegatives,
+		NegativeSignBeforeDigits:     isCurrencyOptsDefaultNegativeSignBeforeDigits,
+		NegativeSignAfterDigits:      isCurrencyOptsDefaultNegativeSignAfterDigits,
+		AllowNegativeSignPlaceholder: isCurrencyOptsDefaultAllowNegativeSignPlaceholder,
+
+		ThousandSeparator:     isCurrencyOptsDefaultThousandSeparator,
+		DecimalSeparator:      isCurrencyOptsDefaultDecimalSeparator,
+		AllowDecimal:          isCurrencyOptsDefaultAllowDecimal,
+		RequireDecimal:        isCurrencyOptsDefaultRequireDecimal,
+		MaxDigitsAfterDecimal: isCurrencyOptsDefaultMaxDigitsAfterDecimal,
+		AllowSpaceAfterDigits: isCurrencyOptsDefaultAllowSpaceAfterDigits,
+	}
 }

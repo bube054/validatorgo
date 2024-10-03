@@ -2,6 +2,10 @@ package validatorgo
 
 import "regexp"
 
+const (
+	isCreditCardOptsDefaultProvider string = ""
+)
+
 // IsCreditCardOpts is used to configure IsCreditCard
 type IsCreditCardOpts struct {
 	Provider string // credit card issuer
@@ -33,11 +37,15 @@ var creditCardProviderRegex = map[string]string{
 // Provider: is a key whose value should be a string, and defines the company issuing the credit card.
 // Valid values include amex, bcglobal, carteblanche, dinersclub, discover, instapayment, jcb, koreanlocal, laser, maestro, mastercard, solo, switch, unionpay, visa, visamastercard or blank will check for any provider.
 //
-//	ok := validatorgo.IsCreditCard("378282246310005", validatorgo.IsCreditCardOpts{Provider: "amex"})
+//	ok := validatorgo.IsCreditCard("378282246310005", &validatorgo.IsCreditCardOpts{Provider: "amex"})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsCreditCard("37828224631000", validatorgo.IsCreditCardOpts{Provider: "amex"})
+//	ok := validatorgo.IsCreditCard("37828224631000", &validatorgo.IsCreditCardOpts{Provider: "amex"})
 //	fmt.Println(ok) // false
-func IsCreditCard(str string, opts IsCreditCardOpts) bool {
+func IsCreditCard(str string, opts *IsCreditCardOpts) bool {
+	if opts == nil {
+		opts =  setIsCreditCardOptsToDefault()
+	}
+
 	reStr, ok := creditCardProviderRegex[opts.Provider]
 
 	if !ok {
@@ -55,4 +63,11 @@ func IsCreditCard(str string, opts IsCreditCardOpts) bool {
 	}
 
 	return false
+}
+
+func setIsCreditCardOptsToDefault() (opts *IsCreditCardOpts) {
+	opts = &IsCreditCardOpts{}
+	opts.Provider = isCreditCardOptsDefaultProvider
+
+	return
 }

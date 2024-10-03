@@ -203,10 +203,9 @@ func IsAlpha(str string, opts *IsAlphaOpts) bool {
 	return re.MatchString(str)
 }
 
-func setIsAlphaOptsToDefault() (opts *IsAlphaOpts) {
-	opts = &IsAlphaOpts{}
-	opts.Ignore = isAlphaOptsDefaultIgnore
-	opts.Locale = isAlphaOptsDefaultLocale
-
-	return
+func setIsAlphaOptsToDefault() *IsAlphaOpts {
+	return &IsAlphaOpts{
+		Ignore: isAlphaOptsDefaultIgnore,
+		Locale: isAlphaOptsDefaultLocale,
+	}
 }
