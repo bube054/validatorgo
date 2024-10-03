@@ -110,7 +110,7 @@ func IsCurrency(str string, opts *IsCurrencyOpts) bool {
 	rightBrack := capGrp[11] // )
 
 	if opts.RequireSymbol {
-		if begSym == "" && endSym == "" {
+		if begSym != opts.Symbol && endSym != opts.Symbol {
 			// fmt.Println("opts.RequireSymbol")
 			return false
 		}

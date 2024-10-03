@@ -4,12 +4,6 @@ import (
 	"regexp"
 )
 
-// IsDateOpts is used to configure IsDate
-type IsDateOpts struct {
-	Format     string
-	StrictMode bool
-}
-
 // IsDate formats
 const (
 	ISO8601       = "2006-01-02"              // YYYY-MM-DD
@@ -24,18 +18,29 @@ const (
 	UnixTimestamp = "2006-01-02 15:04:05"     // Full date and time
 )
 
+const (
+	isDateOptsDefaultFormat     string = ISO8601
+	isDateOptsDefaultStrictMode bool   = false
+)
+
+// IsDateOpts is used to configure IsDate
+type IsDateOpts struct {
+	Format     string
+	StrictMode bool
+}
+
 // dateFormatRegex is the set of date formats and their validating regex
 var dateFormatRegex = map[string]*regexp.Regexp{
-	ISO8601:       regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`),                   // YYYY-MM-DD
-	USFormat:      regexp.MustCompile(`^\d{2}/\d{2}/\d{4}$`),                   // MM/DD/YYYY
-	EUFormat:      regexp.MustCompile(`^\d{2}/\d{2}/\d{4}$`),                   // DD/MM/YYYY
-	JapanFormat:   regexp.MustCompile(`^\d{4}年\d{2}月\d{2}日$`),                  // YYYY年MM月DD日
-	LongForm:      regexp.MustCompile(`^[A-Za-z]+ \d{2}, \d{4}$`),              // Month DD, YYYY
-	ShortForm:     regexp.MustCompile(`^\d{2}-[A-Za-z]{3}-\d{4}$`),             // DD-MMM-YYYY
-	NoDelim:       regexp.MustCompile(`^\d{8}$`),                               // YYYYMMDD
-	WeekDay:       regexp.MustCompile(`^[A-Za-z]+, \d{2} [A-Za-z]+ \d{4}$`),    // Day, DD Month YYYY
-	YearMonth:     regexp.MustCompile(`^\d{4}-\d{2}$`),                         // YYYY-MM
-	UnixTimestamp: regexp.MustCompile(`^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$`), // Full date and time
+	ISO8601:       regexp.MustCompile(`^(\d{4})-(\d{2})-(\d{2})$`),                         // YYYY-MM-DD
+	USFormat:      regexp.MustCompile(`^(\d{2})/(\d{2})/(\d{4})$`),                         // MM/DD/YYYY
+	EUFormat:      regexp.MustCompile(`^(\d{2})/(\d{2})/(\d{4})$`),                         // DD/MM/YYYY
+	JapanFormat:   regexp.MustCompile(`^(\d{4})年(\d{2})月(\d{2})日$`),                        // YYYY年MM月DD日
+	LongForm:      regexp.MustCompile(`^([A-Za-z]+) (\d{2}), (\d{4})$`),                    // Month DD, YYYY
+	ShortForm:     regexp.MustCompile(`^(\d{2})-([A-Za-z]{3})-(\d{4})$`),                   // DD-MMM-YYYY
+	NoDelim:       regexp.MustCompile(`^(\d{4})(\d{2})(\d{2})$`),                           // YYYYMMDD
+	WeekDay:       regexp.MustCompile(`^([A-Za-z]+), (\d{2}) ([A-Za-z]+) (\d{4})$`),        // Day, DD Month YYYY
+	YearMonth:     regexp.MustCompile(`^(\d{4})-(\d{2})$`),                                 // YYYY-MM
+	UnixTimestamp: regexp.MustCompile(`^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2)}$`), // Full date and time
 }
 
 func dateMatchesAnyFormat(str string) bool {
@@ -56,15 +61,19 @@ func dateMatchesAnyFormat(str string) bool {
 //
 // StrictMode: is a boolean and defaults to false. If StrictMode is set to true, the validator will reject strings different from Format.
 //
-//	ok := validatorgo.IsDate("2006-01-02", validatorgo.IsDateOpts{})
+//	ok := validatorgo.IsDate("2006-01-02", &validatorgo.IsDateOpts{})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsDate("01/023/2006", validatorgo.IsDateOpts{})
+//	ok := validatorgo.IsDate("01/023/2006", &validatorgo.IsDateOpts{})
 //	fmt.Println(ok) // false
-func IsDate(str string, opts IsDateOpts) bool {
+func IsDate(str string, opts *IsDateOpts) bool {
+	if opts == nil {
+		opts = setIsDateOptsToDefault()
+	}
+
 	switch opts.Format {
 	case ISO8601, USFormat, EUFormat, JapanFormat, LongForm, ShortForm, NoDelim, WeekDay, YearMonth, UnixTimestamp:
 	case "", "any":
-		opts.Format = ISO8601
+		opts.Format = isDateOptsDefaultFormat
 	default:
 		return false
 	}
@@ -73,5 +82,12 @@ func IsDate(str string, opts IsDateOpts) bool {
 		return dateFormatRegex[opts.Format].MatchString(str)
 	} else {
 		return dateMatchesAnyFormat(str)
+	}
+}
+
+func setIsDateOptsToDefault() *IsDateOpts {
+	return &IsDateOpts{
+		Format:     isDateOptsDefaultFormat,
+		StrictMode: isDateOptsDefaultStrictMode,
 	}
 }

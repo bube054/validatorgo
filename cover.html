@@ -89,15 +89,15 @@
 				
 				<option value="file16">github.com/bube054/validatorgo/iscreditcard.go (100.0%)</option>
 				
-				<option value="file17">github.com/bube054/validatorgo/iscurrency.go (65.2%)</option>
+				<option value="file17">github.com/bube054/validatorgo/iscurrency.go (87.3%)</option>
 				
 				<option value="file18">github.com/bube054/validatorgo/isdatauri.go (100.0%)</option>
 				
-				<option value="file19">github.com/bube054/validatorgo/isdate.go (90.9%)</option>
+				<option value="file19">github.com/bube054/validatorgo/isdate.go (100.0%)</option>
 				
-				<option value="file20">github.com/bube054/validatorgo/isdecimal.go (30.6%)</option>
+				<option value="file20">github.com/bube054/validatorgo/isdecimal.go (97.1%)</option>
 				
-				<option value="file21">github.com/bube054/validatorgo/isdivisibleby.go (83.3%)</option>
+				<option value="file21">github.com/bube054/validatorgo/isdivisibleby.go (100.0%)</option>
 				
 				<option value="file22">github.com/bube054/validatorgo/isean.go (100.0%)</option>
 				
@@ -255,7 +255,7 @@ package validatorgo
 import "strings"
 
 const (
-        containsOptsDefaultIgnoreCase bool = false
+        containsOptsDefaultIgnoreCase     bool = false
         containsOptsDefaultMinOccurrences int  = 1
 )
 
@@ -292,13 +292,13 @@ func Contains(str, seed string, opts *ContainsOpt) bool <span class="cov8" title
         }</span>
 }
 
-func setContainOptsToDefault() (opts *ContainsOpt) <span class="cov8" title="1">{
-        opts = &amp;ContainsOpt{}
-        opts.IgnoreCase = containsOptsDefaultIgnoreCase
-        opts.MinOccurrences = containsOptsDefaultMinOccurrences
-
-        return
-}</pre>
+func setContainOptsToDefault() *ContainsOpt <span class="cov8" title="1">{
+        return &amp;ContainsOpt{
+                IgnoreCase:     containsOptsDefaultIgnoreCase,
+                MinOccurrences: containsOptsDefaultMinOccurrences,
+        }
+}</span>
+</pre>
 		
 		<pre class="file" id="file1" style="display: none">package validatorgo
 
@@ -518,12 +518,11 @@ func IsAlpha(str string, opts *IsAlphaOpts) bool <span class="cov8" title="1">{
         <span class="cov8" title="1">return re.MatchString(str)</span>
 }
 
-func setIsAlphaOptsToDefault() (opts *IsAlphaOpts) <span class="cov8" title="1">{
-        opts = &amp;IsAlphaOpts{}
-        opts.Ignore = isAlphaOptsDefaultIgnore
-        opts.Locale = isAlphaOptsDefaultLocale
-
-        return
+func setIsAlphaOptsToDefault() *IsAlphaOpts <span class="cov8" title="1">{
+        return &amp;IsAlphaOpts{
+                Ignore: isAlphaOptsDefaultIgnore,
+                Locale: isAlphaOptsDefaultLocale,
+        }
 }</span>
 </pre>
 		
@@ -591,7 +590,7 @@ type IsAfterOpts struct {
 //
 // string layouts for str and ComparisonDate can be different layout.
 //
-// these are the only valid layouts from the time package 
+// these are the only valid layouts from the time package
 // e.g Layout, ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, Kitchen, Stamp, StampMilli, StampMicro, StampNano, DateTime, DateOnly, TimeOnly.
 //
 //        ok := validatorgo.IsAfter("2023-09-15", &amp;validatorgo.IsAfterOpts{ComparisonDate: "2023-01-01"})
@@ -620,11 +619,11 @@ func IsAfter(str string, opts *IsAfterOpts) bool <span class="cov8" title="1">{
         <span class="cov8" title="1">return date1.After(*date2)</span>
 }
 
-func setIsAfterOptsToDefault() (opts *IsAfterOpts) <span class="cov8" title="1">{
-        opts = &amp;IsAfterOpts{}
-        opts.ComparisonDate = isAfterOptsDefaultComparisonDate
+func setIsAfterOptsToDefault() *IsAfterOpts <span class="cov8" title="1">{
 
-        return
+        return &amp;IsAfterOpts{
+                ComparisonDate: isAfterOptsDefaultComparisonDate,
+        }
 }</span>
 </pre>
 		
@@ -725,12 +724,11 @@ func IsAlphanumeric(str string, opts *IsAlphanumericOpts) bool <span class="cov8
         <span class="cov8" title="1">return re.MatchString(str)</span>
 }
 
-func setIsAlphanumericOptsToDefault() (opts *IsAlphanumericOpts) <span class="cov8" title="1">{
-        opts = &amp;IsAlphanumericOpts{}
-        opts.Ignore = isAlphanumericOptsDefaultIgnore
-        opts.Locale = isAlphanumericOptsDefaultLocale
-
-        return
+func setIsAlphanumericOptsToDefault() *IsAlphanumericOpts <span class="cov8" title="1">{
+        return &amp;IsAlphanumericOpts{
+                Ignore: isAlphanumericOptsDefaultIgnore,
+                Locale: isAlphanumericOptsDefaultLocale,
+        }
 }</span>
 </pre>
 		
@@ -802,11 +800,11 @@ func IsBase32(str string, opts *IsBase32Opts) bool <span class="cov8" title="1">
 }
 
 func setIsBase32OptsToDefault() (opts *IsBase32Opts) <span class="cov8" title="1">{
-        opts = &amp;IsBase32Opts{}
-        opts.Crockford = isBase32OptsDefaultCrockford
-
-        return
-}</pre>
+        return &amp;IsBase32Opts{
+                Crockford: isBase32OptsDefaultCrockford,
+        }
+}</span>
+</pre>
 		
 		<pre class="file" id="file8" style="display: none">package validatorgo
 
@@ -925,11 +923,11 @@ func IsBefore(str string, opts *IsBeforeOpts) bool <span class="cov8" title="1">
 }
 
 func setIsBeforeOptsToDefault() (opts *IsBeforeOpts) <span class="cov8" title="1">{
-        opts = &amp;IsBeforeOpts{}
-        opts.ComparisonDate = isBeforeOptsDefaultComparisonDate
-
-        return
-}</pre>
+        return &amp;IsBeforeOpts{
+                ComparisonDate: isBeforeOptsDefaultComparisonDate,
+        }
+}</span>
+</pre>
 		
 		<pre class="file" id="file11" style="display: none">package validatorgo
 
@@ -983,11 +981,11 @@ func IsBoolean(str string, opts *IsBooleanOpts) bool <span class="cov8" title="1
 }
 
 func setIsBooleanOptsToDefault() (opts *IsBooleanOpts) <span class="cov8" title="1">{
-        opts = &amp;IsBooleanOpts{}
-        opts.Loose = isBooleanOptsDefaultLoose
-
-        return
-}</pre>
+        return &amp;IsBooleanOpts{
+                Loose: isBooleanOptsDefaultLoose,
+        }
+}</span>
+</pre>
 		
 		<pre class="file" id="file13" style="display: none">package validatorgo
 
@@ -1137,9 +1135,31 @@ func setIsCreditCardOptsToDefault() (opts *IsCreditCardOpts) <span class="cov8" 
 		<pre class="file" id="file17" style="display: none">package validatorgo
 
 import (
-        "fmt"
         "regexp"
         "strconv"
+)
+
+const (
+        isCurrencyOptsDefaultSymbol                string = "$"
+        isCurrencyOptsDefaultRequireSymbol         bool   = false
+        isCurrencyOptsDefaultAllowSpaceAfterSymbol bool   = false
+        isCurrencyOptsDefaultSymbolAfterDigits     bool   = false
+
+        isCurrencyOptsDefaultAllowNegatives               bool = true
+        isCurrencyOptsDefaultParensForNegatives           bool = false
+        isCurrencyOptsDefaultNegativeSignBeforeDigits     bool = false
+        isCurrencyOptsDefaultNegativeSignAfterDigits      bool = false
+        isCurrencyOptsDefaultAllowNegativeSignPlaceholder bool = false
+
+        isCurrencyOptsDefaultThousandSeparator     string = ","
+        isCurrencyOptsDefaultDecimalSeparator      string = "."
+        isCurrencyOptsDefaultAllowDecimal          bool   = true
+        isCurrencyOptsDefaultRequireDecimal        bool   = false
+        isCurrencyOptsDefaultAllowSpaceAfterDigits bool   = false
+)
+
+var (
+        isCurrencyOptsDefaultMaxDigitsAfterDecimal uint = 2
 )
 
 type IsCurrencyOpts struct {
@@ -1161,96 +1181,175 @@ type IsCurrencyOpts struct {
         DecimalSeparator      string // 10.50
         AllowDecimal          bool   // $10.00
         RequireDecimal        bool   // $10.00
-        DigitsAfterDecimal    []int  // $10.50 []
+        MaxDigitsAfterDecimal uint   // $10.50
         AllowSpaceAfterDigits bool   // '$ 10.50
-}
-
-func getMaxDigits(digits []int) string <span class="cov0" title="0">{
-        if len(digits) == 0 </span><span class="cov0" title="0">{
-                return "2"
-        }</span>
-        <span class="cov0" title="0">return strconv.Itoa(digits[len(digits)-1])</span>
-}
-
-func getMinDigits(digits []int) string <span class="cov0" title="0">{
-        if len(digits) == 0 </span><span class="cov0" title="0">{
-                return "0"
-        }</span>
-        <span class="cov0" title="0">return strconv.Itoa(digits[0])</span>
 }
 
 // A validator that checks if the string is a valid currency amount.
 //
-// IsCurrencyOpts is a struct which defaults to { Symbol: '$', RequireSymbol: false, AllowSpaceAfterSymbol: false, SymbolAfterDigits: false, AllowNegatives: true, ParensForNegatives: false, NegativeSignBeforeDigits: false, NegativeSignAfterDigits: false, AllowNegativeSignPlaceholder: false, ThousandsSeparator: ',', DecimalSeparator: '.', AllowDecimal: true, RequireDecimal: false, DigitsAfterDecimal: [2], AllowSpaceAfterDigits: false }.
-// Note: The slice DigitsAfterDecimal is filled with the exact number of digits allowed not a range, for example a range 1 to 3 will be given as [1, 2, 3].
+// IsCurrencyOpts is a struct which defaults to { Symbol: '$', RequireSymbol: false, AllowSpaceAfterSymbol: false, SymbolAfterDigits: false, AllowNegatives: true, ParensForNegatives: false, NegativeSignBeforeDigits: false, NegativeSignAfterDigits: false, AllowNegativeSignPlaceholder: false, ThousandsSeparator: ',', DecimalSeparator: '.', AllowDecimal: true, RequireDecimal: false, MaxDigitsAfterDecimal: 2, AllowSpaceAfterDigits: false }.
 //
-//        ok := validatorgo.IsCurrency("£10.50", validatorgo.IsCurrencyOpts{Symbol: "£"})
+//        ok := validatorgo.IsCurrency("$100,000.00", nil)
 //        fmt.Println(ok) // true
-//        ok := validatorgo.IsCurrency("£10.50", validatorgo.IsCurrencyOpts{Symbol: "$"})
+//        ok := validatorgo.IsCurrency("¥100", &amp;validatorgo.IsCurrencyOpts{Symbol: "¥", RequireSymbol: true})
+//        fmt.Println(ok) // true
+//        ok := validatorgo.IsCurrency("100.50", &amp;validatorgo.IsCurrencyOpts{Symbol: "$", RequireSymbol: true})
 //        fmt.Println(ok) // false
-func IsCurrency(str string, opts IsCurrencyOpts) bool <span class="cov8" title="1">{
-        escOpsSym := regexp.QuoteMeta(opts.Symbol)
-
-        var reqSymReStr = "?"
-
-        if opts.RequireSymbol </span><span class="cov8" title="1">{
-                reqSymReStr = ""
+func IsCurrency(str string, opts *IsCurrencyOpts) bool <span class="cov8" title="1">{
+        if opts == nil </span><span class="cov8" title="1">{
+                opts = setIsCurrencyOptsToDefault()
         }</span>
 
-        <span class="cov8" title="1">alwSpcAftSymStr := ""
+        <span class="cov8" title="1">escSymbol := regexp.QuoteMeta(opts.Symbol)
 
-        if opts.AllowSpaceAfterSymbol </span><span class="cov8" title="1">{
-                alwSpcAftSymStr = " ?"
+        if opts.ThousandSeparator == "" </span><span class="cov8" title="1">{
+                opts.ThousandSeparator = isCurrencyOptsDefaultThousandSeparator
         }</span>
+        <span class="cov8" title="1">escThSep := regexp.QuoteMeta(opts.ThousandSeparator)
 
-        <span class="cov8" title="1">re, err := regexp.Compile(fmt.Sprintf(`^(\(?)([+-]?(%s%s)%s[\d\,\.]*)(\)?)$`, escOpsSym, reqSymReStr, alwSpcAftSymStr))
+        if opts.DecimalSeparator == "" </span><span class="cov8" title="1">{
+                opts.DecimalSeparator = isCurrencyOptsDefaultDecimalSeparator
+        }</span>
+        <span class="cov8" title="1">escDecSep := regexp.QuoteMeta(opts.DecimalSeparator)
+
+        decAftDigs := `(` + escDecSep + `\d{0,` + strconv.Itoa(int(opts.MaxDigitsAfterDecimal)) + `})?`
+
+        reStr := `^(\(?)(-?)(` + escSymbol + `?)(-?)(\s*)(\d{1,3})(` + escThSep + `\d{3})*` + decAftDigs + `(` + escSymbol + `?)([-\s]?)(\)?)$`
+        re, err := regexp.Compile(reStr)
 
         if err != nil </span><span class="cov0" title="0">{
-                fmt.Println("re did not compile for reSym", err)
                 return false
         }</span>
 
         <span class="cov8" title="1">capGrp := re.FindStringSubmatch(str)
+        // fmt.Println(re.String())
 
         if len(capGrp) == 0 </span><span class="cov8" title="1">{
-                fmt.Println("re did not match for reSym", re.String())
                 return false
         }</span>
 
-        // // check whether bracket match
-        // lb, rb := capGrp[1], capGrp[4]
-        // if lb != "" || rb != "" {
-        //         corBra := lb == "(" &amp;&amp; rb == ")"
-                
-        //         if !corBra {
-        //                 fmt.Println("improper bracket format")
-        //                 return false
-        //         }
-        // }
+        // fmt.Println(capGrp, len(capGrp))
+        // fmt.Printf("%+v\n", opts)
 
-        // // check whether symbols match
-        // strSym := capGrp[3]
-        // if strSym != opts.Symbol {
-        //         fmt.Println("symbols do not match")
-        //         return false
-        // }
+        <span class="cov8" title="1">leftBrack := capGrp[1] // (
+        beg1Op := capGrp[2]    // -/+
+        begSym := capGrp[3]    // $/€...
+        beg2Op := capGrp[4]    // -/+
+        space := capGrp[5]     // " " or "        " or "                " ....
+        // intPart1 := capGrp[6]    // 100
+        // intPart2 := capGrp[7]    // ,000
+        decPart := capGrp[8]     // .50
+        endSym := capGrp[9]      // $/€...
+        endOp := capGrp[10]      // -/+ or a space
+        rightBrack := capGrp[11] // )
 
-        // fmt.Println(1, capGrp[0])
-        // fmt.Println(2, capGrp[1])
-        // fmt.Println(3, capGrp[2])
-        // fmt.Println(4, capGrp[3])
-        // fmt.Println(5, capGrp[4])
-        // fmt.Println(reSymCap, len(reSymCap))
+        if opts.RequireSymbol </span><span class="cov8" title="1">{
+                if begSym != opts.Symbol &amp;&amp; endSym != opts.Symbol </span><span class="cov0" title="0">{
+                        // fmt.Println("opts.RequireSymbol")
+                        return false
+                }</span>
+        }
 
-        // if !reSym.MatchString(str) {
-        //         fmt.Println("re did not match for reSym", reSym.String())
-        //         return false
-        // }
+        <span class="cov8" title="1">if !opts.AllowSpaceAfterSymbol </span><span class="cov8" title="1">{
+                if space != "" </span><span class="cov8" title="1">{
+                        // fmt.Println("opts.AllowSpaceAfterSymbol")
+                        return false
+                }</span>
+        }
 
-        <span class="cov8" title="1">fmt.Println(re.String())
-        // fmt.Println(reSym.Find)
-        return true</span>
+        <span class="cov8" title="1">if opts.SymbolAfterDigits </span><span class="cov8" title="1">{
+                if endSym != opts.Symbol </span><span class="cov0" title="0">{
+                        // fmt.Println("opts.SymbolAfterDigits 1")
+                        return false
+                }</span>
+        } else<span class="cov8" title="1"> {
+                // fmt.Println("uvyctuyi")
+                if endSym == opts.Symbol </span><span class="cov8" title="1">{
+                        // fmt.Println("opts.SymbolAfterDigits 2")
+                        return false
+                }</span>
+        }
+
+        <span class="cov8" title="1">if !opts.AllowNegatives </span><span class="cov8" title="1">{
+                if beg1Op == "-" || beg2Op == "-" || endOp == "-" </span><span class="cov0" title="0">{
+                        // fmt.Println("opts.AllowNegatives")
+                        return false
+                }</span>
+        }
+
+        <span class="cov8" title="1">if opts.ParensForNegatives </span><span class="cov8" title="1">{
+                if leftBrack != "(" || rightBrack != ")" || beg1Op != "" || beg2Op != "" || endOp != "" </span><span class="cov0" title="0">{
+                        // fmt.Println("opts.ParensForNegatives")
+                        return false
+                }</span>
+        }
+
+        <span class="cov8" title="1">if opts.NegativeSignBeforeDigits </span><span class="cov8" title="1">{
+                if beg1Op != "-" </span><span class="cov0" title="0">{
+                        // fmt.Println("opts.NegativeSignBeforeDigits")
+                        return false
+                }</span>
+        }
+
+        <span class="cov8" title="1">if opts.NegativeSignAfterDigits </span><span class="cov8" title="1">{
+                if endOp != "-" </span><span class="cov0" title="0">{
+                        // fmt.Println("opts.NegativeSignAfterDigits", beg2Op)
+                        return false
+                }</span>
+        }
+
+        <span class="cov8" title="1">if !opts.AllowNegativeSignPlaceholder </span><span class="cov8" title="1">{
+                if endOp != "" </span><span class="cov8" title="1">{
+                        // fmt.Println("opts.AllowNegativeSignPlaceholder", beg2Op)
+                        return false
+                }</span>
+        }
+
+        <span class="cov8" title="1">if !opts.AllowDecimal </span><span class="cov8" title="1">{
+                if decPart != "" </span><span class="cov0" title="0">{
+                        // fmt.Println("opts.AllowDecimal")
+                        return false
+                }</span>
+        }
+
+        <span class="cov8" title="1">if opts.RequireDecimal </span><span class="cov8" title="1">{
+                if decPart == "" </span><span class="cov8" title="1">{
+                        // fmt.Println("opts.RequireDecimal", decPart)
+                        return false
+                }</span>
+        }
+
+        <span class="cov8" title="1">if !opts.AllowSpaceAfterDigits &amp;&amp; endOp != "-" </span><span class="cov8" title="1">{
+                // fmt.Printf("`%s`\n", endOp)
+                if !IsEmpty(endOp, IsEmptyOpts{IgnoreWhitespace: false}) </span><span class="cov8" title="1">{
+                        // fmt.Println("opts.AllowSpaceAfterDigits")
+                        return false
+                }</span>
+        }
+        <span class="cov8" title="1">return true</span>
 }
+
+func setIsCurrencyOptsToDefault() *IsCurrencyOpts <span class="cov8" title="1">{
+        return &amp;IsCurrencyOpts{
+                Symbol:                isCurrencyOptsDefaultSymbol,
+                RequireSymbol:         isCurrencyOptsDefaultRequireSymbol,
+                AllowSpaceAfterSymbol: isCurrencyOptsDefaultAllowSpaceAfterSymbol,
+                SymbolAfterDigits:     isCurrencyOptsDefaultSymbolAfterDigits,
+
+                AllowNegatives:               isCurrencyOptsDefaultAllowNegatives,
+                ParensForNegatives:           isCurrencyOptsDefaultParensForNegatives,
+                NegativeSignBeforeDigits:     isCurrencyOptsDefaultNegativeSignBeforeDigits,
+                NegativeSignAfterDigits:      isCurrencyOptsDefaultNegativeSignAfterDigits,
+                AllowNegativeSignPlaceholder: isCurrencyOptsDefaultAllowNegativeSignPlaceholder,
+
+                ThousandSeparator:     isCurrencyOptsDefaultThousandSeparator,
+                DecimalSeparator:      isCurrencyOptsDefaultDecimalSeparator,
+                AllowDecimal:          isCurrencyOptsDefaultAllowDecimal,
+                RequireDecimal:        isCurrencyOptsDefaultRequireDecimal,
+                MaxDigitsAfterDecimal: isCurrencyOptsDefaultMaxDigitsAfterDecimal,
+                AllowSpaceAfterDigits: isCurrencyOptsDefaultAllowSpaceAfterDigits,
+        }
+}</span>
 </pre>
 		
 		<pre class="file" id="file18" style="display: none">package validatorgo
@@ -1287,12 +1386,6 @@ import (
         "regexp"
 )
 
-// IsDateOpts is used to configure IsDate
-type IsDateOpts struct {
-        Format     string
-        StrictMode bool
-}
-
 // IsDate formats
 const (
         ISO8601       = "2006-01-02"              // YYYY-MM-DD
@@ -1307,18 +1400,29 @@ const (
         UnixTimestamp = "2006-01-02 15:04:05"     // Full date and time
 )
 
+const (
+        isDateOptsDefaultFormat     string = ISO8601
+        isDateOptsDefaultStrictMode bool   = false
+)
+
+// IsDateOpts is used to configure IsDate
+type IsDateOpts struct {
+        Format     string
+        StrictMode bool
+}
+
 // dateFormatRegex is the set of date formats and their validating regex
 var dateFormatRegex = map[string]*regexp.Regexp{
-        ISO8601:       regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`),                   // YYYY-MM-DD
-        USFormat:      regexp.MustCompile(`^\d{2}/\d{2}/\d{4}$`),                   // MM/DD/YYYY
-        EUFormat:      regexp.MustCompile(`^\d{2}/\d{2}/\d{4}$`),                   // DD/MM/YYYY
-        JapanFormat:   regexp.MustCompile(`^\d{4}年\d{2}月\d{2}日$`),                  // YYYY年MM月DD日
-        LongForm:      regexp.MustCompile(`^[A-Za-z]+ \d{2}, \d{4}$`),              // Month DD, YYYY
-        ShortForm:     regexp.MustCompile(`^\d{2}-[A-Za-z]{3}-\d{4}$`),             // DD-MMM-YYYY
-        NoDelim:       regexp.MustCompile(`^\d{8}$`),                               // YYYYMMDD
-        WeekDay:       regexp.MustCompile(`^[A-Za-z]+, \d{2} [A-Za-z]+ \d{4}$`),    // Day, DD Month YYYY
-        YearMonth:     regexp.MustCompile(`^\d{4}-\d{2}$`),                         // YYYY-MM
-        UnixTimestamp: regexp.MustCompile(`^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$`), // Full date and time
+        ISO8601:       regexp.MustCompile(`^(\d{4})-(\d{2})-(\d{2})$`),                         // YYYY-MM-DD
+        USFormat:      regexp.MustCompile(`^(\d{2})/(\d{2})/(\d{4})$`),                         // MM/DD/YYYY
+        EUFormat:      regexp.MustCompile(`^(\d{2})/(\d{2})/(\d{4})$`),                         // DD/MM/YYYY
+        JapanFormat:   regexp.MustCompile(`^(\d{4})年(\d{2})月(\d{2})日$`),                        // YYYY年MM月DD日
+        LongForm:      regexp.MustCompile(`^([A-Za-z]+) (\d{2}), (\d{4})$`),                    // Month DD, YYYY
+        ShortForm:     regexp.MustCompile(`^(\d{2})-([A-Za-z]{3})-(\d{4})$`),                   // DD-MMM-YYYY
+        NoDelim:       regexp.MustCompile(`^(\d{4})(\d{2})(\d{2})$`),                           // YYYYMMDD
+        WeekDay:       regexp.MustCompile(`^([A-Za-z]+), (\d{2}) ([A-Za-z]+) (\d{4})$`),        // Day, DD Month YYYY
+        YearMonth:     regexp.MustCompile(`^(\d{4})-(\d{2})$`),                                 // YYYY-MM
+        UnixTimestamp: regexp.MustCompile(`^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2)}$`), // Full date and time
 }
 
 func dateMatchesAnyFormat(str string) bool <span class="cov8" title="1">{
@@ -1339,16 +1443,20 @@ func dateMatchesAnyFormat(str string) bool <span class="cov8" title="1">{
 //
 // StrictMode: is a boolean and defaults to false. If StrictMode is set to true, the validator will reject strings different from Format.
 //
-//        ok := validatorgo.IsDate("2006-01-02", validatorgo.IsDateOpts{})
+//        ok := validatorgo.IsDate("2006-01-02", &amp;validatorgo.IsDateOpts{})
 //        fmt.Println(ok) // true
-//        ok := validatorgo.IsDate("01/023/2006", validatorgo.IsDateOpts{})
+//        ok := validatorgo.IsDate("01/023/2006", &amp;validatorgo.IsDateOpts{})
 //        fmt.Println(ok) // false
-func IsDate(str string, opts IsDateOpts) bool <span class="cov8" title="1">{
-        switch opts.Format </span>{
+func IsDate(str string, opts *IsDateOpts) bool <span class="cov8" title="1">{
+        if opts == nil </span><span class="cov8" title="1">{
+                opts = setIsDateOptsToDefault()
+        }</span>
+
+        <span class="cov8" title="1">switch opts.Format </span>{
         case ISO8601, USFormat, EUFormat, JapanFormat, LongForm, ShortForm, NoDelim, WeekDay, YearMonth, UnixTimestamp:<span class="cov8" title="1"></span>
         case "", "any":<span class="cov8" title="1">
-                opts.Format = ISO8601</span>
-        default:<span class="cov0" title="0">
+                opts.Format = isDateOptsDefaultFormat</span>
+        default:<span class="cov8" title="1">
                 return false</span>
         }
 
@@ -1358,6 +1466,13 @@ func IsDate(str string, opts IsDateOpts) bool <span class="cov8" title="1">{
                 return dateMatchesAnyFormat(str)
         }</span>
 }
+
+func setIsDateOptsToDefault() *IsDateOpts <span class="cov8" title="1">{
+        return &amp;IsDateOpts{
+                Format:     isDateOptsDefaultFormat,
+                StrictMode: isDateOptsDefaultStrictMode,
+        }
+}</span>
 </pre>
 		
 		<pre class="file" id="file20" style="display: none">package validatorgo
@@ -1366,6 +1481,17 @@ import (
         "fmt"
         "regexp"
         "strconv"
+)
+
+const (
+        isDecimalOptsDefaultForceDecimal bool   = false
+        isDecimalOptsDefaultLocale       string = "en-US"
+
+        isDecimalOptsDefaultMin uint = 0
+)
+
+var (
+        isDecimalOptsDefaultMax *uint = nil
 )
 
 // DecimalDigits is used to configure IsDecimalOpts
@@ -1405,7 +1531,7 @@ var decimalFormats = map[string]func(IsDecimalOpts) (*regexp.Regexp, error){
                 <span class="cov8" title="1">var maxStr string
                 if ido.DecimalDigits.Max == nil </span><span class="cov8" title="1">{
                         maxStr = ""
-                }</span> else<span class="cov0" title="0"> {
+                }</span> else<span class="cov8" title="1"> {
                         maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
                 }</span>
                 <span class="cov8" title="1">return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}(\.\d{3})*)(\,\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))</span>
@@ -1418,114 +1544,118 @@ var decimalFormats = map[string]func(IsDecimalOpts) (*regexp.Regexp, error){
                 <span class="cov8" title="1">var maxStr string
                 if ido.DecimalDigits.Max == nil </span><span class="cov8" title="1">{
                         maxStr = ""
-                }</span> else<span class="cov0" title="0"> {
+                }</span> else<span class="cov8" title="1"> {
                         maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
                 }</span>
                 <span class="cov8" title="1">return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}( \d{3})*)(\,\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))</span>
         },
-        "dot_decimal_space_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) <span class="cov0" title="0">{ // 1 234.56
+        // "dot_decimal_space_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) { // 1 234.56
+        //         var q = "?"
+        //         if ido.ForceDecimal {
+        //                 q = ""
+        //         }
+        //         var maxStr string
+        //         if ido.DecimalDigits.Max == nil {
+        //                 maxStr = ""
+        //         } else {
+        //                 maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
+        //         }
+        //         return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}( \d{3})*)(\.\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))
+        // },
+        // "dot_decimal_apostrophe_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) { // 1'234.56
+        //         var q = "?"
+        //         if ido.ForceDecimal {
+        //                 q = ""
+        //         }
+        //         var maxStr string
+        //         if ido.DecimalDigits.Max == nil {
+        //                 maxStr = ""
+        //         } else {
+        //                 maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
+        //         }
+        //         return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}('\d{3})*)(\.\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))
+        // },
+        // "comma_decimal_apostrophe_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) { // 1'234,56
+        //         var q = "?"
+        //         if ido.ForceDecimal {
+        //                 q = ""
+        //         }
+        //         var maxStr string
+        //         if ido.DecimalDigits.Max == nil {
+        //                 maxStr = ""
+        //         } else {
+        //                 maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
+        //         }
+        //         return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}('\d{3})*)(\,\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))
+        // },
+        "dot_decimal_no_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) <span class="cov8" title="1">{ // 123456.78
                 var q = "?"
-                if ido.ForceDecimal </span><span class="cov0" title="0">{
+                if ido.ForceDecimal </span><span class="cov8" title="1">{
                         q = ""
                 }</span>
-                <span class="cov0" title="0">var maxStr string
-                if ido.DecimalDigits.Max == nil </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">var maxStr string
+                if ido.DecimalDigits.Max == nil </span><span class="cov8" title="1">{
                         maxStr = ""
-                }</span> else<span class="cov0" title="0"> {
+                }</span> else<span class="cov8" title="1"> {
                         maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
                 }</span>
-                <span class="cov0" title="0">return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}( \d{3})*)(\.\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))</span>
+                <span class="cov8" title="1">return regexp.Compile(fmt.Sprintf(`^[+-]?(\d+)?(\.\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))</span>
         },
-        "dot_decimal_apostrophe_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) <span class="cov0" title="0">{ // 1'234.56
+        // "comma_decimal_no_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) { // 123456,78
+        //         var q = "?"
+        //         if ido.ForceDecimal {
+        //                 q = ""
+        //         }
+        //         var maxStr string
+        //         if ido.DecimalDigits.Max == nil {
+        //                 maxStr = ""
+        //         } else {
+        //                 maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
+        //         }
+        //         return regexp.Compile(fmt.Sprintf(`^[+-]?(\d+)?(\,\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))
+        // },
+        "indian_numbering_system": func(ido IsDecimalOpts) (*regexp.Regexp, error) <span class="cov8" title="1">{ // 1,23,456.78
                 var q = "?"
-                if ido.ForceDecimal </span><span class="cov0" title="0">{
+                if ido.ForceDecimal </span><span class="cov8" title="1">{
                         q = ""
                 }</span>
-                <span class="cov0" title="0">var maxStr string
-                if ido.DecimalDigits.Max == nil </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">var maxStr string
+                if ido.DecimalDigits.Max == nil </span><span class="cov8" title="1">{
                         maxStr = ""
-                }</span> else<span class="cov0" title="0"> {
+                }</span> else<span class="cov8" title="1"> {
                         maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
                 }</span>
-                <span class="cov0" title="0">return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}('\d{3})*)(\.\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))</span>
+                <span class="cov8" title="1">return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,2}(,\d{2})*(,\d{3}))?(\.\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))</span>
         },
-        "comma_decimal_apostrophe_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) <span class="cov0" title="0">{ // 1'234,56
+        "arabic_numerals_dot_decimal": func(ido IsDecimalOpts) (*regexp.Regexp, error) <span class="cov8" title="1">{
                 var q = "?"
-                if ido.ForceDecimal </span><span class="cov0" title="0">{
+                if ido.ForceDecimal </span><span class="cov8" title="1">{
                         q = ""
                 }</span>
-                <span class="cov0" title="0">var maxStr string
-                if ido.DecimalDigits.Max == nil </span><span class="cov0" title="0">{
+                <span class="cov8" title="1">var maxStr string
+                if ido.DecimalDigits.Max == nil </span><span class="cov8" title="1">{
                         maxStr = ""
-                }</span> else<span class="cov0" title="0"> {
+                }</span> else<span class="cov8" title="1"> {
                         maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
                 }</span>
-                <span class="cov0" title="0">return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}('\d{3})*)(\,\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))</span>
+                <span class="cov8" title="1">return regexp.Compile(fmt.Sprintf(`^[+-]?[٠١٢٣٤٥٦٧٨٩]+(٫[٠١٢٣٤٥٦٧٨٩]{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))</span>
         },
-        "dot_decimal_no_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) <span class="cov0" title="0">{ // 123456.78
-                var q = "?"
-                if ido.ForceDecimal </span><span class="cov0" title="0">{
-                        q = ""
+        "arabic_numerals_comma_decimal": func(ido IsDecimalOpts) (*regexp.Regexp, error) <span class="cov8" title="1">{
+                var q = "?" // Optional decimal part by default
+                if ido.ForceDecimal </span><span class="cov8" title="1">{
+                        q = "" // Force the decimal part to appear
                 }</span>
-                <span class="cov0" title="0">var maxStr string
+                <span class="cov8" title="1">var maxStr string
                 if ido.DecimalDigits.Max == nil </span><span class="cov0" title="0">{
-                        maxStr = ""
-                }</span> else<span class="cov0" title="0"> {
+                        maxStr = "" // No upper limit for decimal digits
+                }</span> else<span class="cov8" title="1"> {
                         maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
                 }</span>
-                <span class="cov0" title="0">return regexp.Compile(fmt.Sprintf(`^[+-]?(\d+)?(\.\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))</span>
-        },
-        "comma_decimal_no_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) <span class="cov0" title="0">{ // 123456,78
-                var q = "?"
-                if ido.ForceDecimal </span><span class="cov0" title="0">{
-                        q = ""
-                }</span>
-                <span class="cov0" title="0">var maxStr string
-                if ido.DecimalDigits.Max == nil </span><span class="cov0" title="0">{
-                        maxStr = ""
-                }</span> else<span class="cov0" title="0"> {
-                        maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
-                }</span>
-                <span class="cov0" title="0">return regexp.Compile(fmt.Sprintf(`^[+-]?(\d+)?(\,\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))</span>
-        },
-        "indian_numbering_system": func(ido IsDecimalOpts) (*regexp.Regexp, error) <span class="cov0" title="0">{ // 1,23,456.78
-                var q = "?"
-                if ido.ForceDecimal </span><span class="cov0" title="0">{
-                        q = ""
-                }</span>
-                <span class="cov0" title="0">var maxStr string
-                if ido.DecimalDigits.Max == nil </span><span class="cov0" title="0">{
-                        maxStr = ""
-                }</span> else<span class="cov0" title="0"> {
-                        maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
-                }</span>
-                <span class="cov0" title="0">return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,2}(,\d{2})*(,\d{3}))?(\.\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))</span>
-        },
-        "arabic_numerals_dot_decimal": func(ido IsDecimalOpts) (*regexp.Regexp, error) <span class="cov0" title="0">{ // ١٫٢٣٤,٥٦
-                var q = "?"
-                if ido.ForceDecimal </span><span class="cov0" title="0">{
-                        q = ""
-                }</span>
-                <span class="cov0" title="0">var maxStr string
-                if ido.DecimalDigits.Max == nil </span><span class="cov0" title="0">{
-                        maxStr = ""
-                }</span> else<span class="cov0" title="0"> {
-                        maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
-                }</span>
-                <span class="cov0" title="0">return regexp.Compile(fmt.Sprintf(`^[+-]?[٠١٢٣٤٥٦٧٨٩]+(\٫[٠١٢٣٤٥٦٧٨٩]{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))</span>
-        },
-        "arabic_numerals_comma_decimal": func(ido IsDecimalOpts) (*regexp.Regexp, error) <span class="cov0" title="0">{ // ١٬٢٣٤٫٥٦
-                var q = "?"
-                if ido.ForceDecimal </span><span class="cov0" title="0">{
-                        q = ""
-                }</span>
-                <span class="cov0" title="0">var maxStr string
-                if ido.DecimalDigits.Max == nil </span><span class="cov0" title="0">{
-                        maxStr = ""
-                }</span> else<span class="cov0" title="0"> {
-                        maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
-                }</span>
-                <span class="cov0" title="0">return regexp.Compile(fmt.Sprintf(`^[+-]?[٠١٢٣٤٥٦٧٨٩]+(\٬[٠١٢٣٤٥٦٧٨٩]{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))</span>
+
+                // General regex for decimal numbers with comma as a thousand separator and locale-based numerals
+                <span class="cov8" title="1">return regexp.Compile(fmt.Sprintf(
+                        `^[+-]?[۰۱۲۳۴۵۶۷۸۹١٢٣٤٥٦٧٨٩0-9]+(\,?[۰۱۲۳۴۵۶۷۸۹١٢٣٤٥٦٧٨٩0-9]{3})*(\.|٫)[۰۱۲۳۴۵۶۷۸۹١٢٣٤٥٦٧٨٩0-9]{%d,%s}%s$`,
+                        ido.DecimalDigits.Min, maxStr, q))</span>
         },
 }
 
@@ -1606,23 +1736,27 @@ var localeDecimalFormats = map[string]string{
 //
 // DecimalDigits: is the allowed decimal range e.g {Min: 3, Max: nil} 123.456
 //
-//        ok := validatorgo.IsDecimal("123", validatorgo.IsDecimalOpts{})
+//        ok := validatorgo.IsDecimal("123", &amp;validatorgo.IsDecimalOpts{})
 //        fmt.Println(ok) // true
-//        ok := validatorgo.IsDecimal("abc", validatorgo.IsDecimalOpts{})
+//        ok := validatorgo.IsDecimal("abc", &amp;validatorgo.IsDecimalOpts{})
 //        fmt.Println(ok) // false
-func IsDecimal(str string, opts IsDecimalOpts) bool <span class="cov8" title="1">{
-        if opts.Locale == "" </span><span class="cov8" title="1">{
-                opts.Locale = "en-US"
+func IsDecimal(str string, opts *IsDecimalOpts) bool <span class="cov8" title="1">{
+        if opts == nil </span><span class="cov8" title="1">{
+                opts = setIsDecimalOptsToDefaults()
+        }</span>
+
+        <span class="cov8" title="1">if opts.Locale == "" </span><span class="cov8" title="1">{
+                opts.Locale = isDecimalOptsDefaultLocale
         }</span>
 
         <span class="cov8" title="1">format, ok := localeDecimalFormats[opts.Locale]
 
-        if !ok </span><span class="cov0" title="0">{
+        if !ok </span><span class="cov8" title="1">{
                 return false
         }</span>
 
         <span class="cov8" title="1">validReFunc := decimalFormats[format]
-        re, err := validReFunc(opts)
+        re, err := validReFunc(*opts)
 
         if err != nil </span><span class="cov0" title="0">{
                 return false
@@ -1630,6 +1764,17 @@ func IsDecimal(str string, opts IsDecimalOpts) bool <span class="cov8" title="1"
 
         <span class="cov8" title="1">return re.MatchString(str)</span>
 }
+
+func setIsDecimalOptsToDefaults() *IsDecimalOpts <span class="cov8" title="1">{
+        return &amp;IsDecimalOpts{
+                ForceDecimal: isDecimalOptsDefaultForceDecimal,
+                Locale:       isDecimalOptsDefaultLocale,
+                DecimalDigits: DecimalDigits{
+                        Min: isDecimalOptsDefaultMin,
+                        Max: isDecimalOptsDefaultMax,
+                },
+        }
+}</span>
 </pre>
 		
 		<pre class="file" id="file21" style="display: none">package validatorgo
@@ -1652,7 +1797,7 @@ func IsDivisibleBy(str string, num int) bool <span class="cov8" title="1">{
 
         <span class="cov8" title="1">strInt, err := strconv.Atoi(str)
 
-        if err != nil </span><span class="cov0" title="0">{
+        if err != nil </span><span class="cov8" title="1">{
                 return false
         }</span>
 
