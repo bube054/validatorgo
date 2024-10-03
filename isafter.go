@@ -25,7 +25,7 @@ type IsAfterOpts struct {
 //
 // string layouts for str and ComparisonDate can be different layout.
 //
-// these are the only valid layouts from the time package 
+// these are the only valid layouts from the time package
 // e.g Layout, ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, Kitchen, Stamp, StampMilli, StampMicro, StampNano, DateTime, DateOnly, TimeOnly.
 //
 //	ok := validatorgo.IsAfter("2023-09-15", &validatorgo.IsAfterOpts{ComparisonDate: "2023-01-01"})
@@ -54,9 +54,9 @@ func IsAfter(str string, opts *IsAfterOpts) bool {
 	return date1.After(*date2)
 }
 
-func setIsAfterOptsToDefault() (opts *IsAfterOpts) {
-	opts = &IsAfterOpts{}
-	opts.ComparisonDate = isAfterOptsDefaultComparisonDate
+func setIsAfterOptsToDefault() *IsAfterOpts {
 
-	return
+	return &IsAfterOpts{
+		ComparisonDate: isAfterOptsDefaultComparisonDate,
+	}
 }

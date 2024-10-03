@@ -22,6 +22,12 @@ func TestIsDivisibleBy(t *testing.T) {
 			want:   false,
 		},
 		{
+			name:   "Invalid abc/3",
+			param1: "abc",
+			param2: 3,
+			want:   false,
+		},
+		{
 			name:   "Invalid divisible by 0",
 			param1: "7",
 			param2: 0,

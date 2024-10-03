@@ -22,5 +22,5 @@ func IsDataURI(str string) bool {
 	mimeTyp := capGrp[1]
 	basePrt := capGrp[4]
 
-	return IsBase64(basePrt, IsBase64Opts{UrlSafe: true}) && IsMimeType(mimeTyp)
+	return IsBase64(basePrt, &IsBase64Opts{UrlSafe: true}) && IsMimeType(mimeTyp)
 }
