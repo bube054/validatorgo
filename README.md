@@ -76,7 +76,7 @@ Here is a list of the validators currently available.
 | 24 | **[IsEmpty(str string, opts *IsEmptyOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsEmpty)** | A validator check if the string has a length of zero. <br/> `IsEmptyOpts` is a struct which defaults to `{ IgnoreWhitespace: false }`. |
 | 25 | **[IsEthereumAddress(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsEthereumAddress)** | A validator checks if the string is an [Ethereum address](https://ethereum.org/). Does not validate address checksums. |
 | 26 | **[IsFloat(str string, opts *IsFloatOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsFloat)** | A validator that checks if the string is a float. <br/> `IsFloatOpts` is a struct which can contain the fields `Min`, `Max`, `Gt`, and/or `Lt` to validate the float is within boundaries it also has `Locale` as an option. <br/> `Min` and `Max`: are equivalent to 'greater or equal' and 'less or equal' <br/> `Gt` and `Lt`: are their strict counterparts. <br/> `Locale` determines the decimal separator and is one of `('ar', 'ar-AE', 'ar-BH', 'ar-DZ', 'ar-EG', 'ar-IQ', 'ar-JO', 'ar-KW', 'ar-LB', 'ar-LY', 'ar-MA', 'ar-QA', 'ar-QM', 'ar-SA', 'ar-SD', 'ar-SY', 'ar-TN', 'ar-YE', 'bg-BG', 'cs-CZ', 'da-DK', 'de-DE', 'en-AU', 'en-GB', 'en-HK', 'en-IN', 'en-NZ', 'en-US', 'en-ZA', 'en-ZM', 'eo', 'es-ES', 'fr-CA', 'fr-FR', 'hu-HU', 'it-IT', 'nb-NO', 'nl-NL', 'nn-NO', 'pl-PL', 'pt-BR', 'pt-PT', 'ru-RU', 'sl-SI', 'sr-RS', 'sr-RS@latin', 'sv-SE', 'tr-TR', 'uk-UA')` |
-| 27 | **[IsFQDN(str string, opts *IsFQDNOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsFQDN)** | A validator that checks if the string is a fully qualified domain name (e.g. domain.com). <br> `IsFQDNOpts` is a struct which defaults to `{ RequireTld: false, AllowUnderscores: false, AllowTrailingDot: false, AllowNumericTld: false, allow_wildcard: false, IgnoreMaxLength: false }` |
+| 27 | **[IsFQDN(str string, opts *IsFQDNOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsFQDN)** | A validator that checks if the string is a fully qualified domain name (e.g. domain.com). <br> `IsFQDNOpts` is a struct which defaults to `{ RequireTld: true, AllowUnderscores: false, AllowTrailingDot: false, AllowNumericTld: false, allow_wildcard: false, IgnoreMaxLength: false }` |
 | 28 | **[IsFreightContainerID(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsFreightContainerID)** | A validator that checks alias for IsISO6346, check if the string is a valid [ISO 6346](https://en.wikipedia.org/wiki/ISO_6346) shipping container identification. <br/> |
 | 29 | **[IsFullWidth(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsFullWidth)** | A validator that checks if the string contains any full-width chars. |
 | 30 | **[IsHalfWidth(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsHalfWidth)** | A validator that checks if the string contains any half-width chars. |
@@ -134,12 +134,35 @@ Here is a list of the validators currently available.
 | 82 | **[IsTime(str string, opts IsTimeOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsTime)** | A validator that checks if the string is a valid time e.g. 23:01:59. <br/> `IsTimeOpts` is a struct which can contain the keys `HourFormat` and `Mode`. <br/> `HourFormat` is a key and defaults to `"hour24"`. <br/> `Mode` is a key and defaults to `"default"`. <br/> `HourFormat` can contain the values `"hour12"` or `"hour24"`, `"hour24"` will validate hours in 24 format and `"hour12"` will validate hours in 12 format. <br/> `Mode` can contain the values `"default"` or `"withSeconds"`, `"default"` will validate HH:MM or HH:MM:SS format, `"withSeconds"` will validate only HH:MM:SS format. |
 | 83 | **[IsULID(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsULID)** | A validator that checks if the string is a [ULID](https://github.com/ulid/spec). |
 | 84 | **[IsUpperCase(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsUpperCase)** | A validator that checks if the string is uppercase. |
-| 85 | **[IsURL(str string, opts *IsURLOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsURL)** | A validator that checks if the string is a URL. <br/> `IsURLOpts` is a struct which defaults to `{ Protocols: []string{"https","http","ftp"}, RequireTld: true, RequireProtocol: false, RequireHost: true, RequirePort: false, RequireValidProtocol: true, AllowUnderscores: false, HostWhitelist: nil, HostBlacklist: nil, AllowTrailingDot: false, AllowProtocolRelativeUrls: true, AllowFragments: true, AllowQueryComponents: true, DisallowAuth: false, ValidateLength: true, MaxAllowedLength:: 2048 }`. <br/> `RequireProtocol` - if set to true IsURL will return false if protocol is not present in the URL. <br/> `RequireValidProtocol` - IsURL will check if the URL's protocol is present in the protocols option. <br/> `protocols` - valid protocols can be modified with this option. <br/> `RequireHost` - if set to false IsURL will not check if host is present in the URL. <br/> `RequirePort` - if set to true IsURL will check if port is present in the URL. `AllowProtocolRelativeUrls` - if set to true protocol relative URLs will be allowed. <br/> `AllowFragments` - if set to false IsURL will return false if fragments are present. |
+| 85 | **[IsURL(str string, opts *IsURLOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsURL)** | A validator that checks if the string is a URL. <br/> `IsURLOpts` is a struct which defaults to `{ Protocols: []string{"https","http","ftp"}, RequireTld: true, RequireProtocol: false, RequireHost: true, RequirePort: false, RequireValidProtocol: true, AllowUnderscores: false, HostWhitelist: nil, HostBlacklist: nil, AllowTrailingDot: false, AllowProtocolRelativeUrls: true, AllowFragments: true, AllowQueryComponents: true, DisallowAuth: false, ValidateLength: true, MaxAllowedLength:: 2048 }`. <br/> `RequireProtocol` - if set to true IsURL will return false if protocol is not present in the URL. <br/> `RequireValidProtocol` - IsURL will check if the URL's protocol is present in the protocols option. <br/> `protocols` - valid protocols can be modified with this option. <br/> `RequireHost` - if set to false IsURL will not check if host is present in the URL. <br/> `RequirePort` - if set to true IsURL will check if port is present in the URL. <br/> `AllowProtocolRelativeUrls` - if set to true protocol relative URLs will be allowed. <br/> `AllowFragments` - if set to false IsURL will return false if fragments are present. |
 | 86 | **[IsUUID(str, version string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsUUID)** | A validator that checks if the string is an RFC9562 UUID. <br/> version is one of ("1"-"5"). if none is not provided, it will validate any of them. <br/> AllowQueryComponents - if set to false IsURL will return false if query components are present. <br/> `ValidateLength` - if set to false IsURL will skip string length validation. MaxAllowedLength will be ignored if this is set as false. <br/> `MaxAllowedLength` - if set IsURL will not allow URLs longer than the specified value (default is 2084 that IE maximum URL length). |
 | 87 | **[IsVariableWidth(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsVariableWidth)** | A validator that checks if the string contains a mixture of full and half-width chars. |
 | 88 | **[IsVAT(str, countryCode string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsVAT)** | :warning: **Not implemented** |
 | 89 | **[IsWhitelisted(str, chars string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsWhitelisted)** | A validator that checks if the string consists only of characters that appear in the whitelist chars. |
 | 90 | **[Matches(str string, re *regexp.Regexp)](https://pkg.go.dev/github.com/bube054/validatorgo#IsWhitelisted)** | A validator that checks if the string matches the regex. |
+
+> **⚠ Caution**  
+When using a validator that requires an options struct (either a pointer or non-pointer), always provide values for all the struct fields explicitly. 
+Unlike in validator.js, where missing fields are automatically set to defaults, Go uses strict types. 
+This means missing values will default to false for booleans, 0 for numbers, etc. Not specifying all fields could lead to unexpected behavior if you're used to the JavaScript version.
+
+Examples
+```go
+  // do this (using the default options specified in the docs)
+  ok := validatorgo.IsFQDN("example", nil)
+
+  // or this (explicitly setting all possible fields for the structs)
+  ok := validatorgo.IsFQDN("example", &IsFQDNOpts{
+    RequireTld: false, 
+    AllowUnderscores: false, 
+    AllowTrailingDot: true, 
+    AllowNumericTld: false, 
+    IgnoreMaxLength: true 
+  })
+
+  // but rarely this(not explicitly setting all possible fields)
+  ok := validatorgo.IsFQDN("example", &IsFQDNOpts{ RequireTld: false, })
+```
 
 # Simple sanitizer example
 
