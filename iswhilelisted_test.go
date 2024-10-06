@@ -13,6 +13,7 @@ func TestIsWhitelisted(t *testing.T) {
 		{name: "Empty string provided but list provided", param1: "", param2: "thf", want: true},
 
 		{name: "All characters are present in list", param1: "stop", param2: "post", want: true},
+		{name: "All characters are present in list, repasted letters ", param1: "stops", param2: "post", want: true},
 		{name: "No characters are present in list", param1: "bang", param2: "take", want: false},
 		{name: "At least one character (c) is not present in list", param1: "cake", param2: "take", want: false},
 		{name: "Characters present but empty list", param1: "cake", param2: "", want: false},

@@ -14,6 +14,7 @@ func TestMatches(t *testing.T) {
 	}{
 		{name: "Matches regex", param1: "foo", param2: regexp.MustCompile(`^foo$`), want: true},
 		{name: "Does not match regex", param1: "foo", param2: regexp.MustCompile(`^foobar$`), want: false},
+		{name: "nil regex", param1: "foo", param2: nil, want: false},
 	}
 
 	for _, test := range tests {
