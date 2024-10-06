@@ -13,7 +13,15 @@ func intPtr(i int) *int {
 	return &i
 }
 
+func uintPtr(i uint) *uint {
+	return &i
+}
+
 func floatPtr(f float64) *float64 {
+	return &f
+}
+
+func strPtr(f string) *string {
 	return &f
 }
 
@@ -22,14 +30,6 @@ func stripDashesAndSpaces(str string) string {
 	strWthOutSpacesAndDashes := strings.ReplaceAll(strWthOutDashes, " ", "")
 
 	return strWthOutSpacesAndDashes
-}
-
-func stripDashes(str string) string {
-	return strings.ReplaceAll(str, "-", "")
-}
-
-func stripSpaces(str string) string {
-	return strings.ReplaceAll(str, " ", "")
 }
 
 func stripHyphens(str string) string {

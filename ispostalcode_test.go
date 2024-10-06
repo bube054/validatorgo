@@ -33,6 +33,7 @@ func TestIsPostalCode(t *testing.T) {
 
 		// Invalid postal codes with no locale
 		{name: "Invalid Postal Code - Gibberish (No Locale)", param1: "XYZ123", param2: "", want: false},
+		{name: "Invalid Postal Code - Gibberish (and unrecognizable Locale)", param1: "XYZ123", param2: "ab-XY", want: false},
 		{name: "Invalid Postal Code - Empty String (No Locale)", param1: "", param2: "", want: false},
 	}
 

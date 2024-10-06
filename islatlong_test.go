@@ -6,7 +6,7 @@ func TestIsLatLong(t *testing.T) {
 	tests := []struct {
 		name   string
 		param1 string
-		param2 IsLatLongOpts
+		param2 *IsLatLongOpts
 		want   bool
 	}{
 		// Valid latlong default options
@@ -28,14 +28,14 @@ func TestIsLatLong(t *testing.T) {
 		{name: "Latitude exceeds the maximum allowed value", param1: "91,180", want: false},
 		{name: "Longitude with too many decimal places", param1: "90.1,180", want: false},
 		// Valid latlong withCheckDMS
-		{name: "Simple valid DMS", param1: `40°44'55"N, 73°59'11"W`, param2: IsLatLongOpts{CheckDMS: true}, want: true},
-		{name: "With decimal seconds", param1: `40°44'55.5"N, 73°59'11.2"W`, param2: IsLatLongOpts{CheckDMS: true}, want: true},
-		{name: "South and East", param1: `40°44'55"S, 73°59'11"E`, param2: IsLatLongOpts{CheckDMS: true}, want: true},
+		{name: "Simple valid DMS", param1: `40°44'55"N, 73°59'11"W`, param2: &IsLatLongOpts{CheckDMS: true}, want: true},
+		{name: "With decimal seconds", param1: `40°44'55.5"N, 73°59'11.2"W`, param2: &IsLatLongOpts{CheckDMS: true}, want: true},
+		{name: "South and East", param1: `40°44'55"S, 73°59'11"E`, param2: &IsLatLongOpts{CheckDMS: true}, want: true},
 		// Invalid latlong withCheckDMS
-		{name: "Minutes exceeding 59", param1: `40°60'00"N, 73°60'00"W`, param2: IsLatLongOpts{CheckDMS: true}, want: false},
-		{name: "Missing direction N/S or E/W", param1: `40°44'55, 73°59'11"`, param2: IsLatLongOpts{CheckDMS: true}, want: false},
-		{name: "Latitude exceeding valid range", param1: `100°00'00"N, 73°59'11"W`, param2: IsLatLongOpts{CheckDMS: true}, want: false},
-		{name: "Incorrect separator ;", param1: `40°44'55.5"N; 73°59'11.2"W`, param2: IsLatLongOpts{CheckDMS: true}, want: false},
+		{name: "Minutes exceeding 59", param1: `40°60'00"N, 73°60'00"W`, param2: &IsLatLongOpts{CheckDMS: true}, want: false},
+		{name: "Missing direction N/S or E/W", param1: `40°44'55, 73°59'11"`, param2: &IsLatLongOpts{CheckDMS: true}, want: false},
+		{name: "Latitude exceeding valid range", param1: `100°00'00"N, 73°59'11"W`, param2: &IsLatLongOpts{CheckDMS: true}, want: false},
+		{name: "Incorrect separator ;", param1: `40°44'55.5"N; 73°59'11.2"W`, param2: &IsLatLongOpts{CheckDMS: true}, want: false},
 	}
 
 	for _, test := range tests {

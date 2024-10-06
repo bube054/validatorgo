@@ -6,14 +6,11 @@ import (
 	"strconv"
 )
 
-const (
+var (
 	isDecimalOptsDefaultForceDecimal bool   = false
 	isDecimalOptsDefaultLocale       string = "en-US"
 
 	isDecimalOptsDefaultMin uint = 0
-)
-
-var (
 	isDecimalOptsDefaultMax *uint = nil
 )
 

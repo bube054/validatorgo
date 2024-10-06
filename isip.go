@@ -18,14 +18,6 @@ var ipVersionRegex = map[string]*regexp.Regexp{
 //	fmt.Println(ok) // false
 func IsIP(str, version string) bool {
 	if version == "" {
-		version = "any"
-	}
-
-	if version != "4" && version != "6" {
-		return false
-	}
-
-	if version == "any" {
 		for _, re := range ipVersionRegex {
 			matches := re.MatchString(str)
 			if matches {
@@ -34,7 +26,12 @@ func IsIP(str, version string) bool {
 		}
 		return false
 	} else {
-		re := ipVersionRegex[version]
+		re, ok := ipVersionRegex[version]
+
+		if !ok {
+			return false
+		}
+
 		return re.MatchString(str)
 	}
 }

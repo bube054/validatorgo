@@ -5,7 +5,7 @@ import (
 )
 
 // defaults values to configure IsStrongPassword, IsStrongPasswordOpts
-const (
+var (
 	defaultStrongPasswordMinimumLength    int = 8
 	defaultStrongPasswordMinimumLowercase int = 1
 	defaultStrongPasswordMinimumUppercase int = 1
@@ -50,12 +50,17 @@ type uppLwrSpecNumChars struct {
 //
 // Default IsStrongPasswordOpts: { MinLength: 8, MinLowercase: 1, MinUppercase: 1, MinNumbers: 1, MinSymbols: 1,  PointsPerUnique: 1, PointsPerRepeat: 0.5, PointsForContainingLower: 10, PointsForContainingUpper: 10, PointsForContainingNumber: 10, PointsForContainingSymbol: 10 }
 //
-//	ok, score := validatorgo.IsStrongPassword("Password123!", validatorgo.IsStrongPasswordOpts{})
+//	ok, score := validatorgo.IsStrongPassword("Password123!", &validatorgo.IsStrongPasswordOpts{})
 //	fmt.Println(ok, score) // true, 130.5
-//	ok, score := validatorgo.IsStrongPassword("P@ss1", validatorgo.IsStrongPasswordOpts{})
+//	ok, score := validatorgo.IsStrongPassword("P@ss1", &validatorgo.IsStrongPasswordOpts{})
 //	fmt.Println(ok, score) // false, 53.50
-func IsStrongPassword(str string, opts IsStrongPasswordOpts) (bool, float64) {
-	optsWithDefaults := strongPasswordOptsToDefault(opts)
+func IsStrongPassword(str string, opts *IsStrongPasswordOpts) (bool, float64) {
+	var optsWithDefaults *IsStrongPasswordOpts
+	if opts == nil {
+		optsWithDefaults = setStrongPasswordOptsToDefault()
+	}else{
+		optsWithDefaults = strongPasswordOptsToDefault(*opts)
+	}
 
 	score := 0.00
 	valid := true
@@ -95,7 +100,7 @@ func IsStrongPassword(str string, opts IsStrongPasswordOpts) (bool, float64) {
 	return valid, score
 }
 
-func strongPasswordOptsToDefault(opts IsStrongPasswordOpts) IsStrongPasswordOpts {
+func strongPasswordOptsToDefault(opts IsStrongPasswordOpts) *IsStrongPasswordOpts {
 	if opts.MinLength == nil {
 		opts.MinLength = intPtr(defaultStrongPasswordMinimumLength)
 	}
@@ -140,7 +145,23 @@ func strongPasswordOptsToDefault(opts IsStrongPasswordOpts) IsStrongPasswordOpts
 		opts.PointsForContainingSymbol = floatPtr(defaultStrongPasswordPointsContainingSymbol)
 	}
 
-	return opts
+	return &opts
+}
+
+func setStrongPasswordOptsToDefault() *IsStrongPasswordOpts {
+	return &IsStrongPasswordOpts{
+		MinLength:                 intPtr(defaultStrongPasswordMinimumLength),
+		MinLowercase:              intPtr(defaultStrongPasswordMinimumLowercase),
+		MinUppercase:              intPtr(defaultStrongPasswordMinimumUppercase),
+		MinNumbers:                intPtr(defaultStrongPasswordMinimumNumbers),
+		MinSymbols:                intPtr(defaultStrongPasswordMinimumSymbols),
+		PointsPerUnique:           floatPtr(defaultStrongPasswordPointsPerUnique),
+		PointsPerRepeat:           floatPtr(defaultStrongPasswordPointsPerRepeat),
+		PointsForContainingLower:  floatPtr(defaultStrongPasswordPointsForContainingLower),
+		PointsForContainingUpper:  floatPtr(defaultStrongPasswordPointsForContainingUpper),
+		PointsForContainingNumber: floatPtr(defaultStrongPasswordPointsContainingNumber),
+		PointsForContainingSymbol: floatPtr(defaultStrongPasswordPointsContainingSymbol),
+	}
 }
 
 func cntUppLwrSymNumChars(str string) (ulsc uppLwrSpecNumChars) {

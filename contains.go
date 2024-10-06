@@ -3,7 +3,7 @@ package validatorgo
 
 import "strings"
 
-const (
+var (
 	containsOptsDefaultIgnoreCase     bool = false
 	containsOptsDefaultMinOccurrences int  = 1
 )

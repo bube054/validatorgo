@@ -30,6 +30,7 @@ func TestIsPassportNumber(t *testing.T) {
 		{name: "Valid FR passport number", param1: "12AB34567", param2: "FR", want: true},
 		// Invalid passport number (FR)
 		{name: "Invalid FR passport number (invalid characters)", param1: "12AB@4567", param2: "FR", want: false},
+		{name: "Valid password but invalid locale", param1: "123456789", param2: "", want: false},
 
 		// Valid passport number (IN)
 		{name: "Valid IN passport number", param1: "A1234567", param2: "IN", want: true},

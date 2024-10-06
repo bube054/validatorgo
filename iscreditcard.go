@@ -2,7 +2,7 @@ package validatorgo
 
 import "regexp"
 
-const (
+var (
 	isCreditCardOptsDefaultProvider string = ""
 )
 

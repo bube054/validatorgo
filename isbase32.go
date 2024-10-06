@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-const (
+var (
 	isBase32OptsDefaultCrockford bool = false
 )
 

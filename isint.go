@@ -1,9 +1,17 @@
 package validatorgo
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
+)
+
+var (
+	isIntOptsDefaultMin *int = nil
+	isIntOptsDefaultMax *int = nil
+	isIntOptsDefaultGt  *int = nil
+	isIntOptsDefaultLt  *int = nil
+
+	isIntOptsDefaultAllowLeadingZeroes bool = false
 )
 
 type IsIntOpts struct {
@@ -18,17 +26,21 @@ type IsIntOpts struct {
 
 // A validator that checks if the string is an integer.
 //
-// IsIntOpts is a struct which can contain the keys Min and/or Max to check the integer is within boundaries (e.g. { Min: nil, Max: nil }). 
+// IsIntOpts is a struct which can contain the keys Min and/or Max to check the integer is within boundaries (e.g. { Min: nil, Max: nil }).
 //
-// IsIntOpts can also contain the key AllowLeadingZeroes, which when set to false will disallow integer values with leading zeroes (e.g. { AllowLeadingZeroes: false }). 
+// IsIntOpts can also contain the key AllowLeadingZeroes, which when set to false will disallow integer values with leading zeroes (e.g. { AllowLeadingZeroes: false }).
 //
 // Finally, IsIntOpts can contain the keys Gt and/or Lt which will enforce integers being greater than or less than, respectively, the value provided (e.g. {Gt: ptr(1), Lt: ptr(4)} for a number between 1 and 4).
 //
-//	ok := validatorgo.IsInt("123", IsIntOpts{})
+//	ok := validatorgo.IsInt("123", &IsIntOpts{})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsInt("123.45", IsIntOpts{})
+//	ok := validatorgo.IsInt("123.45", &IsIntOpts{})
 //	fmt.Println(ok) // false
-func IsInt(str string, opts IsIntOpts) bool {
+func IsInt(str string, opts *IsIntOpts) bool {
+	if opts == nil {
+		opts = setIsIntOptsToDefault()
+	}
+
 	var matches bool
 
 	if opts.AllowLeadingZeroes {
@@ -64,8 +76,6 @@ func IsInt(str string, opts IsIntOpts) bool {
 		withinLimits = withinLimits && isMax
 	}
 
-	fmt.Println(strInt, withinLimits)
-
 	if opts.Lt != nil {
 		isMin := strInt < *(opts.Lt)
 		withinLimits = withinLimits && isMin
@@ -79,4 +89,14 @@ func IsInt(str string, opts IsIntOpts) bool {
 	}
 
 	return withinLimits
+}
+
+func setIsIntOptsToDefault() *IsIntOpts {
+	return &IsIntOpts{
+		Min:                isIntOptsDefaultMin,
+		Max:                isIntOptsDefaultMax,
+		Gt:                 isIntOptsDefaultGt,
+		Lt:                 isIntOptsDefaultLt,
+		AllowLeadingZeroes: isIntOptsDefaultAllowLeadingZeroes,
+	}
 }

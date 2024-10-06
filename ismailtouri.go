@@ -15,13 +15,13 @@ type IsMailToURIOpts struct {
 //
 // IsMailToURIOpts validates emails inside the URI (check IsEmailOpts for details).
 //
-//	ok := validatorgo.IsMailtoURI("mailto:someone@example.com")
+//	ok := validatorgo.IsMailtoURI("mailto:someone@example.com", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsMailtoURI("someone@example.com")
+//	ok := validatorgo.IsMailtoURI("someone@example.com", nil)
 //	fmt.Println(ok) // false
 //
 // [Mailto URI]: https://en.wikipedia.org/wiki/Mailto
-func IsMailtoURI(str string, opts IsMailToURIOpts) bool {
+func IsMailtoURI(str string, opts *IsMailToURIOpts) bool {
 	re := regexp.MustCompile(`^(mailto:)([^\?]+)(\?.*)?$`)
 
 	capGrp := re.FindStringSubmatch(str)
@@ -32,7 +32,11 @@ func IsMailtoURI(str string, opts IsMailToURIOpts) bool {
 
 	email := capGrp[2]
 
-	return IsEmail(email, IsEmailOpts{
+	if opts == nil {
+		return IsEmail(email, setIsEmailOptsToDefault())
+	}
+
+	return IsEmail(email, &IsEmailOpts{
 		AllowDisplayName:         opts.AllowDisplayName,
 		RequireDisplayName:       opts.RequireDisplayName,
 		AllowUTF8LocalPart:       opts.AllowUTF8LocalPart,

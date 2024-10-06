@@ -4,6 +4,11 @@ import (
 	"regexp"
 )
 
+var (
+	isNumericOptsDefaultNoSymbols bool   = false
+	isNumericOptsDefaultLocale    string = "en-US"
+)
+
 // IsNumericOpts is used to configure IsNumeric
 type IsNumericOpts struct {
 	NoSymbols bool
@@ -60,12 +65,19 @@ var numericFormatsRegex = map[int]func(opts IsNumericOpts) *regexp.Regexp{
 		}
 		return regexp.MustCompile(`^[+-]?(\d{1,3})('\d{3})*(\.\d+)?$`) // With symbols
 	}, // matches 1'234'567.89 (apostrophe for thousands, dot for decimals)
+	// 8: func(opts IsNumericOpts) *regexp.Regexp {
+	// 	if opts.NoSymbols {
+	// 		return regexp.MustCompile(`^(\d{1,3})(٬\d{3})*(٫\d+)?$`) // Without symbols
+	// 	}
+	// 	return regexp.MustCompile(`^[+-]?(\d{1,3})(٬\d{3})*(٫\d+)?$`) // With symbols
+	// }, // matches ١٬٢٣٤٬٥٦٧٫٨٩ (Arabic: comma-like for thousands, period-like for decimals)
 	8: func(opts IsNumericOpts) *regexp.Regexp {
 		if opts.NoSymbols {
-			return regexp.MustCompile(`^(\d{1,3})(٬\d{3})*(٫\d+)?$`) // Without symbols
+			return regexp.MustCompile(`^[\x{0660}-\x{0669}]{1,3}(٬[\x{0660}-\x{0669}]{3})*(٫[\x{0660}-\x{0669}]+)?$`) // Without symbols
 		}
-		return regexp.MustCompile(`^[+-]?(\d{1,3})(٬\d{3})*(٫\d+)?$`) // With symbols
-	}, // matches ١٬٢٣٤٬٥٦٧٫٨٩ (Arabic: comma-like for thousands, period-like for decimals)
+		return regexp.MustCompile(`^[+-]?[\x{0660}-\x{0669}]{1,3}(٬[\x{0660}-\x{0669}]{3})*(٫[\x{0660}-\x{0669}]+)?$`) // With symbols
+	},
+
 	9: func(opts IsNumericOpts) *regexp.Regexp {
 		if opts.NoSymbols {
 			return regexp.MustCompile(`^(\d{1,3})( \d{3})*(\.\d+)?$`) // Without symbols
@@ -157,58 +169,6 @@ var codeNumericFormats = map[string]int{
 	"uk-UA":       3, // Ukrainian (1.234.567,89)
 }
 
-// var codeNumericFormats = map[string]int{
-// 	"ar":          3, // Arabic (general)
-// 	"ar-AE":       3, // Arabic (United Arab Emirates)
-// 	"ar-BH":       3, // Arabic (Bahrain)
-// 	"ar-DZ":       3, // Arabic (Algeria)
-// 	"ar-EG":       3, // Arabic (Egypt)
-// 	"ar-IQ":       3, // Arabic (Iraq)
-// 	"ar-JO":       3, // Arabic (Jordan)
-// 	"ar-KW":       3, // Arabic (Kuwait)
-// 	"ar-LB":       3, // Arabic (Lebanon)
-// 	"ar-LY":       3, // Arabic (Libya)
-// 	"ar-MA":       3, // Arabic (Morocco)
-// 	"ar-QA":       3, // Arabic (Qatar)
-// 	"ar-QM":       3, // Arabic (Oman)
-// 	"ar-SA":       3, // Arabic (Saudi Arabia)
-// 	"ar-SD":       3, // Arabic (Sudan)
-// 	"ar-SY":       3, // Arabic (Syria)
-// 	"ar-TN":       3, // Arabic (Tunisia)
-// 	"ar-YE":       3, // Arabic (Yemen)
-// 	"bg-BG":       2, // Bulgarian (Bulgaria)
-// 	"cs-CZ":       2, // Czech (Czech Republic)
-// 	"da-DK":       3, // Danish (Denmark)
-// 	"de-DE":       3, // German (Germany)
-// 	"en-AU":       0, // English (Australia)
-// 	"en-GB":       0, // English (United Kingdom)
-// 	"en-HK":       0, // English (Hong Kong)
-// 	"en-IN":       5, // English (India)
-// 	"en-NZ":       0, // English (New Zealand)
-// 	"en-US":       0, // English (United States)
-// 	"en-ZA":       2, // English (South Africa)
-// 	"en-ZM":       0, // English (Zambia)
-// 	"eo":          0, // Esperanto
-// 	"es-ES":       3, // Spanish (Spain)
-// 	"fr-FR":       2, // French (France)
-// 	"fr-CA":       0, // French (Canada)
-// 	"hu-HU":       2, // Hungarian (Hungary)
-// 	"it-IT":       3, // Italian (Italy)
-// 	"nb-NO":       3, // Norwegian Bokmål (Norway)
-// 	"nl-NL":       3, // Dutch (Netherlands)
-// 	"nn-NO":       3, // Norwegian Nynorsk (Norway)
-// 	"pl-PL":       2, // Polish (Poland)
-// 	"pt-BR":       2, // Portuguese (Brazil)
-// 	"pt-PT":       2, // Portuguese (Portugal)
-// 	"ru-RU":       2, // Russian (Russia)
-// 	"sl-SI":       3, // Slovenian (Slovenia)
-// 	"sr-RS":       3, // Serbian (Cyrillic, Serbia)
-// 	"sr-RS@latin": 3, // Serbian (Latin, Serbia)
-// 	"sv-SE":       3, // Swedish (Sweden)
-// 	"tr-TR":       3, // Turkish (Turkey)
-// 	"uk-UA":       2, // Ukrainian (Ukraine)
-// }
-
 // A validator that check if a string is a number.
 //
 // IsNumericOpts is a struct which defaults to { NoSymbols: false, Locale: ""}.
@@ -217,11 +177,15 @@ var codeNumericFormats = map[string]int{
 //
 // Locale determines the numeric format and is one of ("ar", "ar-AE", "ar-BH", "ar-DZ", "ar-EG", "ar-IQ", "ar-JO", "ar-KW", "ar-LB", "ar-LY", "ar-MA", "ar-QA", "ar-QM", "ar-SA", "ar-SD", "ar-SY", "ar-TN", "ar-YE", "bg-BG", "cs-CZ", "da-DK", "de-DE", "en-AU", "en-GB", "en-HK", "en-IN", "en-NZ", "en-US", "en-ZA", "en-ZM", "eo", "es-ES", "fr-FR", "fr-CA", "hu-HU", "it-IT", "nb-NO", "nl-NL", "nn-NO", "pl-PL", "pt-BR", "pt-PT", "ru-RU", "sl-SI", "sr-RS", "sr-RS@latin", "sv-SE", "tr-TR", "uk-UA"). Locale will default to "en-US" if not present.
 //
-//	ok = validatorgo.IsNumeric("12345", validatorgo.IsNumericOpts{})
+//	ok = validatorgo.IsNumeric("12345", &validatorgo.IsNumericOpts{})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsNumeric("12.34.56", validatorgo.IsNumericOpts{})
+//	ok := validatorgo.IsNumeric("12.34.56", &validatorgo.IsNumericOpts{})
 //	fmt.Println(ok) // false
-func IsNumeric(str string, opts IsNumericOpts) bool {
+func IsNumeric(str string, opts *IsNumericOpts) bool {
+	if opts == nil {
+		opts = setIsNumericOptsToDefault()
+	}
+
 	var re *regexp.Regexp
 
 	// has symbols and no Locale
@@ -237,101 +201,20 @@ func IsNumeric(str string, opts IsNumericOpts) bool {
 	}
 
 	if opts.Locale == "" {
-		opts.Locale = "en-US"
+		opts.Locale = isNumericOptsDefaultLocale
 	}
 
 	// Locale is present and plus or minus symbols are optional(NoSymbol does not matter)
 	codeNumForm := codeNumericFormats[opts.Locale]
 	valFunc := numericFormatsRegex[codeNumForm]
-	re = valFunc(opts)
+	re = valFunc(*opts)
 
 	return re.MatchString(str)
 }
 
-// // codeNumericFormats is the set of cldr chart codes
-// var codeNumericFormats = map[string]int{
-// 	"af":      2, // Afrikaans
-// 	"sq":      2, // Albanian
-// 	"am":      0, // Amharic
-// 	"ar":      0, // Arabic
-// 	"hy":      2, // Armenian
-// 	"as":      5, // Assamese
-// 	"az":      3, // Azerbaijani
-// 	"bn":      5, // Bengali (India)
-// 	"eu":      3, // Basque
-// 	"be":      2, // Belarusian
-// 	"bs":      3, // Bosnian
-// 	"bg":      2, // Bulgarian
-// 	"de_CH":   7, // Swiss German
-// 	"fr_CH":   7, // Swiss French
-// 	"it_CH":   7, // Swiss Italian
-// 	"my":      0, // Burmese
-// 	"yue":     5, // Cantonese
-// 	"ca":      3, // Catalan
-// 	"chr":     5, // Cherokee
-// 	"zh":      0, // Chinese (Simplified)
-// 	"hr":      3, // Croatian
-// 	"cs":      2, // Czech
-// 	"da":      3, // Danish
-// 	"nl":      3, // Dutch
-// 	"en":      0, // English
-// 	"et":      2, // Estonian
-// 	"pt_PT":   2, // Portuguese (Portugal)
-// 	"fil":     0, // Filipino
-// 	"fi":      2, // Finnish
-// 	"fr":      2, // French
-// 	"gl":      3, // Galician
-// 	"ka":      2, // Georgian
-// 	"de":      3, // German
-// 	"el":      3, // Greek
-// 	"gu":      5, // Gujarati
-// 	"ha":      0, // Hausa
-// 	"hi":      0, // Hindi
-// 	"hi_Latn": 5, // Hindi (Latin script)
-// 	"hu":      2, // Hungarian
-// 	"is":      3, // Icelandic
-// 	"ig":      0, // Igbo
-// 	"id":      3, // Indonesian
-// 	"ga":      0, // Irish
-// 	"it":      3, // Italian
-// 	"ja":      0, // Japanese
-// 	"jv":      0, // Javanese
-// 	"kn":      5, // Kannada
-// 	"kk":      3, // Kazakh
-// 	"km":      0, // Khmer
-// 	"ko":      0, // Korean
-// 	"lo":      0, // Lao
-// 	"lv":      2, // Latvian
-// 	"lt":      2, // Lithuanian
-// 	"mk":      3, // Macedonian
-// 	"ms":      3, // Malay
-// 	"ml":      5, // Malayalam
-// 	"mr":      5, // Marathi
-// 	"mn":      0, // Mongolian
-// 	"ne":      5, // Nepali
-// 	"no":      3, // Norwegian
-// 	"fa":      3, // Persian
-// 	"pl":      2, // Polish
-// 	"pt_BR":   2, // Portuguese (Brazil)
-// 	"pa":      5, // Punjabi
-// 	"ro":      2, // Romanian
-// 	"ru":      2, // Russian
-// 	"sr":      3, // Serbian
-// 	"si":      5, // Sinhala
-// 	"sk":      2, // Slovak
-// 	"sl":      3, // Slovenian
-// 	"es":      3, // Spanish
-// 	"sw":      0, // Swahili
-// 	"sv":      3, // Swedish
-// 	"ta":      5, // Tamil
-// 	"te":      5, // Telugu
-// 	"th":      0, // Thai
-// 	"tr":      3, // Turkish
-// 	"uk":      2, // Ukrainian
-// 	"ur":      0, // Urdu
-// 	"uz":      3, // Uzbek
-// 	"vi":      0, // Vietnamese
-// 	"cy":      0, // Welsh
-// 	"yo":      0, // Yoruba
-// 	"zu":      0, // Zulu
-// }
+func setIsNumericOptsToDefault() *IsNumericOpts {
+	return &IsNumericOpts{
+		NoSymbols: isNumericOptsDefaultNoSymbols,
+		Locale:    isNumericOptsDefaultLocale,
+	}
+}

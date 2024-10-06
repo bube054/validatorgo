@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-const (
+var (
 	isCurrencyOptsDefaultSymbol                string = "$"
 	isCurrencyOptsDefaultRequireSymbol         bool   = false
 	isCurrencyOptsDefaultAllowSpaceAfterSymbol bool   = false
@@ -22,9 +22,6 @@ const (
 	isCurrencyOptsDefaultAllowDecimal          bool   = true
 	isCurrencyOptsDefaultRequireDecimal        bool   = false
 	isCurrencyOptsDefaultAllowSpaceAfterDigits bool   = false
-)
-
-var (
 	isCurrencyOptsDefaultMaxDigitsAfterDecimal uint = 2
 )
 
@@ -187,7 +184,7 @@ func IsCurrency(str string, opts *IsCurrencyOpts) bool {
 
 	if !opts.AllowSpaceAfterDigits && endOp != "-" {
 		// fmt.Printf("`%s`\n", endOp)
-		if !IsEmpty(endOp, IsEmptyOpts{IgnoreWhitespace: false}) {
+		if !IsEmpty(endOp, &IsEmptyOpts{IgnoreWhitespace: false}) {
 			// fmt.Println("opts.AllowSpaceAfterDigits")
 			return false
 		}

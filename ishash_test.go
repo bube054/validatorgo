@@ -141,6 +141,9 @@ func TestIsHash(t *testing.T) {
 		{name: "Invalid tiger192 - too short", param1: "329c83258a7469b6d21dd87dd0518e5d6b04c810d8eabf64752abfabc5adf8ff2", param2: "tiger192", want: false},
 		{name: "Invalid tiger192 - too long", param1: "329c83258a7469b6d21dd87dd0518e5d6b04c810d8eabf64752abfabc5adf8ff2e1", param2: "tiger192", want: false},
 		{name: "Invalid tiger192 - contains non-hex character", param1: "329c83258a7469b6d21dd87dd0518e5d6b04c810d8eabf64752abfabc5adf8ff2e1g", param2: "tiger192", want: false},
+
+		// Invalid algo
+		{name: "Invalid algo", param1: "d202ef8", param2: "Khan47", want: false},
 	}
 
 	for _, test := range tests {

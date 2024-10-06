@@ -6,6 +6,14 @@ import (
 	"strings"
 )
 
+var (
+	isFloatOptsDefaultMin    *float64 = nil
+	isFloatOptsDefaultMax    *float64 = nil
+	isFloatOptsDefaultGt     *float64 = nil
+	isFloatOptsDefaultLt     *float64 = nil
+	isFloatOptsDefaultLocale string   = "en-US"
+)
+
 type IsFloatOpts struct {
 	Min    *float64
 	Max    *float64
@@ -132,7 +140,7 @@ var floatDecimalFormats = map[string]string{
 	"th-TH": "dot_decimal_no_thousands",
 }
 
-const defaultIsFloatFormat = "dot_decimal_comma_thousands"
+// const defaultIsFloatFormat = "dot_decimal_comma_thousands"
 
 // A validator that checks if the string is a float.
 //
@@ -144,15 +152,22 @@ const defaultIsFloatFormat = "dot_decimal_comma_thousands"
 //
 // Locale determines the decimal separator and is one of ('ar', 'ar-AE', 'ar-BH', 'ar-DZ', 'ar-EG', 'ar-IQ', 'ar-JO', 'ar-KW', 'ar-LB', 'ar-LY', 'ar-MA', 'ar-QA', 'ar-QM', 'ar-SA', 'ar-SD', 'ar-SY', 'ar-TN', 'ar-YE', 'bg-BG', 'cs-CZ', 'da-DK', 'de-DE', 'en-AU', 'en-GB', 'en-HK', 'en-IN', 'en-NZ', 'en-US', 'en-ZA', 'en-ZM', 'eo', 'es-ES', 'fr-CA', 'fr-FR', 'hu-HU', 'it-IT', 'nb-NO', 'nl-NL', 'nn-NO', 'pl-PL', 'pt-BR', 'pt-PT', 'ru-RU', 'sl-SI', 'sr-RS', 'sr-RS@latin', 'sv-SE', 'tr-TR', 'uk-UA').
 //
-//	ok := validatorgo.IsFloat("123.45",  validatorgo.IsFloatOpts{})
+//	ok := validatorgo.IsFloat("123.45",  &validatorgo.IsFloatOpts{})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsFloat("123", validatorgo.IsFloatOpts{})
+//	ok := validatorgo.IsFloat("123", &validatorgo.IsFloatOpts{})
 //	fmt.Println(ok) // false
-func IsFloat(str string, opts IsFloatOpts) bool {
-	format, ok := floatDecimalFormats[opts.Locale]
+func IsFloat(str string, opts *IsFloatOpts) bool {
+	if opts == nil {
+		opts = setIsFloatOptsToDefault()
+	}
 
+	if opts.Locale == "" {
+		opts.Locale = isFloatOptsDefaultLocale
+	}
+
+	format, ok := floatDecimalFormats[opts.Locale]
 	if !ok {
-		format = defaultIsFloatFormat
+		return false
 	}
 
 	parsableFltFunc := formatFloat[format]
@@ -185,4 +200,13 @@ func IsFloat(str string, opts IsFloatOpts) bool {
 	}
 
 	return re.MatchString(str) && inRange
+}
+
+func setIsFloatOptsToDefault() *IsFloatOpts {
+	return &IsFloatOpts{
+		Min: isFloatOptsDefaultMin,
+		Max: isFloatOptsDefaultMax,
+		Gt:  isFloatOptsDefaultGt,
+		Lt:  isFloatOptsDefaultLt,
+	}
 }
