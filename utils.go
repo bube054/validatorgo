@@ -32,14 +32,6 @@ func stripDashesAndSpaces(str string) string {
 	return strWthOutSpacesAndDashes
 }
 
-func stripDashes(str string) string {
-	return strings.ReplaceAll(str, "-", "")
-}
-
-func stripSpaces(str string) string {
-	return strings.ReplaceAll(str, " ", "")
-}
-
 func stripHyphens(str string) string {
 	return strings.ReplaceAll(str, "-", "")
 }
