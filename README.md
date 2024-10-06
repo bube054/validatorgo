@@ -132,14 +132,14 @@ Here is a list of the validators currently available.
 | 80 | **[IsSurrogatePair(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsSurrogatePair)** | A validator that checks if the string contains any surrogate pairs chars. |
 | 81 | **[IsTaxID(str, locale string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsTaxID)** | A validator that checks if the string is a valid Tax Identification Number. Defaults locale is "en-US" and "any" will match any of them. <br/> Supported `locales`: `("bg-BG", "cs-CZ", "de-AT", "de-DE", "dk-DK", "el-CY", "el-GR", "en-CA", "en-GB", "en-IE", "en-US", "es-AR", "es-ES", "et-EE", "fi-FI", "fr-BE", "fr-CA", "fr-FR", "fr-LU", "hr-HR", "hu-HU", "it-IT", "lb-LU", "lt-LT", "lv-LV", "mt-MT", "nl-BE", "nl-NL", "pl-PL", "pt-BR", "pt-PT", "ro-RO", "sk-SK", "sl-SI", "sv-SE", "uk-UA")`. <br/> |
 | 82 | **[IsTime(str string, opts IsTimeOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsTime)** | A validator that checks if the string is a valid time e.g. 23:01:59. <br/> `IsTimeOpts` is a struct which can contain the keys `HourFormat` and `Mode`. <br/> `HourFormat` is a key and defaults to `"hour24"`. <br/> `Mode` is a key and defaults to `"default"`. <br/> `HourFormat` can contain the values `"hour12"` or `"hour24"`, `"hour24"` will validate hours in 24 format and `"hour12"` will validate hours in 12 format. <br/> `Mode` can contain the values `"default"` or `"withSeconds"`, `"default"` will validate HH:MM or HH:MM:SS format, `"withSeconds"` will validate only HH:MM:SS format. |
-| 82 | **[IsULID(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsULID)** | A validator that checks if the string is a [ULID](https://github.com/ulid/spec). |
-| 83 | **[IsUpperCase(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsUpperCase)** | A validator that checks if the string is uppercase. |
-| 84 | **[IsURL(str string, opts \*IsURLOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsURL)** | :warning: **Not implemented** |
-| 85 | **[IsUUID(str, version string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsUUID)** | A validator that checks if the string is an RFC9562 UUID. <br/> version is one of ("1"-"5"). if none is not provided, it will validate any of them. |
-| 86 | **[IsVariableWidth(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsVariableWidth)** | A validator that checks if the string contains a mixture of full and half-width chars. |
-| 87 | **[IsVAT(str, countryCode string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsVAT)** | :warning: **Not implemented** |
-| 88 | **[IsWhitelisted(str, chars string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsWhitelisted)** | A validator that checks if the string consists only of characters that appear in the whitelist chars. |
-| 89 | **[Matches(str string, re \*regexp.Regexp)](https://pkg.go.dev/github.com/bube054/validatorgo#IsWhitelisted)** | A validator that checks if the string matches the regex. |
+| 83 | **[IsULID(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsULID)** | A validator that checks if the string is a [ULID](https://github.com/ulid/spec). |
+| 84 | **[IsUpperCase(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsUpperCase)** | A validator that checks if the string is uppercase. |
+| 85 | **[IsURL(str string, opts \*IsURLOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsURL)** | :warning: **Not implemented** |
+| 86 | **[IsUUID(str, version string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsUUID)** | A validator that checks if the string is an RFC9562 UUID. <br/> version is one of ("1"-"5"). if none is not provided, it will validate any of them. |
+| 87 | **[IsVariableWidth(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsVariableWidth)** | A validator that checks if the string contains a mixture of full and half-width chars. |
+| 88 | **[IsVAT(str, countryCode string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsVAT)** | :warning: **Not implemented** |
+| 89 | **[IsWhitelisted(str, chars string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsWhitelisted)** | A validator that checks if the string consists only of characters that appear in the whitelist chars. |
+| 90 | **[Matches(str string, re \*regexp.Regexp)](https://pkg.go.dev/github.com/bube054/validatorgo#IsWhitelisted)** | A validator that checks if the string matches the regex. |
 
 # Simple sanitizer example
 
