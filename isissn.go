@@ -6,6 +6,18 @@ import (
 	"strconv"
 )
 
+var (
+	isISSNOptsDefaultRequireHyphen        bool = false
+	isISSNOptsDefaultRequireCaseSensitive bool = false
+)
+
+func setIsISSNOptsToDefault() *IsISSNOpts {
+	return &IsISSNOpts{
+		RequireHyphen: isISSNOptsDefaultRequireHyphen,
+		CaseSensitive: isISSNOptsDefaultRequireCaseSensitive,
+	}
+}
+
 // IsISSNOpts is used to configure IsISSN
 type IsISSNOpts struct {
 	RequireHyphen bool // requires a hyphen
@@ -18,13 +30,17 @@ type IsISSNOpts struct {
 //
 // If CaseSensitive is true, ISSNs with a lowercase "x" as the check digit are rejected.
 //
-//	ok := validatorgo.IsISSN("0378-5955", validatorgo.IsISSNOpts{})
+//	ok := validatorgo.IsISSN("0378-5955", &validatorgo.IsISSNOpts{})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsISSN("1234567", validatorgo.IsISSNOpts{})
+//	ok := validatorgo.IsISSN("1234567", &validatorgo.IsISSNOpts{})
 //	fmt.Println(ok) // false
 //
 // [ISSN]: https://en.wikipedia.org/wiki/International_Standard_Serial_Number
-func IsISSN(str string, opts IsISSNOpts) bool {
+func IsISSN(str string, opts *IsISSNOpts) bool {
+	if opts == nil {
+		opts = setIsISSNOptsToDefault()
+	}
+
 	var reqHypStr string
 	if !opts.RequireHyphen {
 		reqHypStr = "?"
@@ -38,7 +54,7 @@ func IsISSN(str string, opts IsISSNOpts) bool {
 	re := regexp.MustCompile(fmt.Sprintf(`^[0-9]{4}-%s[0-9]{3}[0-9X%s]$`, reqHypStr, reqCasSenStr))
 	capGrp := re.FindStringSubmatch(str)
 
-	if capGrp == nil {
+	if len(capGrp) == 0 {
 		return false
 	}
 

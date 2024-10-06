@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-const (
+var (
 	normalizeEmailOptsDefaultAllLowercase                  bool = true
 	normalizeEmailOptsDefaultGmailLowercase                bool = true
 	normalizeEmailOptsDefaultGmailRemoveDots               bool = true

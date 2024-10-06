@@ -21,6 +21,7 @@ func TestIsLuhnNumber(t *testing.T) {
 		{name: "Invalid due to incorrect checksum", param1: "490154203237519", want: false},
 		{name: "Invalid Luhn number", param1: "79927398714", want: false},
 		{name: "Invalid due to incorrect checksum", param1: "1234567812345671", want: false},
+		{name: "Invalid due to incorrect non number included", param1: "12345abc12345671", want: false},
 	}
 
 	for _, test := range tests {

@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-const (
+var (
 	isAlphaOptsDefaultIgnore string = ""
 	isAlphaOptsDefaultLocale string = "en-US"
 )

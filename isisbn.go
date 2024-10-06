@@ -18,10 +18,6 @@ import (
 func IsISBN(str, version string) bool {
 	strNum := stripDashesAndSpaces(str)
 
-	if version != "10" && version != "13" && version != "" {
-		return false
-	}
-
 	if version == "10" {
 		return valIsISBNv10(strNum)
 	} else if version == "13" {
@@ -32,15 +28,15 @@ func IsISBN(str, version string) bool {
 }
 
 func valIsISBNv10(str string) bool {
-	len := len(str)
+	ln := len(str)
 	sum := 0
 
-	if len != 10 {
+	if ln != 10 {
 		return false
 	}
 
 	for i, char := range str {
-		pos := len - i
+		pos := ln - i
 		num, err := strconv.Atoi(string(char))
 
 		if err != nil {
@@ -56,15 +52,15 @@ func valIsISBNv10(str string) bool {
 }
 
 func valIsISBNv13(str string) bool {
-	len := len(str)
+	ln := len(str)
 	sum := 0
 
-	if len != 13 {
+	if ln != 13 {
 		return false
 	}
 
 	for i, char := range str {
-		pos := len - i
+		pos := ln - i
 		num, err := strconv.Atoi(string(char))
 
 		if err != nil {

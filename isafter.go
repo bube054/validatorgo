@@ -6,7 +6,7 @@ import (
 	"github.com/bube054/validatorgo/sanitizer"
 )
 
-const (
+var (
 	isAfterOptsDefaultComparisonDate string = ""
 )
 

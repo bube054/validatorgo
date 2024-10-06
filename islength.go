@@ -4,6 +4,11 @@ import (
 	"unicode/utf8"
 )
 
+var (
+	isLengthOptsDefaultMin uint = 0
+	isLengthOptsDefaultMax *uint = nil
+)
+
 // IsLengthOpts is used to configure IsLength
 type IsLengthOpts struct {
 	Min uint // Minimum character length
@@ -16,11 +21,15 @@ type IsLengthOpts struct {
 //
 // Note: this function takes into account surrogate pairs.
 //
-//	ok := validatorgo.IsLength("hello", validatorgo.IsLengthOpts{Min: 3})
+//	ok := validatorgo.IsLength("hello", &validatorgo.IsLengthOpts{Min: 3})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsLength("hi", validatorgo.IsLengthOpts{Min: 3})
+//	ok := validatorgo.IsLength("hi", &validatorgo.IsLengthOpts{Min: 3})
 //	fmt.Println(ok) // false
-func IsLength(str string, opts IsLengthOpts) bool {
+func IsLength(str string, opts *IsLengthOpts) bool {
+	if opts == nil {
+		opts = setIsLengthOptsToDefault()
+	}
+
 	len := uint(utf8.RuneCountInString(str))
 
 	withinLimits := true
@@ -34,4 +43,11 @@ func IsLength(str string, opts IsLengthOpts) bool {
 	withinLimits = withinLimits && isMin
 
 	return withinLimits
+}
+
+func setIsLengthOptsToDefault() *IsLengthOpts{
+	return &IsLengthOpts{
+		Min: isLengthOptsDefaultMin,
+		Max: isLengthOptsDefaultMax,
+	}
 }

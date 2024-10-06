@@ -5,7 +5,7 @@ import (
 	"unicode/utf8"
 )
 
-const (
+var (
 	isBase64OptsDefaultUrlSafe bool = false
 )
 

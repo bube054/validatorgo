@@ -4,6 +4,11 @@ import (
 	"regexp"
 )
 
+var (
+	isISO8601OptsDefaultStrict          bool = false
+	isISO8601OptsDefaultStrictSeparator bool = false
+)
+
 // IsISO8601Opts is used to configure IsISO8601
 type IsISO8601Opts struct {
 	Strict          bool // must be a date that has actually happened, is happening or will happen.
@@ -18,13 +23,17 @@ type IsISO8601Opts struct {
 //
 // If StrictSeparator is true, date strings with date and time separated by anything other than a T will be invalid.
 //
-//	ok := validatorgo.IsISO8601("2023-09-05", validatorgo.IsISO8601Opts{})
+//	ok := validatorgo.IsISO8601("2023-09-05", &validatorgo.IsISO8601Opts{})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsISO8601("2023-13-05T14:30:00", validatorgo.IsISO8601Opts{})
+//	ok := validatorgo.IsISO8601("2023-13-05T14:30:00", &validatorgo.IsISO8601Opts{})
 //	fmt.Println(ok) // false
 //
 // [ISO 8601]: https://en.wikipedia.org/wiki/ISO_8601
-func IsISO8601(str string, opts IsISO8601Opts) bool {
+func IsISO8601(str string, opts *IsISO8601Opts) bool {
+	if opts == nil {
+		opts = setIsISO8601OptsToDefault()
+	}
+
 	var re *regexp.Regexp
 
 	if opts.StrictSeparator {
@@ -46,4 +55,11 @@ func IsISO8601(str string, opts IsISO8601Opts) bool {
 	}
 
 	return true
+}
+
+func setIsISO8601OptsToDefault() *IsISO8601Opts {
+	return &IsISO8601Opts{
+		Strict:          isISO8601OptsDefaultStrict,
+		StrictSeparator: isISO8601OptsDefaultStrictSeparator,
+	}
 }

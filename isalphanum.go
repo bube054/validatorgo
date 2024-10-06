@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-const (
+var (
 	isAlphanumericOptsDefaultIgnore string = ""
 	isAlphanumericOptsDefaultLocale string = "en-US"
 )

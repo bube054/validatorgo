@@ -5,11 +5,11 @@ import (
 	"regexp"
 )
 
-const (
+var (
 	IsTimeOptsHourFormat24 string = "hour24"
 	IsTimeOptsHourFormat12 string = "hour12"
 
-	IsTimeOptsModeDefault     string = "defaults"
+	IsTimeOptsModeDefault     string = "default"
 	IsTimeOptsModeWithSeconds string = "withSeconds"
 )
 
@@ -30,11 +30,15 @@ type IsTimeOpts struct {
 //
 // Mode can contain the values "default" or "withSeconds", "default" will validate HH:MM or HH:MM:SS format, "withSeconds" will validate only HH:MM:SS format.
 //
-//	ok := validatorgo.IsTime("14:30", validatorgo.IsTime{})
+//	ok := validatorgo.IsTime("14:30", &validatorgo.IsTime{})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsTime("09:5", validatorgo.IsTime{})
+//	ok := validatorgo.IsTime("09:5", &validatorgo.IsTime{})
 //	fmt.Println(ok) // false
-func IsTime(str string, opts IsTimeOpts) bool {
+func IsTime(str string, opts *IsTimeOpts) bool {
+	if opts == nil {
+		opts  = setIsTimeOptsToDefault()
+	}
+
 	if opts.HourFormat == "" {
 		opts.HourFormat = IsTimeOptsHourFormat24
 	}
@@ -71,4 +75,11 @@ func IsTime(str string, opts IsTimeOpts) bool {
 	re := regexp.MustCompile(reStr)
 
 	return re.MatchString(str)
+}
+
+func setIsTimeOptsToDefault() *IsTimeOpts {
+	return &IsTimeOpts{
+		HourFormat: IsTimeOptsHourFormat24,
+		Mode: IsTimeOptsModeDefault,
+	}
 }

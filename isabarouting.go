@@ -14,7 +14,7 @@ import (
 func IsAbaRouting(str string) bool {
 	strWithoutDashes := stripDashesAndSpaces(str)
 
-	if utf8.RuneCountInString(strWithoutDashes) != 9 || !IsNumeric(strWithoutDashes, IsNumericOpts{NoSymbols: true}) {
+	if utf8.RuneCountInString(strWithoutDashes) != 9 || !IsNumeric(strWithoutDashes, &IsNumericOpts{NoSymbols: true}) {
 		return false
 	}
 

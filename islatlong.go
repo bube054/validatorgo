@@ -4,6 +4,16 @@ import (
 	"regexp"
 )
 
+var (
+	isLatLongOptsDefaultCheckDMS bool = false
+)
+
+func setIsLatLongOptsToDefault() *IsLatLongOpts {
+	return &IsLatLongOpts{
+		CheckDMS: isLatLongOptsDefaultCheckDMS,
+	}
+}
+
 // IsLatLongOpts is used to configure IsLatLong
 type IsLatLongOpts struct {
 	CheckDMS bool // checks DMS(degrees, minutes, and seconds)
@@ -15,11 +25,15 @@ type IsLatLongOpts struct {
 //
 // Pass CheckDMS as true to validate DMS(degrees, minutes, and seconds) latitude-longitude format.
 //
-//	ok := validatorgo.IsLatLong("40.730610,-73.935242" , validatorgo.IsLatLongOpts{})
+//	ok := validatorgo.IsLatLong("40.730610,-73.935242" , &validatorgo.IsLatLongOpts{})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsLatLong("91,181" , validatorgo.IsLatLongOpts{})
+//	ok := validatorgo.IsLatLong("91,181" , &validatorgo.IsLatLongOpts{})
 //	fmt.Println(ok) // false
-func IsLatLong(str string, opts IsLatLongOpts) bool {
+func IsLatLong(str string, opts *IsLatLongOpts) bool {
+	if opts == nil {
+		opts = setIsLatLongOptsToDefault()
+	}
+
 	var re *regexp.Regexp
 	if opts.CheckDMS {
 		re = regexp.MustCompile(`^([+\-]?[0-8]?\d|90)[°˚º\s-]+([0-5]?\d)['′\s-]+([0-5]?\d(\.\d*)?)["¨˝\s-]*([NnSs])[\s,]+([+\-]?(0?\d?\d|1[0-7]\d|180))[°˚º\s-]+([0-5]?\d)['′\s-]+([0-5]?\d(\.\d*)?)["¨˝\s-]*([EeWw])$`)

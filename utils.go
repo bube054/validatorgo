@@ -13,7 +13,15 @@ func intPtr(i int) *int {
 	return &i
 }
 
+func uintPtr(i uint) *uint {
+	return &i
+}
+
 func floatPtr(f float64) *float64 {
+	return &f
+}
+
+func strPtr(f string) *string {
 	return &f
 }
 

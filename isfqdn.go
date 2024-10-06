@@ -6,10 +6,18 @@ import (
 	"unicode/utf8"
 )
 
-const defaultMaxFQDNLength = 253
+var (
+	isFQDNOptsDefaultRequireTld       bool = false
+	isFQDNOptsDefaultAllowUnderscores bool = false
+	isFQDNOptsDefaultAllowTrailingDot bool = false
+	isFQDNOptsDefaultAllowNumericTld  bool = false
+	isFQDNOptsDefaultIgnoreMaxLength  bool = false
 
-// IsFQDNoptsOpts is used to configure IsFQDNopts
-type IsFQDNopts struct {
+	isFQDNMaxLength int = 253
+)
+
+// IsFQDNOptsOpts is used to configure IsFQDNOpts
+type IsFQDNOpts struct {
 	RequireTld       bool
 	AllowUnderscores bool
 	AllowTrailingDot bool
@@ -19,16 +27,21 @@ type IsFQDNopts struct {
 
 // A validator that checks if the string is a fully qualified domain name (e.g. domain.com).
 //
-// IsFQDNopts is a struct which defaults to { RequireTld: false, AllowUnderscores: false, AllowTrailingDot: false, AllowNumericTld: false, allow_wildcard: false, IgnoreMaxLength: false }.
-//	ok := validatorgo.IsFQDN("localhost",  validatorgo.IsFQDNOpts{})
+// IsFQDNOpts is a struct which defaults to { RequireTld: false, AllowUnderscores: false, AllowTrailingDot: false, AllowNumericTld: false, allow_wildcard: false, IgnoreMaxLength: false }.
+//
+//	ok := validatorgo.IsFQDN("localhost",  &validatorgo.IsFQDNOpts{})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsFQDN("example..com", validatorgo.IsFQDNOpts{})
+//	ok := validatorgo.IsFQDN("example..com", &validatorgo.IsFQDNOpts{})
 //	fmt.Println(ok) // false
-func IsFQDN(str string, opts IsFQDNopts) bool {
-	ignMaxLength := true
-	len := utf8.RuneCountInString(str)
+func IsFQDN(str string, opts *IsFQDNOpts) bool {
+	if opts == nil {
+		opts = setIsFQDNOptsToDefault()
+	}
 
-	if !opts.IgnoreMaxLength && len > defaultMaxFQDNLength {
+	ignMaxLength := true
+	ln := utf8.RuneCountInString(str)
+
+	if !opts.IgnoreMaxLength && ln > isFQDNMaxLength {
 		ignMaxLength = false
 	}
 
@@ -50,9 +63,17 @@ func IsFQDN(str string, opts IsFQDNopts) bool {
 	}
 
 	reStr := fmt.Sprintf(`^([%s])+(\.[%s]+)?\.%s%s+%s$`, allowUnderScoreRe, allowUnderScoreRe, requireTldRe, allowNumTldRe, allowTrailingDotRe)
-	// fmt.Println(reStr)
 	re := regexp.MustCompile(reStr)
 	isValid := re.MatchString(str)
-	fmt.Printf("length is, %d while defleng is %d and isvalid is %t\n", len, defaultMaxFQDNLength, isValid)
 	return isValid && ignMaxLength
+}
+
+func setIsFQDNOptsToDefault() *IsFQDNOpts {
+	return &IsFQDNOpts{
+		RequireTld:       isFQDNOptsDefaultRequireTld,
+		AllowUnderscores: isFQDNOptsDefaultAllowUnderscores,
+		AllowTrailingDot: isFQDNOptsDefaultAllowTrailingDot,
+		AllowNumericTld:  isFQDNOptsDefaultAllowNumericTld,
+		IgnoreMaxLength:  isFQDNOptsDefaultIgnoreMaxLength,
+	}
 }
