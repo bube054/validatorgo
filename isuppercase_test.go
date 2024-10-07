@@ -10,7 +10,7 @@ func TestIsUpperCase(t *testing.T) {
 	}{
 		// Valid Example
 		{name: "Is uppercase", param1: "HELLO", want: true},
-		// Invalid Example
+		// Invalid  Example
 		{name: "Empty string is not uppercase", param1: "", want: false},
 		{name: "Is not uppercase", param1: "hello", want: false},
 		{name: "Only few letter are uppercase", param1: "ExaMPle", want: false},
