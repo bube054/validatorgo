@@ -187,7 +187,7 @@
 				
 				<option value="file65">github.com/bube054/validatorgo/ismimetype.go (100.0%)</option>
 				
-				<option value="file66">github.com/bube054/validatorgo/ismobilephone.go (72.0%)</option>
+				<option value="file66">github.com/bube054/validatorgo/ismobilephone.go (72.7%)</option>
 				
 				<option value="file67">github.com/bube054/validatorgo/ismongoid.go (100.0%)</option>
 				
@@ -1005,7 +1005,7 @@ func IsBTCAddress(str string) bool <span class="cov8" title="1">{
 		<pre class="file" id="file14" style="display: none">package validatorgo
 
 var (
-        isIsByteLengthOptsDefaultMin uint = 0
+        isIsByteLengthOptsDefaultMin uint  = 0
         isIsByteLengthOptsDefaultMax *uint = nil
 )
 
@@ -1042,7 +1042,8 @@ func setIsByteLengthOptsToDefault() (opts *IsByteLengthOpts) <span class="cov8" 
         opts.Max = isIsByteLengthOptsDefaultMax
 
         return
-}</pre>
+}</span>
+</pre>
 		
 		<pre class="file" id="file15" style="display: none">package validatorgo
 
@@ -1088,8 +1089,8 @@ var creditCardProviderRegex = map[string]string{
 }
 
 // A validator that checks if the string is a credit card number.
-// 
-// IsCreditCardOpts is an struct that can be supplied with the following key(s): 
+//
+// IsCreditCardOpts is an struct that can be supplied with the following key(s):
 //
 // Provider: is a key whose value should be a string, and defines the company issuing the credit card.
 // Valid values include amex, bcglobal, carteblanche, dinersclub, discover, instapayment, jcb, koreanlocal, laser, maestro, mastercard, solo, switch, unionpay, visa, visamastercard or blank will check for any provider.
@@ -1100,7 +1101,7 @@ var creditCardProviderRegex = map[string]string{
 //        fmt.Println(ok) // false
 func IsCreditCard(str string, opts *IsCreditCardOpts) bool <span class="cov8" title="1">{
         if opts == nil </span><span class="cov8" title="1">{
-                opts =  setIsCreditCardOptsToDefault()
+                opts = setIsCreditCardOptsToDefault()
         }</span>
 
         <span class="cov8" title="1">reStr, ok := creditCardProviderRegex[opts.Provider]
@@ -1127,7 +1128,8 @@ func setIsCreditCardOptsToDefault() (opts *IsCreditCardOpts) <span class="cov8" 
         opts.Provider = isCreditCardOptsDefaultProvider
 
         return
-}</pre>
+}</span>
+</pre>
 		
 		<pre class="file" id="file17" style="display: none">package validatorgo
 
@@ -1153,7 +1155,7 @@ var (
         isCurrencyOptsDefaultAllowDecimal          bool   = true
         isCurrencyOptsDefaultRequireDecimal        bool   = false
         isCurrencyOptsDefaultAllowSpaceAfterDigits bool   = false
-        isCurrencyOptsDefaultMaxDigitsAfterDecimal uint = 2
+        isCurrencyOptsDefaultMaxDigitsAfterDecimal uint   = 2
 )
 
 type IsCurrencyOpts struct {
@@ -1481,7 +1483,7 @@ var (
         isDecimalOptsDefaultForceDecimal bool   = false
         isDecimalOptsDefaultLocale       string = "en-US"
 
-        isDecimalOptsDefaultMin uint = 0
+        isDecimalOptsDefaultMin uint  = 0
         isDecimalOptsDefaultMax *uint = nil
 )
 
@@ -1859,8 +1861,8 @@ var (
         isEmailDefaultAllowIpDomain            bool   = false
         isEmailDefaultDomainSpecificValidation bool   = false
         isEmailDefaultBlacklistedChars         string = ""
-        isEmailDefaultHostWhitelist = []string{}
-        isEmailDefaultHostBlacklist = []string{}
+        isEmailDefaultHostWhitelist                   = []string{}
+        isEmailDefaultHostBlacklist                   = []string{}
 )
 
 // IsEmailOpts is used to configure IsEmail
@@ -2861,7 +2863,8 @@ func setIsIMEIOptsToDefault() *IsIMEIOpts <span class="cov8" title="1">{
         return &amp;IsIMEIOpts{
                 AllowHyphens: isIMEIOptsDefaultAllowHyphens,
         }
-}</pre>
+}</span>
+</pre>
 		
 		<pre class="file" id="file38" style="display: none">package validatorgo
 
@@ -3513,7 +3516,8 @@ func setIsISO8601OptsToDefault() *IsISO8601Opts <span class="cov8" title="1">{
                 Strict:          isISO8601OptsDefaultStrict,
                 StrictSeparator: isISO8601OptsDefaultStrictSeparator,
         }
-}</pre>
+}</span>
+</pre>
 		
 		<pre class="file" id="file51" style="display: none">package validatorgo
 
@@ -3770,13 +3774,13 @@ import (
 )
 
 var (
-        isLengthOptsDefaultMin uint = 0
+        isLengthOptsDefaultMin uint  = 0
         isLengthOptsDefaultMax *uint = nil
 )
 
 // IsLengthOpts is used to configure IsLength
 type IsLengthOpts struct {
-        Min uint // Minimum character length
+        Min uint  // Minimum character length
         Max *uint // Maximum character length
 }
 
@@ -3810,12 +3814,13 @@ func IsLength(str string, opts *IsLengthOpts) bool <span class="cov8" title="1">
         return withinLimits</span>
 }
 
-func setIsLengthOptsToDefault() *IsLengthOpts<span class="cov8" title="1">{
+func setIsLengthOptsToDefault() *IsLengthOpts <span class="cov8" title="1">{
         return &amp;IsLengthOpts{
                 Min: isLengthOptsDefaultMin,
                 Max: isLengthOptsDefaultMax,
         }
-}</pre>
+}</span>
+</pre>
 		
 		<pre class="file" id="file57" style="display: none">package validatorgo
 
@@ -3884,7 +3889,7 @@ func IsLocale(str string) bool <span class="cov8" title="1">{
 		
 		<pre class="file" id="file59" style="display: none">package validatorgo
 
-// import "strings"
+import "strings"
 
 // A validator that checks if the string is lowercase.
 //
@@ -3893,8 +3898,7 @@ func IsLocale(str string) bool <span class="cov8" title="1">{
 //        ok := validatorgo.IsLowerCase("WORLD")
 //        fmt.Println(ok) // false
 func IsLowerCase(str string) bool <span class="cov8" title="1">{
-        // return str == strings.ToLower(str)
-        return false // need to think about special characters
+        return str == strings.ToLower(str) &amp;&amp; str != strings.ToUpper(str)
 }</span>
 </pre>
 		
@@ -3937,7 +3941,8 @@ func IsLuhnNumber(str string) bool <span class="cov8" title="1">{
         }
 
         <span class="cov8" title="1">return sum%10 == 0</span>
-}</pre>
+}
+</pre>
 		
 		<pre class="file" id="file61" style="display: none">package validatorgo
 
@@ -3947,8 +3952,8 @@ import (
 )
 
 var (
-        isMacAddressOptsDefault bool = false
-        isMacAddressOptsType *string = nil
+        isMacAddressOptsDefault bool    = false
+        isMacAddressOptsType    *string = nil
 )
 
 // IsMacAddressOpts is used to configure IsMacAddress
@@ -4004,9 +4009,10 @@ func IsMacAddress(str string, opts *IsMacAddressOpts) bool <span class="cov8" ti
 func setIsMacAddressOptsToDefault() *IsMacAddressOpts <span class="cov8" title="1">{
         return &amp;IsMacAddressOpts{
                 NoSeparators: isMacAddressOptsDefault,
-                Type: isMacAddressOptsType,
+                Type:         isMacAddressOptsType,
         }
-}</pre>
+}</span>
+</pre>
 		
 		<pre class="file" id="file62" style="display: none">package validatorgo
 
@@ -4692,11 +4698,11 @@ var mobilePhoneLocaleRegex = map[string]func(opts IsMobilePhoneOpts) *regexp.Reg
                 }</span>
                 <span class="cov8" title="1">return regexp.MustCompile(`^\d{9}$`)</span>
         },
-        "fil-PH": func(opts IsMobilePhoneOpts) *regexp.Regexp <span class="cov8" title="1">{
+        "fil-PH": func(opts IsMobilePhoneOpts) *regexp.Regexp <span class="cov0" title="0">{
                 if opts.StrictMode </span><span class="cov0" title="0">{
                         return regexp.MustCompile(`^\+63\d{10}$`) // Philippines
                 }</span>
-                <span class="cov8" title="1">return regexp.MustCompile(`^0\d{10}$`)</span>
+                <span class="cov0" title="0">return regexp.MustCompile(`^0\d{10}$`)</span>
         },
         "fr-BE": func(opts IsMobilePhoneOpts) *regexp.Regexp <span class="cov8" title="1">{
                 if opts.StrictMode </span><span class="cov8" title="1">{
@@ -4836,11 +4842,11 @@ var mobilePhoneLocaleRegex = map[string]func(opts IsMobilePhoneOpts) *regexp.Reg
                 }</span>
                 <span class="cov0" title="0">return regexp.MustCompile(`^\d{6}$`)</span>
         },
-        "fr-NE": func(opts IsMobilePhoneOpts) *regexp.Regexp <span class="cov0" title="0">{
+        "fr-NE": func(opts IsMobilePhoneOpts) *regexp.Regexp <span class="cov8" title="1">{
                 if opts.StrictMode </span><span class="cov0" title="0">{
                         return regexp.MustCompile(`^\+227\d{8}$`) // Niger
                 }</span>
-                <span class="cov0" title="0">return regexp.MustCompile(`^\d{8}$`)</span>
+                <span class="cov8" title="1">return regexp.MustCompile(`^\d{8}$`)</span>
         },
         "fr-PF": func(opts IsMobilePhoneOpts) *regexp.Regexp <span class="cov0" title="0">{
                 if opts.StrictMode </span><span class="cov0" title="0">{
@@ -4998,11 +5004,11 @@ var mobilePhoneLocaleRegex = map[string]func(opts IsMobilePhoneOpts) *regexp.Reg
                 }</span>
                 <span class="cov0" title="0">return regexp.MustCompile(`^\d{8}$`)</span>
         },
-        "ms-MY": func(opts IsMobilePhoneOpts) *regexp.Regexp <span class="cov0" title="0">{
+        "ms-MY": func(opts IsMobilePhoneOpts) *regexp.Regexp <span class="cov8" title="1">{
                 if opts.StrictMode </span><span class="cov0" title="0">{
                         return regexp.MustCompile(`^\+60\d{9,10}$`) // Malaysia
                 }</span>
-                <span class="cov0" title="0">return regexp.MustCompile(`^\d{9,10}$`)</span>
+                <span class="cov8" title="1">return regexp.MustCompile(`^\d{9,10}$`)</span>
         },
         "ne-NP": func(opts IsMobilePhoneOpts) *regexp.Regexp <span class="cov0" title="0">{
                 if opts.StrictMode </span><span class="cov0" title="0">{
@@ -5148,11 +5154,11 @@ var mobilePhoneLocaleRegex = map[string]func(opts IsMobilePhoneOpts) *regexp.Reg
                 }</span>
                 <span class="cov0" title="0">return regexp.MustCompile(`^\d{8}$`)</span>
         },
-        "sr-ME": func(opts IsMobilePhoneOpts) *regexp.Regexp <span class="cov0" title="0">{
+        "sr-ME": func(opts IsMobilePhoneOpts) *regexp.Regexp <span class="cov8" title="1">{
                 if opts.StrictMode </span><span class="cov0" title="0">{
                         return regexp.MustCompile(`^\+382\d{8}$`) // Montenegro
                 }</span>
-                <span class="cov0" title="0">return regexp.MustCompile(`^\d{8}$`)</span>
+                <span class="cov8" title="1">return regexp.MustCompile(`^\d{8}$`)</span>
         },
         "sr-RS": func(opts IsMobilePhoneOpts) *regexp.Regexp <span class="cov8" title="1">{
                 if opts.StrictMode </span><span class="cov8" title="1">{
@@ -5824,14 +5830,14 @@ func IsRFC3339(str string) bool <span class="cov8" title="1">{
 import "regexp"
 
 var (
-        isRgbOptsDefaultIncludePercentValues bool =  false
-        isRgbOptsDefaultAllowSpaces bool =  false
+        isRgbOptsDefaultIncludePercentValues bool = false
+        isRgbOptsDefaultAllowSpaces          bool = false
 )
 
 // IsRgbOpts is used to configure IsRgbColor
 type IsRgbOpts struct {
         IncludePercentValues bool // must use percent values 90% not 0-255
-        AllowSpaces bool // whether to include spaces
+        AllowSpaces          bool // whether to include spaces
 }
 
 // A validator that checks if the string is a rgb or rgba color.
@@ -5857,17 +5863,18 @@ func IsRgbColor(str string, opts *IsRgbOpts) bool <span class="cov8" title="1">{
                 return regexp.MustCompile(`^rgba?\(\d{0,255},\s*\d{0,255},\s*\d{0,255}(,\s*(1|0?\.[1-9])*)?\)$`).MatchString(str)
         }</span> else<span class="cov8" title="1"> if opts.IncludePercentValues &amp;&amp; !opts.AllowSpaces </span><span class="cov8" title="1">{
                 return regexp.MustCompile(`^rgba?\((\d{0,100}(\.[0-9]*)?%|\d{0,255}),(\d{0,100}(\.[0-9]*)?%|\d{0,255}),(\d{0,100}(\.[0-9]*)?%|\d{0,255})(,(1|0?\.[0-9])?)?\)$`).MatchString(str)
-        }</span>else<span class="cov8" title="1"> {
+        }</span> else<span class="cov8" title="1"> {
                 return regexp.MustCompile(`^rgba?\(\d{0,255},\d{0,255},\d{0,255}(,(1|0?\.[1-9])*)?\)$`).MatchString(str)
         }</span>
 }
 
-func setIsRgbOptsToDefault() *IsRgbOpts<span class="cov8" title="1">{
+func setIsRgbOptsToDefault() *IsRgbOpts <span class="cov8" title="1">{
         return &amp;IsRgbOpts{
                 IncludePercentValues: isRgbOptsDefaultIncludePercentValues,
-                AllowSpaces: isRgbOptsDefaultAllowSpaces,
+                AllowSpaces:          isRgbOptsDefaultAllowSpaces,
         }
-}</pre>
+}</span>
+</pre>
 		
 		<pre class="file" id="file76" style="display: none">package validatorgo
 
@@ -5896,7 +5903,8 @@ import "regexp"
 //        fmt.Println(ok) // false
 func IsSlug(str string) bool <span class="cov8" title="1">{
         return regexp.MustCompile(`^[a-z0-9]+(?:-[a-z0-9]+)*$`).MatchString(str)
-}</pre>
+}</span>
+</pre>
 		
 		<pre class="file" id="file78" style="display: none">package validatorgo
 
@@ -5958,7 +5966,7 @@ func IsStrongPassword(str string, opts *IsStrongPasswordOpts) (bool, float64) <s
         var optsWithDefaults *IsStrongPasswordOpts
         if opts == nil </span><span class="cov8" title="1">{
                 optsWithDefaults = setStrongPasswordOptsToDefault()
-        }</span>else<span class="cov8" title="1">{
+        }</span> else<span class="cov8" title="1"> {
                 optsWithDefaults = strongPasswordOptsToDefault(*opts)
         }</span>
 
@@ -6167,7 +6175,7 @@ var taxIdLocaleRegex = map[string]*regexp.Regexp{
 //
 // Supported locales: ("bg-BG", "cs-CZ", "de-AT", "de-DE", "dk-DK", "el-CY", "el-GR", "en-CA", "en-GB", "en-IE", "en-US", "es-AR", "es-ES", "et-EE", "fi-FI", "fr-BE", "fr-CA", "fr-FR", "fr-LU", "hr-HR", "hu-HU", "it-IT", "lb-LU", "lt-LT", "lv-LV", "mt-MT", "nl-BE", "nl-NL", "pl-PL", "pt-BR", "pt-PT", "ro-RO", "sk-SK", "sl-SI", "sv-SE", "uk-UA").
 func IsTaxID(str, locale string) bool <span class="cov8" title="1">{
-        if locale == ""</span><span class="cov8" title="1">{
+        if locale == "" </span><span class="cov8" title="1">{
                 locale = "en-US"
         }</span>
 
@@ -6231,7 +6239,7 @@ type IsTimeOpts struct {
 //        fmt.Println(ok) // false
 func IsTime(str string, opts *IsTimeOpts) bool <span class="cov8" title="1">{
         if opts == nil </span><span class="cov8" title="1">{
-                opts  = setIsTimeOptsToDefault()
+                opts = setIsTimeOptsToDefault()
         }</span>
 
         <span class="cov8" title="1">if opts.HourFormat == "" </span><span class="cov8" title="1">{
@@ -6275,9 +6283,10 @@ func IsTime(str string, opts *IsTimeOpts) bool <span class="cov8" title="1">{
 func setIsTimeOptsToDefault() *IsTimeOpts <span class="cov8" title="1">{
         return &amp;IsTimeOpts{
                 HourFormat: IsTimeOptsHourFormat24,
-                Mode: IsTimeOptsModeDefault,
+                Mode:       IsTimeOptsModeDefault,
         }
-}</pre>
+}</span>
+</pre>
 		
 		<pre class="file" id="file82" style="display: none">package validatorgo
 
@@ -6307,7 +6316,7 @@ import "strings"
 //        ok := validatorgo.IsUpperCase("world")
 //        fmt.Println(ok) // false
 func IsUpperCase(str string) bool <span class="cov8" title="1">{
-        return str == strings.ToUpper(str)
+        return str == strings.ToUpper(str) &amp;&amp; str != strings.ToLower(str)
 }</span>
 </pre>
 		
@@ -6606,7 +6615,8 @@ func IsUUID(str, version string) bool <span class="cov8" title="1">{
         }
 
         <span class="cov8" title="1">return re.MatchString(str)</span>
-}</pre>
+}
+</pre>
 		
 		<pre class="file" id="file86" style="display: none">package validatorgo
 
