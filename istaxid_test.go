@@ -44,7 +44,7 @@ func TestIsTaxID(t *testing.T) {
 		{name: "Special characters tax ID", param1: "123-45!6789", param2: "en-US", want: false},
 		{name: "Valid Estonia", param1: "51001091072", param2: "et-EE", want: true},                    // Estonia valid
 		{name: "Invalid Estonia too short", param1: "12345", param2: "et-EE", want: false},             // Estonia too short
-		{name: "Valid Poland PESEL", param1: "4405140135", param2: "pl-PL", want: true},               // Poland PESEL valid
+		{name: "Valid Poland PESEL", param1: "4405140135", param2: "pl-PL", want: true},                // Poland PESEL valid
 		{name: "Invalid Poland PESEL characters", param1: "4405140A359", param2: "pl-PL", want: false}, // Poland PESEL with characters
 	}
 

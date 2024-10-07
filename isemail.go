@@ -15,8 +15,8 @@ var (
 	isEmailDefaultAllowIpDomain            bool   = false
 	isEmailDefaultDomainSpecificValidation bool   = false
 	isEmailDefaultBlacklistedChars         string = ""
-	isEmailDefaultHostWhitelist = []string{}
-	isEmailDefaultHostBlacklist = []string{}
+	isEmailDefaultHostWhitelist                   = []string{}
+	isEmailDefaultHostBlacklist                   = []string{}
 )
 
 // IsEmailOpts is used to configure IsEmail

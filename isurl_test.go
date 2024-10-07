@@ -217,7 +217,7 @@ func TestIsURL(t *testing.T) {
 		},
 		// Test: Not a url
 		{
-			name:   "Valid - Port missing but not required",
+			name:   "Not a url",
 			param1: "xyz.abc.def",
 			param2: nil, // Port is not required
 			want:   false,

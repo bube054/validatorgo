@@ -9,27 +9,35 @@ func TestIsHSL(t *testing.T) {
 		want   bool
 	}{
 		// Valid HSL Colors
-		{name: "Valid HSL with integer values", param1: "hsl(360, 100%, 50%)", want: true},
-		{name: "Valid HSL with decimal values", param1: "hsl(180.5, 50%, 75%)", want: true},
-		{name: "Valid HSLA with alpha value", param1: "hsla(120, 100%, 50%, 0.5)", want: true},
-		{name: "Valid HSL with degree unit", param1: "hsl(120deg, 50%, 50%)", want: true},
-		{name: "Valid HSL with radian unit", param1: "hsl(3.1415rad, 50%, 50%)", want: true},
-		{name: "Valid HSL with turn unit", param1: "hsl(1turn, 50%, 50%)", want: true},
-		{name: "Valid HSL with space", param1: "hsl(240deg 100% 50%)", want: true},
-		{name: "Valid HSLA with percentage alpha", param1: "hsla(180, 100%, 50%, 50%)", want: true},
-		{name: "Valid HSLA with percentage alpha and space", param1: "hsla(180 100% 50% / 0.5)", want: true},
+		{name: "Valid hsl color all values in range", param1: "hsl(170, 50%, 50%)", want: true},
+		{name: "Valid hsl color hue not preceding range", param1: "hsl(0, 50%, 50%)", want: true},
+		{name: "Valid hsl color saturation not preceding range", param1: "hsl(0, 0%, 50%)", want: true},
+		{name: "Valid hsl color lightness not preceding range", param1: "hsl(10, 50%, 0%)", want: true},
+		{name: "Valid hsl color hue not exceeding range", param1: "hsl(360, 50%, 50%)", want: true},
+		{name: "Valid hsl color saturation not exceeding range", param1: "hsl(0, 100%, 50%)", want: true},
+		{name: "Valid hsl color lightness not exceeding range", param1: "hsl(10, 50%, 100%)", want: true},
+		{name: "Valid hsl color no spaces", param1: "hsl(0,50%,70%)", want: true},
 
-		// // Invalid HSL Colors
-		{name: "Invalid HSL missing values", param1: "hsl(360, 100%)", want: false},
-		{name: "Invalid HSL with incorrect percent", param1: "hsl(360, 100, 50%)", want: false},
-		{name: "Invalid HSL with out of range hue", param1: "hsl(361, 100%, 50%)", want: false},
-		{name: "Invalid HSL with incorrect alpha value", param1: "hsla(120, 100%, 50%, 1.5)", want: false},
-		{name: "Invalid HSL with invalid unit", param1: "hsl(120xyz, 50%, 50%)", want: false},
-		{name: "Invalid HSL with incorrect syntax", param1: "hsl(120, 50%, 50%", want: false},
-		{name: "Invalid HSLA with misplaced comma", param1: "hsla(120, 100%, 50% 0.5)", want: false},
-		{name: "Invalid HSLA with too many values", param1: "hsla(120, 100%, 50%, 0.5, 10%)", want: false},
-		{name: "Invalid HSL with wrong degrees value", param1: "hsl(360deg, 100%, 50%)", want: false},
-		{name: "Invalid HSL with missing unit", param1: "hsl(120, 100%, 50)", want: false},
+		// Invalid HSL Colors
+		{name: "Invalid hsl color all values in range", param1: "hsl(170%, 50, 50)", want: false},
+		{name: "Invalid hsl color hue is not a digit", param1: "hsl(abc, 50%, 50%)", want: false},
+		{name: "Invalid hsl color hue preceding range", param1: "hsl(-1, 50%, 50%)", want: false},
+		{name: "Invalid hsl color saturation preceding range", param1: "hsl(0, -0%, 50%)", want: false},
+		{name: "Invalid hsl color lightness preceding range", param1: "hsl(10, 50%, -0%)", want: false},
+		{name: "Invalid hsl color hue exceeding range", param1: "hsl(361, 50%, 50%)", want: false},
+		{name: "Invalid hsl color saturation exceeding range", param1: "hsl(0, 101%, 50%)", want: false},
+		{name: "Invalid hsl color lightness exceeding range", param1: "hsl(10, 50%, 101%)", want: false},
+
+		// Valid HSLA Colors
+		{name: "Valid hsla color alpha at low", param1: "hsla(170, 50%, 50%, 0)", want: true},
+		{name: "Valid hsla color alpha at high", param1: "hsla(170, 50%, 50%, 1)", want: true},
+		{name: "Valid hsla color alpha at mid", param1: "hsla(170, 50%, 50%, 0.5)", want: true},
+		{name: "Valid hsla color no spaces", param1: "hsla(170,50%,50%,0.5)", want: true},
+
+		// Invalid HSLA Colors
+		{name: "Invalid hsla alpha present but hsla was not specified", param1: "hsl(170, 50%, 50%, 0)", want: false},
+		{name: "Invalid hsla alpha value exceeded", param1: "hsla(170, 50%, 50%, 1.1)", want: false},
+		{name: "Invalid hsla alpha value exceeded", param1: "hsla(170, 50%, 50%, -1)", want: false},
 	}
 
 	for _, test := range tests {

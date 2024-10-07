@@ -1,7 +1,6 @@
 package validatorgo
 
 import (
-	"fmt"
 	"math"
 	"regexp"
 	"strconv"
@@ -68,30 +67,25 @@ func IsFreightContainerID(str string) bool {
 	}
 
 	sum := 0
-	for ind, char := range str[:10] {
-		wgh := int(math.Pow(2.0, float64(9-ind)))
-		charStr := string(char)
-		num, ok := alphaFreightNumVal[charStr]
+	for i := 0; i < 10; i++ {
+		char := string(str[i])
+		mag, ok := alphaFreightNumVal[char]
 
 		if !ok {
 			return false
 		}
-		fmt.Printf("Char: %v, Weight: %v, Num: %v\n", charStr, wgh, num)
-		sum += wgh * num
+
+		mul := math.Pow(2.00, float64(i))
+
+		sum += int(mul) * mag
 	}
 
-	grps := re.FindStringSubmatch(str)
-	checkDigit := grps[4] // Extract the check digit
-	rem := sum % 11
+	actCheck := sum % 11
+	givCheck, err := strconv.Atoi(string(str[10]))
 
-	if rem == 10 && checkDigit == "0" {
-		return true
-	}
-
-	checkDigitInt, err := strconv.Atoi(checkDigit)
 	if err != nil {
 		return false
 	}
 
-	return checkDigitInt == rem
+	return actCheck == givCheck
 }

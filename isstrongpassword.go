@@ -58,7 +58,7 @@ func IsStrongPassword(str string, opts *IsStrongPasswordOpts) (bool, float64) {
 	var optsWithDefaults *IsStrongPasswordOpts
 	if opts == nil {
 		optsWithDefaults = setStrongPasswordOptsToDefault()
-	}else{
+	} else {
 		optsWithDefaults = strongPasswordOptsToDefault(*opts)
 	}
 

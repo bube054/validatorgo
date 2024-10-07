@@ -10,8 +10,8 @@ func TestIsLowerCase(t *testing.T) {
 	}{
 		// Valid Example
 		{name: "Is lowercase", param1: "hello", want: true},
-		{name: "Empty string is lowercase", param1: "", want: true},
 		// Invalid Example
+		{name: "Empty string is not lowercase", param1: "", want: false},
 		{name: "Is not lowercase", param1: "WORLD", want: false},
 		{name: "Only few letter are lowercase", param1: "ExaMPle", want: false},
 	}

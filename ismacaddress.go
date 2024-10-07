@@ -6,8 +6,8 @@ import (
 )
 
 var (
-	isMacAddressOptsDefault bool = false
-	isMacAddressOptsType *string = nil
+	isMacAddressOptsDefault bool    = false
+	isMacAddressOptsType    *string = nil
 )
 
 // IsMacAddressOpts is used to configure IsMacAddress
@@ -63,6 +63,6 @@ func IsMacAddress(str string, opts *IsMacAddressOpts) bool {
 func setIsMacAddressOptsToDefault() *IsMacAddressOpts {
 	return &IsMacAddressOpts{
 		NoSeparators: isMacAddressOptsDefault,
-		Type: isMacAddressOptsType,
+		Type:         isMacAddressOptsType,
 	}
 }

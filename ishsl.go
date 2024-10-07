@@ -3,7 +3,6 @@ package validatorgo
 import (
 	"regexp"
 	"strconv"
-	"strings"
 )
 
 // A validator that checks if the string is an HSL (hue, saturation, lightness, optional alpha) color based on CSS Colors Level 4 specification.
@@ -13,53 +12,55 @@ import (
 //	ok := validatorgo.IsHSL("hsl(360, 100%)")
 //	fmt.Println(ok) // false
 func IsHSL(str string) bool {
-	re := regexp.MustCompile(`(?im)^hsla?\(\s*(?<h>[-+]?\d{1,3}(?:\.\d+)?)(deg|grad|rad|turn)?\s*,\s*(?<s>[-+]?\d{1,3}(?:\.\d+)?)%\s*,\s*(?<l>[-+]?\d{1,3}(?:\.\d+)?)%\s*(?:,\s*(?<alpha>[-+]?[\d.]+%?)\s*)?\)$
-`)
+	re := regexp.MustCompile(`^hsl(a)?\(\s?([^-+].*),\s?([^-+].*)%,\s?([^-+].*)%(,\s?([^-+].*))?\)$`)
+	capGrp := re.FindStringSubmatch(str)
 
-	match := re.MatchString(str)
-
-	if !match {
-		return match
-	}
-
-	grps := re.FindStringSubmatch(str)
-	hue, sat, light, alpha := grps[1], grps[3], grps[4], grps[5]
-
-	const bitSize = 64
-	hueNum, err := strconv.ParseFloat(hue, bitSize)
-
-	if err != nil || hueNum < 0 || hueNum > 360 {
+	if len(capGrp) == 0 {
 		return false
 	}
 
-	// satWthOutPer := strings.Replace(sat, "%", "", 1)
-	satNum, err := strconv.ParseFloat(sat, bitSize)
+	a := capGrp[1]        // "a"
+	hueVal := capGrp[2]   // "360"
+	satVal := capGrp[3]   // "50"
+	lightVal := capGrp[4] // "50"
+	alphaVal := capGrp[6] // "0.5"
 
-	if err != nil || satNum < 0 || satNum > 100 {
+	if hueFlt, err := strconv.ParseFloat(hueVal, 64); err != nil {
 		return false
-	}
-
-	// lightWthOutPer := strings.Replace(light, "%", "", 1)
-	lightNum, err := strconv.ParseFloat(light, bitSize)
-
-	if err != nil || lightNum < 0 || lightNum > 100 {
-		return false
-	}
-
-	var (
-		alphaNum float64
-		alphaErr error
-	)
-	if strings.HasSuffix(alpha, "%") {
-		alphaWthOutPer := strings.Replace(alpha, "%", "", 1)
-		alphaNum, alphaErr = strconv.ParseFloat(alphaWthOutPer, bitSize)
-		alphaNum = alphaNum / 100
 	} else {
-		alphaNum, alphaErr = strconv.ParseFloat(alpha, bitSize)
+		if hueFlt < 0 || hueFlt > 360 {
+			return false
+		}
 	}
 
-	if alpha != "" && (alphaErr != nil || alphaNum < 0 || alphaNum > 1) {
+	if satFlt, err := strconv.ParseFloat(satVal, 64); err != nil {
 		return false
+	} else {
+		if satFlt < 0 || satFlt > 100 {
+			return false
+		}
+	}
+
+	if lightFlt, err := strconv.ParseFloat(lightVal, 64); err != nil {
+		return false
+	} else {
+		if lightFlt < 0 || lightFlt > 100 {
+			return false
+		}
+	}
+
+	if alphaVal != "" {
+		if a == "" {
+			return false
+		}
+
+		if alphaVal, err := strconv.ParseFloat(alphaVal, 64); err != nil {
+			return false
+		} else {
+			if alphaVal < 0 || alphaVal > 1 {
+				return false
+			}
+		}
 	}
 
 	return true

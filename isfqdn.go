@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	isFQDNOptsDefaultRequireTld       bool = false
+	isFQDNOptsDefaultRequireTld       bool = true
 	isFQDNOptsDefaultAllowUnderscores bool = false
 	isFQDNOptsDefaultAllowTrailingDot bool = false
 	isFQDNOptsDefaultAllowNumericTld  bool = false
@@ -27,7 +27,7 @@ type IsFQDNOpts struct {
 
 // A validator that checks if the string is a fully qualified domain name (e.g. domain.com).
 //
-// IsFQDNOpts is a struct which defaults to { RequireTld: false, AllowUnderscores: false, AllowTrailingDot: false, AllowNumericTld: false, allow_wildcard: false, IgnoreMaxLength: false }.
+// IsFQDNOpts is a struct which defaults to { RequireTld: true, AllowUnderscores: false, AllowTrailingDot: false, AllowNumericTld: false, allow_wildcard: false, IgnoreMaxLength: false }.
 //
 //	ok := validatorgo.IsFQDN("localhost",  &validatorgo.IsFQDNOpts{})
 //	fmt.Println(ok) // true

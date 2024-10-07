@@ -65,7 +65,6 @@ func TestIsIdentityCard(t *testing.T) {
 		{name: "Valid with any Locale", param1: "1234567890123", param2: "any", want: true},
 		{name: "Valid with no locale specified", param1: "1234567890123", param2: "", want: true},
 		{name: "Invalid with Unrecognized Locale", param1: "12345678901239009", param2: "YY", want: false},
-
 	}
 
 	for _, test := range tests {

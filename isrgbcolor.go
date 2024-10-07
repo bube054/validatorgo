@@ -3,14 +3,14 @@ package validatorgo
 import "regexp"
 
 var (
-	isRgbOptsDefaultIncludePercentValues bool =  false
-	isRgbOptsDefaultAllowSpaces bool =  false
+	isRgbOptsDefaultIncludePercentValues bool = false
+	isRgbOptsDefaultAllowSpaces          bool = false
 )
 
 // IsRgbOpts is used to configure IsRgbColor
 type IsRgbOpts struct {
 	IncludePercentValues bool // must use percent values 90% not 0-255
-	AllowSpaces bool // whether to include spaces
+	AllowSpaces          bool // whether to include spaces
 }
 
 // A validator that checks if the string is a rgb or rgba color.
@@ -36,14 +36,14 @@ func IsRgbColor(str string, opts *IsRgbOpts) bool {
 		return regexp.MustCompile(`^rgba?\(\d{0,255},\s*\d{0,255},\s*\d{0,255}(,\s*(1|0?\.[1-9])*)?\)$`).MatchString(str)
 	} else if opts.IncludePercentValues && !opts.AllowSpaces {
 		return regexp.MustCompile(`^rgba?\((\d{0,100}(\.[0-9]*)?%|\d{0,255}),(\d{0,100}(\.[0-9]*)?%|\d{0,255}),(\d{0,100}(\.[0-9]*)?%|\d{0,255})(,(1|0?\.[0-9])?)?\)$`).MatchString(str)
-	}else {
+	} else {
 		return regexp.MustCompile(`^rgba?\(\d{0,255},\d{0,255},\d{0,255}(,(1|0?\.[1-9])*)?\)$`).MatchString(str)
 	}
 }
 
-func setIsRgbOptsToDefault() *IsRgbOpts{
+func setIsRgbOptsToDefault() *IsRgbOpts {
 	return &IsRgbOpts{
 		IncludePercentValues: isRgbOptsDefaultIncludePercentValues,
-		AllowSpaces: isRgbOptsDefaultAllowSpaces,
+		AllowSpaces:          isRgbOptsDefaultAllowSpaces,
 	}
 }
