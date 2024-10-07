@@ -10,7 +10,7 @@ var (
 	isDecimalOptsDefaultForceDecimal bool   = false
 	isDecimalOptsDefaultLocale       string = "en-US"
 
-	isDecimalOptsDefaultMin uint = 0
+	isDecimalOptsDefaultMin uint  = 0
 	isDecimalOptsDefaultMax *uint = nil
 )
 

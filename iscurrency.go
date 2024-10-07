@@ -22,7 +22,7 @@ var (
 	isCurrencyOptsDefaultAllowDecimal          bool   = true
 	isCurrencyOptsDefaultRequireDecimal        bool   = false
 	isCurrencyOptsDefaultAllowSpaceAfterDigits bool   = false
-	isCurrencyOptsDefaultMaxDigitsAfterDecimal uint = 2
+	isCurrencyOptsDefaultMaxDigitsAfterDecimal uint   = 2
 )
 
 type IsCurrencyOpts struct {

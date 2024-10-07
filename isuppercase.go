@@ -9,5 +9,5 @@ import "strings"
 //	ok := validatorgo.IsUpperCase("world")
 //	fmt.Println(ok) // false
 func IsUpperCase(str string) bool {
-	return str == strings.ToUpper(str)
+	return str == strings.ToUpper(str) && str != strings.ToLower(str)
 }

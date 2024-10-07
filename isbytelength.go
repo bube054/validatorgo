@@ -1,7 +1,7 @@
 package validatorgo
 
 var (
-	isIsByteLengthOptsDefaultMin uint = 0
+	isIsByteLengthOptsDefaultMin uint  = 0
 	isIsByteLengthOptsDefaultMax *uint = nil
 )
 

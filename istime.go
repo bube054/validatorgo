@@ -36,7 +36,7 @@ type IsTimeOpts struct {
 //	fmt.Println(ok) // false
 func IsTime(str string, opts *IsTimeOpts) bool {
 	if opts == nil {
-		opts  = setIsTimeOptsToDefault()
+		opts = setIsTimeOptsToDefault()
 	}
 
 	if opts.HourFormat == "" {
@@ -80,6 +80,6 @@ func IsTime(str string, opts *IsTimeOpts) bool {
 func setIsTimeOptsToDefault() *IsTimeOpts {
 	return &IsTimeOpts{
 		HourFormat: IsTimeOptsHourFormat24,
-		Mode: IsTimeOptsModeDefault,
+		Mode:       IsTimeOptsModeDefault,
 	}
 }

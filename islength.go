@@ -5,13 +5,13 @@ import (
 )
 
 var (
-	isLengthOptsDefaultMin uint = 0
+	isLengthOptsDefaultMin uint  = 0
 	isLengthOptsDefaultMax *uint = nil
 )
 
 // IsLengthOpts is used to configure IsLength
 type IsLengthOpts struct {
-	Min uint // Minimum character length
+	Min uint  // Minimum character length
 	Max *uint // Maximum character length
 }
 
@@ -45,7 +45,7 @@ func IsLength(str string, opts *IsLengthOpts) bool {
 	return withinLimits
 }
 
-func setIsLengthOptsToDefault() *IsLengthOpts{
+func setIsLengthOptsToDefault() *IsLengthOpts {
 	return &IsLengthOpts{
 		Min: isLengthOptsDefaultMin,
 		Max: isLengthOptsDefaultMax,

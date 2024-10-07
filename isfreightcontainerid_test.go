@@ -8,15 +8,25 @@ func TestIsFreightContainerID(t *testing.T) {
 		param1 string
 		want   bool
 	}{
-    {name: "Valid container ID", param1: "ABCU1234567", want: true},
-    {name: "Valid container ID with Z category", param1: "XYZZ9876543", want: true},
+		// Valid container ID (assuming correct check digit calculation)
+		{name: "Valid container ID", param1: "CSQU3054383", want: true},
+		{name: "Valid container ID", param1: "ABCU1234560", want: true},
+		{name: "Valid container ID", param1: "MSKU6011672", want: true},
 
-    {name: "Invalid owner code (too short)", param1: "AB123456789", want: false},
-    {name: "Invalid category identifier", param1: "ABCX1234567", want: false},
-    {name: "Invalid serial number length", param1: "ABCJ12345", want: false},
-    {name: "Invalid check digit", param1: "ABCU123456", want: false},
-    {name: "Invalid characters in serial number", param1: "ABCU12A4567", want: false},
-    {name: "Empty string", param1: "", want: false},
+		// Invalid container ID (wrong format - less than 11 characters)
+		{name: "Too short", param1: "ABC12345", want: false},
+		// Invalid container ID (wrong format - more than 11 characters)
+		{name: "Too long", param1: "ABCU123456789", want: false},
+		// Invalid container ID (wrong format - invalid characters in prefix)
+		{name: "Invalid characters in prefix", param1: "AB11234567", want: false},
+		// Invalid container ID (invalid UJZ code)
+		{name: "Invalid UJZ code", param1: "ABCD1234567", want: false}, // 'D' is not a valid UJZ code
+		// Invalid container ID (non-numeric check digit)
+		{name: "Non-numeric check digit", param1: "ABCU123456X", want: false},
+		// Invalid container ID (invalid check digit, different valid UJZ code)
+		{name: "Invalid check digit with U", param1: "ABCU1234561", want: false},
+		// Edge case: all zeros in the numeric part
+		{name: "All zeros in the numeric part", param1: "ABCU0000000", want: false}, // Check digit is likely incorrect
 	}
 
 	for _, test := range tests {

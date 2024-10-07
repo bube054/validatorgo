@@ -9,7 +9,7 @@ func TestEquals(t *testing.T) {
 		param2 string
 		want   bool
 	}{
-		{name: "Valid equals", param1: "Hello", param2: "Hello", want: true}, 
+		{name: "Valid equals", param1: "Hello", param2: "Hello", want: true},
 		{name: "Valid not equals", param1: "Hello", param2: "World", want: false},
 	}
 
