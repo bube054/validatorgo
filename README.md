@@ -1,219 +1,343 @@
 # validatorgo
 
-<!-- <img alt="Tag" src="https://img.shields.io/badge/tag-v0.1.0-blue?labelColor=gray"> <img alt="Go Version" src="https://img.shields.io/badge/Go->=1.13-00ADD8?labelColor=gray"> <img alt="Reference" src="https://img.shields.io/badge/-reference-00ADD8?logo=go&labelColor=gray"> <img alt="Tests" src="https://img.shields.io/badge/tests-passing-brightgreen?logo=github&labelColor=gray"> <img alt="Go Report" src="https://img.shields.io/badge/go_report-A%2B-00ADD8"> <img alt="Coverage" src="https://img.shields.io/badge/coverage-87.30%25-brightgreen?logo=codecov"> <img alt="Contributors" src="https://img.shields.io/badge/contributors-1-blueviolet"> <img alt="License" src="https://img.shields.io/badge/license-MIT-yellow"> <img alt="Validators" src="https://img.shields.io/badge/validators-88-brightgreen?labelColor=gray"> <img alt="Sanitizers" src="https://img.shields.io/badge/sanitizers-13-brightgreen?labelColor=gray"> -->
+[![Go Reference](https://pkg.go.dev/badge/github.com/bube054/validatorgo.svg)](https://pkg.go.dev/github.com/bube054/validatorgo)
+[![Go Report Card](https://goreportcard.com/badge/github.com/bube054/validatorgo)](https://goreportcard.com/report/github.com/bube054/validatorgo)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/bube054/validatorgo)](https://go.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A library of string validators and sanitizers, based on the js library [validator.js](https://github.com/validatorjs/validator.js)
+> A comprehensive library of **string validators** and **sanitizers** for Go, inspired by the popular JavaScript library [validator.js](https://github.com/validatorjs/validator.js).
 
-## Why not use other popular Go libraries?
+---
 
-Why should not you use other widely known Go libraries like [go-playground/validator](https://github.com/go-playground/validator) or [asaskevich/govalidator](https://github.com/asaskevich/govalidator). The reason is that these libraries primarily focus on validating structs rather than standalone strings. Additionally, they lack a comprehensive library of validators comparable to the original js package [validator.js](https://github.com/validatorjs/validator.js), on which they are based.
+## Table of Contents
 
-I created this project to serve as a dependency for another Go open-source library I developed, called [ginvalidator](https://github.com/bube054/ginvalidator). ginvalidator is designed specifically for validating HTTP requests and acts as the Go equivalent of the popular Node.js/Express library [express-validator](https://express-validator.github.io/docs/).
+- [Features](#features)
+- [Why validatorgo?](#why-validatorgo)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Validators](#validators)
+  - [Strings & Text](#strings--text)
+  - [Numbers & Booleans](#numbers--booleans)
+  - [Dates & Times](#dates--times)
+  - [Network, Web & URIs](#network-web--uris)
+  - [Encoding, Hashes & JSON](#encoding-hashes--json)
+  - [Identifiers, Codes & Versioning](#identifiers-codes--versioning)
+  - [Geographic & Locale](#geographic--locale)
+  - [Personal & Identity](#personal--identity)
+  - [Finance & Crypto](#finance--crypto)
+  - [Colors & Data Structures](#colors--data-structures)
+- [Sanitizers](#sanitizers)
+- [Important: Options Struct Behavior](#-important-options-struct-behavior)
+- [Maintainers](#maintainers)
+- [Contributing](#contributing)
+- [License](#license)
 
-The existing libraries in the Go ecosystem were either too complex, not robust enough, or unsuitable for my use case. That’s why I decided to build my own library.
+---
 
+## Features
+
+- **80+ validators** covering everything from emails and URLs to IBANs and ISO codes
+- **13 sanitizers** for cleaning, normalizing, and converting input strings
+- **Locale-aware** — many validators accept locale options for region-specific formats
+- **Pure Go**, no heavy dependencies
+- **Comprehensive tests** with ~87% coverage
+- Drop-in mental model for anyone familiar with [validator.js](https://github.com/validatorjs/validator.js)
+
+---
+
+## Why validatorgo?
+
+Other popular Go libraries like [go-playground/validator](https://github.com/go-playground/validator) and [asaskevich/govalidator](https://github.com/asaskevich/govalidator) primarily focus on validating **structs**, not standalone strings. They also lack the breadth of validators offered by [validator.js](https://github.com/validatorjs/validator.js).
+
+validatorgo was originally built as a dependency for [ginvalidator](https://github.com/bube054/ginvalidator) — a Go equivalent of the popular Node.js library [express-validator](https://express-validator.github.io/docs/). The existing Go ecosystem options were either too complex, not robust enough, or unsuitable for that use case, so this library fills the gap.
+
+---
 
 ## Installation
 
-Using go get.
-
-```
- go get -u github.com/bube054/validatorgo
+```sh
+go get -u github.com/bube054/validatorgo
 ```
 
-Then import the package into your own code.
+Then import it in your code:
 
 ```go
- import (
-   "fmt"
-   "github.com/bube054/validatorgo"
- )
+import (
+    "fmt"
+    "github.com/bube054/validatorgo"
+)
 ```
 
-If you are unhappy using the long validatorgo package name, you can do this.
+Prefer a shorter alias?
 
 ```go
- import (
-   "fmt"
-   vgo "github.com/bube054/validatorgo"
- )
+import (
+    "fmt"
+    vgo "github.com/bube054/validatorgo"
+)
 ```
 
-# Simple validator example
+---
+
+## Quick Start
+
+**Validate a MongoDB ObjectID:**
 
 ```go
- func main(){
-   id := "5f2a6c69e1d7a4e0077b4e6b"
-   validId := vgo.IsMongoID(id)
-   fmt.Println(validId) // true
- }
+package main
+
+import (
+    "fmt"
+    vgo "github.com/bube054/validatorgo"
+)
+
+func main() {
+    id := "5f2a6c69e1d7a4e0077b4e6b"
+    fmt.Println(vgo.IsMongoID(id)) // true
+}
 ```
 
-# Validators
+**Validate an email with options:**
 
-Here is a list of the validators currently available.
+```go
+ok := vgo.IsEmail("user@example.com", &vgo.IsEmailOpts{
+    AllowDisplayName:         false,
+    RequireDisplayName:       false,
+    AllowUTF8LocalPart:       true,
+    RequireTld:               true,
+    AllowIpDomain:            false,
+    DomainSpecificValidation: false,
+    BlacklistedChars:         "",
+    HostBlacklist:            nil,
+})
+fmt.Println(ok) // true
+```
+
+**Sanitize a string:**
+
+```go
+import "github.com/bube054/validatorgo/sanitizer"
+
+clean := sanitizer.Whitelist("Hello123 World!", "a-zA-Z")
+fmt.Println(clean) // "HelloWorld"
+```
+
+For full API docs and parameter details, see the [Go Reference](https://pkg.go.dev/github.com/bube054/validatorgo).
+
+---
+
+## Validators
+
+### Strings & Text
+
 | Validator | Description |
-| -------- | ----------- |
-| **[Contains(str, seed string, opts \*ContainsOpt)](https://pkg.go.dev/github.com/bube054/validatorgo#Contains)** | A validator that checks if a string contains a seed. `ContainsOpt` defaults to `{ IgnoreCase: false, MinOccurrences: 1 }`. <br /> **[ContainsOpt](https://pkg.go.dev/github.com/bube054/validatorgo#ContainsOpts):** <br /> - `IgnoreCase`: Ignore case during comparison (default: `false`). <br /> - `MinOccurrences`: Minimum number of occurrences for the seed in the string (default: `1`). |
-| **[Equals(str string, comparison string))](https://pkg.go.dev/github.com/bube054/validatorgo#Equals)** | A validator that checks if the string matches the comparison. |
-| **[IsAbaRouting(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsAbaRouting)** | A validator that checks if the string is an ABA routing number for US bank account / cheque. |
-| **[IsAfter(str string, opts \*IsAfterOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsAfter)** | A validator that checks if the string is a date that is after the specified date. <br/> `IsAfterOpts` is a struct that defaults to `{ ComparisonDate: "" }`. <br/> `IsAfterOpts`: <br/> `ComparisonDate`: defaults to the current time. <br/> string layouts for str and `ComparisonDate` can be different layout. <br/> these are the only valid layouts from the `time` package e.g `Layout, ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, Kitchen, Stamp, StampMilli, StampMicro, StampNano, DateTime, DateOnly, TimeOnly, StandardDateLayout, SlashDateLayout, DateTimeLayout, ISO8601Layout, ISO8601ZuluLayout, ISO8601WithMillisecondsLayout`. |
-| **[IsAlpha(str string, opts \*IsAlphaOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsAlpha)** | A validator that checks if the string contains only letters (a-zA-Z). <br> `IsAlphaOpts` is an optional struct that can be supplied with the following key(s): <br> `Ignore`: is the string to be ignored e.g. " -" will ignore spaces and -'s. <br> `Locale`: one of `("ar", "ar-AE", "ar-BH", "ar-DZ", "ar-EG", "ar-IQ", "ar-JO", "ar-KW", "ar-LB", "ar-LY", "ar-MA", "ar-QA", "ar-QM", "ar-SA", "ar-SD", "ar-SY", "ar-TN", "ar-YE", "bg-BG", "bn", "cs-CZ", "da-DK", "de-DE", "el-GR", "en-AU", "en-GB", "en-HK", "en-IN", "en-NZ", "en-US", "en-ZA", "en-ZM", "eo", "es-ES", "fa-IR", "fi-FI", "fr-CA", "fr-FR", "he", "hi-IN", "hu-HU", "it-IT", "kk-KZ", "ko-KR", "ja-JP", "ku-IQ", "nb-NO", "nl-NL", "nn-NO", "pl-PL", "pt-BR", "pt-PT", "ru-RU", "si-LK", "sl-SI", "sk-SK", "sr-RS", "sr-RS@latin", "sv-SE", "th-TH", "tr-TR", "uk-UA")` and defaults to `en-US` if none is provided. |
-| **[IsAlphanumeric(str string, opts \*IsAlphanumericOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsAlphanumeric)** |A validator that checks if the string contains only letters and numbers (a-zA-Z0-9). <br> `IsAlphaOpts` is an optional struct that can be supplied with the following key(s): <br> `Ignore`: is the string to be ignored e.g. " -" will ignore spaces and -'s. <br> `Locale`: one of `("ar", "ar-AE", "ar-BH", "ar-DZ", "ar-EG", "ar-IQ", "ar-JO", "ar-KW", "ar-LB", "ar-LY", "ar-MA", "ar-QA", "ar-QM", "ar-SA", "ar-SD", "ar-SY", "ar-TN", "ar-YE", "bn", "bg-BG", "cs-CZ", "da-DK", "de-DE", "el-GR", "en-AU", "en-GB", "en-HK", "en-IN", "en-NZ", "en-US", "en-ZA", "en-ZM", "eo", "es-ES", "fa-IR", "fi-FI", "fr-CA", "fr-FR", "he", "hi-IN", "hu-HU", "it-IT", "kk-KZ", "ko-KR", "ja-JP","ku-IQ", "nb-NO", "nl-NL", "nn-NO", "pl-PL", "pt-BR", "pt-PT", "ru-RU", "si-LK", "sl-SI", "sk-SK", "sr-RS", "sr-RS@latin", "sv-SE", "th-TH", "tr-TR", "uk-UA")` and defaults to `en-US` if none is provided. |
-| **[IsArray(str string, opts *IsArrayOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsArray)** | A validator to check that a value is an array. `IsArrayOpts` is a struct which defaults to `{ Min: nil, Max: nil }`. You can also check that the array's length is greater than or equal to `IsArrayOpts.Min` and/or that it's less than or equal to `IsArrayOpts.Max`. |
-| **[IsAscii(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsAscii)** | A validator that checks if the string contains ASCII chars only. |
-| **[IsBase32(str string, opts \*IsBase32Opts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsBase32)** | A validator that checks if the string is base32 encoded. <br/> `IsBase32Opts` defaults to `{ Crockford: false }`. When Crockford is true it tests the given base32 encoded string using [crockford's](http://www.crockford.com/base32.html) base32 alternative. |
-| **[IsBase58(str string) bool](https://pkg.go.dev/github.com/bube054/validatorgo#IsBase58)** | A validator that checks if the string is base58 encoded. |
-| **[IsBase64(str string, opts \*IsBase64Opts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsBase64)** | A validator that checks if the string is base64 encoded. <br/> `IsBase64Opts` is an optional struct which defaults to `{ UrlSafe: false }`. <br> When `UrlSafe` is true it tests the given base64 encoded string is [url safe](https://base64.guru/standards/base64url). |
-| **[IsBefore(str string, opts \*IsBeforeOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsBefore)** | A validator that checks if the string is a date that is before the specified date. <br/> `IsAfterOpts` is a struct that defaults to `{ ComparisonDate: "" }`. <br/> `IsAfterOpts`: <br/> `ComparisonDate`: defaults to the current time. <br/> string layouts for str and `ComparisonDate` can be different layout. <br/> these are the only valid layouts from the `time` package e.g `Layout, ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, Kitchen, Stamp, StampMilli, StampMicro, StampNano, DateTime, DateOnly, TimeOnly, StandardDateLayout, SlashDateLayout, DateTimeLayout, ISO8601Layout, ISO8601ZuluLayout, ISO8601WithMillisecondsLayout.`. |
-| **[IsBic(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsBic)** | A validator that checks if the string is a BIC (Bank Identification Code) or SWIFT code. |
-| **[IsBoolean(str string, opts \*IsBooleanOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsBoolean)** | A validator that check if the string is a boolean. |
-| **[IsBTCAddress(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsBTCAddress)** | A validator that checks if the string is a valid BTC address. |
-| **[IsByteLength(str string, opts \*IsByteLengthOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsByteLength)** | A validator that checks if the string's length (in UTF-8 bytes) falls in a range. <br/> `IsByteLengthOpts` is a struct which defaults to `{ Min: 0, Max: nil }`. |
-| **[IsCreditCard(str string, opts \*IsCreditCardOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsCreditCard)** | A validator that checks if the string is a credit card number. <br/> `IsCreditCardOpts` is an struct that can be supplied with the following key(s): <br/> `Provider`: is a key whose value should be a string, and defines the company issuing the credit card. Valid values include `amex, bcglobal, carteblanche, dinersclub, discover, instapayment, jcb, koreanlocal, laser, maestro, mastercard, solo, switch, unionpay, visa, visamastercard` or blank will check for any provider. |
-| **[IsCurrency(str string, opts \*IsCurrencyOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsCurrency)** | A validator that checks if the string is a valid currency amount. <br/> IsCurrencyOpts is a struct which defaults to `{ Symbol: '$', RequireSymbol: false, AllowSpaceAfterSymbol: false, SymbolAfterDigits: false, AllowNegatives: true, ParensForNegatives: false, NegativeSignBeforeDigits: false, NegativeSignAfterDigits: false, AllowNegativeSignPlaceholder: false, ThousandsSeparator: ',', DecimalSeparator: '.', AllowDecimal: true, RequireDecimal: false, MaxDigitsAfterDecimal: 2, AllowSpaceAfterDigits: false }`.|
-| **[IsDataURI(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsDataURI)** | A validator that checks if the string is a data uri format. |
-| **[IsDate(str string, opts \*IsDateOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsDate)** | A Validator that checks if the string is a valid date. e.g. 2002-07-15. <br/> `IsDateOpts` is a struct which can contain the keys `Format`, `StrictMode`. <br/> Format: is a string and defaults to `validatorgo.StandardDateLayout` if `"any"` or no value is provided. <br/> `StrictMode`: is a boolean and defaults to false. If `StrictMode` is set to true, the validator will reject strings different from Format. |
-| **[IsDecimal(str string, opts \*IsDecimalOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsDate)** | A validator that check if the string represents a decimal number, such as 0.1, .3, 1.1, 1.00003, 4.0, etc. <br/> `IsDecimalOpts` is a struct which defaults to `{ForceDecimal: false, DecimalDigits: {Min: 0, Max: nil}, locale: 'en-US'}`. <br/> `locale`: determines the decimal separator and is one of ("ar", "ar-AE", "ar-BH", "ar-DZ", "ar-EG", "ar-IQ", "ar-JO", "ar-KW", "ar-LB", "ar-LY", "ar-MA", "ar-QA", "ar-QM", "ar-SA", "ar-SD", "ar-SY", "ar-TN", "ar-YE", "bg-BG", "cs-CZ", "da-DK", "de-DE", "el-GR", "en-AU", "en-GB", "en-HK", "en-IN", "en-NZ", "en-US", "en-ZA", "en-ZM", "eo", "es-ES", "fa", "fa-AF", "fa-IR", "fr-FR", "fr-CA", "hu-HU", "id-ID", "it-IT", "ku-IQ", "nb-NO", "nl-NL", "nn-NO", "pl-PL", "pl-Pl", "pt-BR", "pt-PT", "ru-RU", "sl-SI", "sr-RS", "sr-RS@latin", "sv-SE", "tr-TR", "uk-UA", "vi-VN"). `Locale` defaults to `"en-US"` <br/> `ForceDecimal`: simply means a decimal must be present "123" will not pass but "123.45" will pass <br/> `DecimalDigits`: is the allowed decimal range e.g `{Min: 3, Max: nil}` 123.456 |
-| **[IsDivisibleBy(str string, num int)](https://pkg.go.dev/github.com/bube054/validatorgo#IsDivisibleBy)** | A validator thats checks if the string is a number(integer not a floating point) that is divisible by another(integer not a floating point). |
-| **[IsEAN(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsEAN)** | IsEAN checks if the string is a valid [EAN](https://en.wikipedia.org/wiki/International_Article_Number) (European Article Number). |
-| **[IsEmail(str string, opts \*IsEmailOpts)](https://pkg.go.dev/github.com/bube054/validatorgoI#sEmail)** | A validator that checks if the string is an email. <br/> `IsEmailOpts` is a struct which defaults to `{ AllowDisplayName: false, RequireDisplayName: false, AllowUTF8LocalPart: true, RequireTld: true, AllowIpDomain: false, DomainSpecificValidation: false, BlacklistedChars: "", HostBlacklist: [] }`. <br/> `AllowDisplayName`: if set to true, the validator will also match Display Name <email-address>. <br/> `RequireDisplayName`: if set to true, the validator will reject strings without the format Display Name <email-address>. <br/> `AllowUTF8LocalPart`: if set to false, the validator will not allow any non-English UTF8 character in email address' local part. <br/> `RequireTld`: if set to false, email addresses without a TLD in their domain will also be matched. <br/> `IgnoreMaxLength`: if set to true, the validator will not check for the standard max length of an email. <br/> `AllowIpDomain`: if set to true, the validator will allow IP addresses in the host part. <br/> `DomainSpecificValidation`: is true, some additional validation will be enabled, e.g. disallowing certain syntactically valid email addresses that are rejected by Gmail. <br/> `BlacklistedChars`: receives a string, then the validator will reject emails that include any of the characters in the string, in the name part. <br/> `HostBlacklist`: if set to an slice of strings and the part of the email after the @ symbol matches one of the strings defined in it, the validation fails. <br/>`HostWhitelist`: if set to an slice of strings and the part of the email after the @ symbol matches none of the strings defined in it, the validation fails. |
-| **[IsEmpty(str string, opts \*IsEmptyOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsEmpty)** | A validator check if the string has a length of zero. <br/> `IsEmptyOpts` is a struct which defaults to `{ IgnoreWhitespace: false }`. |
-| **[IsEthereumAddress(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsEthereumAddress)** | A validator checks if the string is an [Ethereum address](https://ethereum.org/). Does not validate address checksums. |
-| **[IsFloat(str string, opts \*IsFloatOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsFloat)** | A validator that checks if the string is a float. <br/> `IsFloatOpts` is a struct which can contain the fields `Min`, `Max`, `Gt`, and/or `Lt` to validate the float is within boundaries it also has `Locale` as an option. <br/> `Min` and `Max`: are equivalent to 'greater or equal' and 'less or equal' <br/> `Gt` and `Lt`: are their strict counterparts. <br/> `Locale` determines the decimal separator and is one of `("ar", "ar-AE", "ar-BH", "ar-DZ", "ar-EG", "ar-IQ", "ar-JO", "ar-KW", "ar-LB", "ar-LY", "ar-MA", "ar-QA", "ar-QM", "ar-SA", "ar-SD", "ar-SY", "ar-TN", "ar-YE", "bg-BG", "cs-CZ", "da-DK", "de-DE", "en-AU", "en-GB", "en-HK", "en-IN", "en-NZ", "en-US", "en-ZA", "en-ZM", "eo", "es-ES", "fr-CA", "fr-FR", "hu-HU", "it-IT", "nb-NO", "nl-NL", "nn-NO", "pl-PL", "pt-BR", "pt-PT", "ru-RU", "sl-SI", "sr-RS", "sr-RS@latin", "sv-SE", "tr-TR", "uk-UA")` |
-| **[IsFQDN(str string, opts \*IsFQDNOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsFQDN)** | A validator that checks if the string is a fully qualified domain name (e.g. domain.com). <br> `IsFQDNOpts` is a struct which defaults to `{ RequireTld: true, AllowUnderscores: false, AllowTrailingDot: false, AllowNumericTld: false, allow_wildcard: false, IgnoreMaxLength: false }` |
-| **[IsFreightContainerID(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsFreightContainerID)** | A validator that checks alias for IsISO6346, check if the string is a valid [ISO 6346](https://en.wikipedia.org/wiki/ISO_6346) shipping container identification. <br/> |
-| **[IsFullWidth(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsFullWidth)** | A validator that checks if the string contains any full-width chars. |
-| **[IsHalfWidth(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsHalfWidth)** | A validator that checks if the string contains any half-width chars. |
-| **[IsHash(str, algorithm string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsHash)** | A validator that checks if the string is a hash of type algorithm. <br/> `Algorithm` is one of `("crc32", "crc32b", "md4", "md5", "ripemd128", "ripemd160", "sha1", "sha256", "sha384", "sha512", "tiger128", "tiger160", "tiger192")'ripemd128', 'ripemd160', 'sha1', 'sha256', 'sha384', 'sha512', 'tiger128', 'tiger160', 'tiger192')`, No checksum are calculated. |
-| **[IsHexadecimal(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsHexadecimal)** | A validator that checks if the string is a hexadecimal number. |
-| **[IsHexColor(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsHexColor)** | A validator that checks if the string is a hexadecimal color. |
-| **[IsHSL(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsHSL)** | A validator that checks if the string is an HSL (hue, saturation, lightness, optional alpha) color based on CSS Colors Level 4 specification. |
-| **[IsIBAN(str, countryCode string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsIBAN)** | A validator that checks if the string is an IBAN (International Bank Account Number). <br/> these are the allowed country codes `("AD","AE","AL","AT","AZ","BA","BE","BG","BH","BR","BY","CH","CR","CY","CZ","DE","DK","DO","EE","EG","ES","FI","FO","FR","GB","GE","GI","GL","GR","GT","HR","HU","IE","IL","IQ","IR","IS","IT","JO","KW","KZ","LB","LC","LI","LT","LU","LV","MC","MD","ME","MK","MR","MT","MU","MZ","NL","NO","PK","PL","PS","PT","QA","RO","RS","SA","SC","SE","SI","SK","SM","SV","TL","TN","TR","UA","VA","VG","XK")`. No checksum are calculated. |
-| **[IsIdentityCard(str, locale string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsIdentityCard)** | A validator that checks if the string is a valid identity card code. <br/> `locale` is one of `("LK", "PL", "ES", "FI", "IN", "IT", "IR", "MZ", "NO", "TH", "zh-TW", "he-IL", "ar-LY", "ar-TN", "zh-CN", "zh-HK", "PK")` OR `"any"`. If `"any"` is used, function will check if any of the locales match. Defaults to `"any"` if locale not present. No checksums calculated. |
-| **[IsIMEI(str string, opts \*IsIMEIOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsIMEI)** | A validator that checks if the string is a valid [IMEI number](https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity). IMEI should be of format ############### or ##-######-######-#. <br/> `IsIMEIOpts` is a struct which can contain the keys `AllowHyphens`. Defaults to first format. <br/> If `AllowHyphens` is set to true, the validator will validate the second format. |
-| **[IsIn(str string, values []string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsIn)** | A validator that checks if the string is in a slice of allowed values. |
-| **[IsInt(str string, opts \*IsIntOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsInt)** | A validator that checks if the string is an integer. <br/> `IsIntOpts` is a struct which can contain the keys `Min` and/or `Max` to check the integer is within boundaries (e.g. `{ Min: nil, Max: nil }`). <br/> `IsIntOpts` can also contain the key `AllowLeadingZeroes`, which when set to false will disallow integer values with leading zeroes (e.g. `{ AllowLeadingZeroes: false }`). <br/> Finally, `IsIntOpts` can contain the keys `Gt` and/or `Lt` which will enforce integers being greater than or less than, respectively, the value provided (e.g. `{Gt: ptr(1), Lt: ptr(4)}` for a number between 1 and 4). |
-| **[IsIP(str, version string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsIP)** | A validator that checks if the string is an IP (version 4 or 6). If `version` is not provide, both versions `"4"` and `"6"` will be checked. |
-| **[IsIPRange(str, version string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsIPRange)** | A validator that checks if the string is an IP Range (version 4 or 6). If `version` is not provide, both versions `"4"` and `"6"` will be checked. |
-| **[IsISBN(str, version string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsISBN)** | A validator that checks if the string is an [ISBN](https://en.wikipedia.org/wiki/ISBN). <br/> `version`: ISBN version to compare to. Accepted values are `"10"` and `"13"`. If none provided, both will be tested. |
-| **[IsISIN(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsISIN)** | A validator that checks if the string is an [ISIN (stock/security identifier)](https://en.wikipedia.org/wiki/International_Securities_Identification_Number). |
-| **[IsIso4217(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsIso4217)** | A validator that checks if the string is a valid [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) officially assigned currency code. |
-| **[IsISO6346(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsISO6346)** | A validator that checks if the string is a valid [ISO 6346](https://en.wikipedia.org/wiki/ISO_6346) shipping container identification. |
-| **[IsISO6391(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsISO6391)** | A validator that checks if the string is a valid [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) language code. |
-| **[IsISO6391(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsISO6391)** | A validator that checks if the string is a valid [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) language code. |
-| **[IsISO8601(str string, opts \*IsISO8601Opts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsISO8601)** | A validator that checks if the string is a valid [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date. <br/>`IsISO8601Opts` is a struct which defaults to `{ Strict: false, StrictSeparator: false }`. <br/> If `Strict` is `true`, date strings with invalid dates like 2009-02-29 will be invalid. <br/> If `StrictSeparator` is `true`, date strings with date and time separated by anything other than a T will be invalid. |
-| **[IsISO31661Alpha2(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsISO31661Alpha2)** | A validator that checks if the string is a valid [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_4217) officially assigned country code. |
-| **[IsISO31661Alpha3(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsISO31661Alpha3)** | A validator that checks if the string is a valid [ISO 3166-1 alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) officially assigned country code. |
-| **[IsISO31661Numeric(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsISO31661Numeric)** | A validator that checks check if the string is a valid [ISO 3166-1](https://en.wikipedia.org/wiki/ISO_3166-1_numeric) numeric officially assigned country code. |
-| **[IsISRC(str string, allowHyphens bool)](https://pkg.go.dev/github.com/bube054/validatorgo#IsISRC)** | A validator that checks if the string is an [ISRC](https://en.wikipedia.org/wiki/International_Standard_Recording_Code). <br/> `allowHyphens` will allow codes with dashes present CC-XXX-YY-NNNNN |
-| **[IsISSN(str string, opts \*IsISSNOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsISSN)** | A validator that checks if the string is an [ISSN](https://en.wikipedia.org/wiki/International_Standard_Serial_Number). <br/> `IsISSNOpts` is a struct which defaults to `{ CaseSensitive: false, RequireHyphen: false }`. <br/> If `CaseSensitive` is `true`, ISSNs with a lowercase `"x"` as the check digit are rejected.|
-| **[IsJSON(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsJSON)** | A validator that checks if the string is valid JSON (note: uses `json.Valid()`). |
-| **[IsLatLong(str string, opts \*IsLatLongOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsLatLong)** | A validator that checks if the string is a valid latitude-longitude coordinate in the format lat,long or lat, long. <br/> `IsLatLongOpts` is a struct that defaults to `{ CheckDMS: false }`. <br/> Pass `CheckDMS` as true to validate DMS(degrees, minutes, and seconds) latitude-longitude format. |
-| **[IsLicensePlate(str string, locale string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsLicensePlate)** | A validator that checks if the string matches the format of a country's license plate. <br> `locale` is one of `("cs-CZ", "de-DE", "de-LI", "en-IN", "en-SG", "en-PK", "es-AR", "hu-HU", "pt-BR", "pt-PT", "sq-AL", "sv-SE", "any")` |
-| **[IsLocale(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsLocale)** | A validator that checks if the string is a locale. |
-| **[IsLowerCase(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsLowerCase)** | A validator that checks if the string is lowercase. |
-| **[IsLuhnNumber(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsLuhnNumber)** | A validator that checks if the string passes the [Luhn algorithm](https://en.wikipedia.org/wiki/Luhn_algorithm) check. |
-| **[IsMacAddress(str string, opts \*IsMacAddressOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsMacAddress)** | A validator that checks if the string is a MAC address. <br/> `IsMacAddressOpts` is a struct which defaults to `{ NoSeparators: false, Type: nil }`. <br/> If `NoSeparators` is `true`, the validator will allow MAC addresses without separators. <br/> Also, it allows the use of hyphens, spaces or dots e.g. "01 02 03 04 05 ab", "01-02-03-04-05-ab" or "0102.0304.05ab". <br/> The Type is a pointer to "48" or "64", defaults to "48" |
-| **[IsMagnetURI(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsMagnetURI)** | A validator that checks if the string is a [Magnet URI](https://en.wikipedia.org/wiki/Magnet_URI_scheme) format. |
-| **[IsMailtoURI(str string, opts \*IsMailToURIOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsMagnetURI)** | A validator that checks if the string is a [Mailto URI](https://en.wikipedia.org/wiki/Mailto) format. <br/> `IsMailToURIOpts` is a struct that directly embeds `IsEmailOpts`. <br/> `IsMailToURIOpts` validates emails inside the URI (check `IsEmailOpts` for details). |
-| **[IsMD5(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsMD5)** | A validator that checks if the string is a MD5 hash. <br/> Please note that you can also use the `isHash(str, "md5")` function. <br/> Keep in mind that MD5 has some collision weaknesses compared to other algorithms (e.g., SHA). |
-| **[IsMimeType(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsMimeType)** | A validator that checks if the string matches to a valid MIME type format. |
-| **[IsMobilePhone(str string, locales []string, opts \*IsMobilePhoneOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsMobilePhone)** | A validator that checks if the string is a mobile phone number. <br/> locale is either a slice of locales e.g. `[]string{'sk-SK', 'sr-RS'}` possible options are `("am-Am", "ar-AE", "ar-BH", "ar-DZ", "ar-EG", "ar-EH", "ar-IQ", "ar-JO", "ar-KW", "ar-PS", "ar-SA", "ar-SD", "ar-SY", "ar-TN", "ar-YE", "az-AZ", "az-LB", "az-LY", "be-BY", "bg-BG", "bn-BD", "bs-BA", "ca-AD", "cs-CZ", "da-DK", "de-AT", "de-CH", "de-DE", "de-LU", "dv-MV", "dz-BT", "el-CY", "el-GR", "en-AG", "en-AI", "en-AU", "en-BM", "en-BS", "en-BW", "en-CA", "en-GB", "en-GG", "en-GH", "en-GY", "en-HK", "en-IE", "en-IN", "en-JM", "en-KE", "en-KI", "en-KN", "en-LS", "en-MO", "en-MT", "en-MU", "en-MW", "en-NG", "en-NZ", "en-PG", "en-PH", "en-PK", "en-RW", "en-SG", "en-SL", "en-SS", "en-TZ", "en-UG", "en-US", "en-ZA", "en-ZM", "en-ZW", "es-AR", "es-BO", "es-CL", "es-CO", "es-CR", "es-CU", "es-DO", "es-EC", "es-ES", "es-GT","es-HN", "es-MX", "es-NI", "es-PA", "es-PE", "es-PY", "es-SV", "es-UY", "es-VE", "et-EE", "fa-AF", "fa-IR", "fi-FI", "fj-FJ", "fo-FO", "fr-BE", "fr-BF", "fr-BJ", "fr-CD", "fr-CF", "fr-FR", "fr-GF", "fr-GP", "fr-MQ", "fr-PF", "fr-RE", "fr-WF", "ga-IE", "he-IL", "hu-HU", "id-ID", "ir-IR", "it-IT", "it-SM", "ja-JP", "ka-GE", "kk-KZ", "kl-GL", "ko-KR", "ky-KG", "lt-LT", "mg-MG", "mn-MN", "ms-MY", "my-MM", "mz-MZ", "nb-NO", "ne-NP", "nl-AW", "nl-BE", "nl-NL", "nn-NO", "pl-PL", "pt-AO", "pt-BR", "pt-PT", "ro-Md", "ro-RO", "ru-RU", "si-LK", "sk-SK", "sl-SI", "so-SO", "sq-AL", "sr-RS", "sv-SE", "tg-TJ", "th-TH", "tk-TM", "tr-TR", "uk-UA", "uz-UZ", "vi-VN", "zh-CN", "zh-HK", "zh-MO", "zh-TW")`. If `nil` is provided any of the locales will be matched. If an unidentified value is used, function will return `false`. <br/> `IsMobilePhoneOpts` is a struct that can be supplied with the following keys: <br/> `StrictMode`, if this is set to true, the mobile phone number must be supplied with the country code and therefore must start with +. |
-| **[IsMongoID(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsMongoID)** | A validator that checks if the string is a valid hex-encoded representation of a MongoDB ObjectId. |
-| **[IsMultibyte(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsMultibyte)** | A validator that checks if the string contains one or more multibyte chars. |
-| **[IsNumeric(str string, opts \*IsNumericOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsNumeric)** | A validator that check if a string is a number. <br/> `IsNumericOpts` is a struct which defaults to `{ NoSymbols: false, Locale: ""}`. <br/> If `NoSymbols` is `true`, the validator will reject numeric strings that feature a symbol (e.g. +, -, or .). <br/> `Locale` determines the numeric format and is one of `("ar", "ar-AE", "ar-BH", "ar-DZ", "ar-EG", "ar-IQ", "ar-JO", "ar-KW", "ar-LB", "ar-LY", "ar-MA", "ar-QA", "ar-QM", "ar-SA", "ar-SD", "ar-SY", "ar-TN", "ar-YE", "bg-BG", "cs-CZ", "da-DK", "de-DE", "en-AU", "en-GB", "en-HK", "en-IN", "en-NZ", "en-US", "en-ZA", "en-ZM", "eo", "es-ES", "fr-FR", "fr-CA", "hu-HU", "it-IT", "nb-NO", "nl-NL", "nn-NO", "pl-PL", "pt-BR", "pt-PT", "ru-RU", "sl-SI", "sr-RS", "sr-RS@latin", "sv-SE", "tr-TR", "uk-UA")`. `Locale` will default to `"en-US"` if not present. |
-| **[F(str string, opts *IsObjectOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsObject)** | A validator to check that a value is a json object. For example, `"{}"`, `"{ foo: 'bar' }"` would pass this validator. `IsObjectOpts` is a struct which defaults to `{ Strict: true }.` If the `Strict` option is set to `false`, then this validator works, where both arrays (`"[]"`) and the null (`"null"`) value are considered objects. |
-| **[IsOctal(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsOctal)** | A validator that checks if the string is a valid octal number. |
-| **[IsPassportNumber(str, countryCode string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsPassportNumber)** | A validator that checks if the string is a valid passport number. <br/> `countryCode` is one of `("AM", "AR", "AT", "AU", "AZ", "BE", "BG", "BY", "BR", "CA", "CH", "CN", "CY", "CZ", "DE", "DK", "DZ", "EE", "ES", "FI", "FR", "GB", "GR", "HR", "HU", "IE", "IN", "IR", "ID", "IS", "IT", "JM", "JP", "KR", "KZ", "LI", "LT", "LU", "LV", "LY", "MT", "MX", "MY", "MZ", "NL", "NZ", "PH", "PK", "PL", "PT", "RO", "RU", "SE", "SL", "SK", "TH", "TR", "UA", "US", "ZA")`. |
-| **[IsPort(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsPort)** | A validator that checks if the string is a valid port number. |
-| **[IsPostalCode(str, locale string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsPostalCode)** | A validator that checks if the string is a postal code. <br/> `locale` is one of `("AD", "AT", "AU", "AZ", "BA", "BE", "BG", "BR", "BY", "CA", "CH", "CN", "CO", "CZ", "DE", "DK", "DO", "DZ", "EE", "ES", "FI", "FR", "GB", "GR", "HR", "HT", "HU", "ID", "IE", "IL", "IN", "IR", "IS", "IT", "JP", "KE", "KR", "LI", "LK", "LT", "LU", "LV", "MG", "MT", "MX", "MY", "NL", "NO", "NP", "NZ", "PL", "PR", "PT", "RO", "RU", "SA", "SE", "SG", "SI", "SK", "TH", "TN", "TW", "UA", "US", "ZA", "ZM")`. If `"any"` or no locale is used, function will check if any of the locales match. |
-| **[IsRFC3339(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsRFC3339)** | A validator that checks if the string is a valid [RFC 3339](https://tools.ietf.org/html/rfc3339) date. |
-| **[IsRgbColor(str string, opts \*IsRgbOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsRgbColor)** |A validator that checks if the string is a rgb or rgba color. <br/> `IsRgbOpts` is a struct with the following properties: <br/> `IncludePercentValues` defaults to `false`. If you don't want to allow to set rgb or rgba values with percents, like rgb(5%,5%,5%), or rgba(90%,90%,90%,.3), then set it to `false`. <br/> `AllowSpaces` defaults to `false`, which prohibits whitespace. If set to `false`, whitespace between color values is allowed, such as rgb(255, 255, 255) or even rgba(255, 128, 0, 0.7). |
-| **[IsSemVer(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsSemVer)** | A validator that checks if the string is a Semantic Versioning Specification (SemVer). |
-| **[IsSlug(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsSlug)** | A validator that checks if the string is of type slug. |
-| **[IsStrongPassword(str string, opts \*IsStrongPasswordOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsStrongPassword)** | A validator that checks if the string can be considered a strong password or not. Returns the validity and the score. <br/> Default `IsStrongPasswordOpts`: `{ MinLength: 8, MinLowercase: 1, MinUppercase: 1, MinNumbers: 1, MinSymbols: 1,  PointsPerUnique: 1, PointsPerRepeat: 0.5, PointsForContainingLower: 10, PointsForContainingUpper: 10, PointsForContainingNumber: 10, PointsForContainingSymbol: 10 }`, note all values here are pointers. |
-| **[IsSurrogatePair(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsSurrogatePair)** | A validator that checks if the string contains any surrogate pairs chars. |
-| **[IsTaxID(str, locale string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsTaxID)** | A validator that checks if the string is a valid Tax Identification Number. Defaults locale is "en-US" and "any" will match any of them. <br/> Supported `locales`: `("bg-BG", "cs-CZ", "de-AT", "de-DE", "dk-DK", "el-CY", "el-GR", "en-CA", "en-GB", "en-IE", "en-US", "es-AR", "es-ES", "et-EE", "fi-FI", "fr-BE", "fr-CA", "fr-FR", "fr-LU", "hr-HR", "hu-HU", "it-IT", "lb-LU", "lt-LT", "lv-LV", "mt-MT", "nl-BE", "nl-NL", "pl-PL", "pt-BR", "pt-PT", "ro-RO", "sk-SK", "sl-SI", "sv-SE", "uk-UA")`. <br/> |
-| **[IsTime(str string, opts IsTimeOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsTime)** | A validator that checks if the string is a valid time e.g. 23:01:59. <br/> `IsTimeOpts` is a struct which can contain the keys `HourFormat` and `Mode`. <br/> `HourFormat` is a key and defaults to `"hour24"`. <br/> `Mode` is a key and defaults to `"default"`. <br/> `HourFormat` can contain the values `"hour12"` or `"hour24"`, `"hour24"` will validate hours in 24 format and `"hour12"` will validate hours in 12 format. <br/> `Mode` can contain the values `"default"` or `"withSeconds"`, `"default"` will validate HH:MM or HH:MM:SS format, `"withSeconds"` will validate only HH:MM:SS format. |
-| **[IsULID(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsULID)** | A validator that checks if the string is a [ULID](https://github.com/ulid/spec). |
-| **[IsUpperCase(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsUpperCase)** | A validator that checks if the string is uppercase. |
-| **[IsURL(str string, opts \*IsURLOpts)](https://pkg.go.dev/github.com/bube054/validatorgo#IsURL)** | A validator that checks if the string is a URL. <br/> `IsURLOpts` is a struct which defaults to `{ Protocols: []string{"https","http","ftp"}, RequireTld: true, RequireProtocol: false, RequireHost: true, RequirePort: false, RequireValidProtocol: true, AllowUnderscores: false, HostWhitelist: nil, HostBlacklist: nil, AllowTrailingDot: false, AllowProtocolRelativeUrls: true, AllowFragments: true, AllowQueryComponents: true, DisallowAuth: false, ValidateLength: true, MaxAllowedLength:: 2048 }`. <br/> `RequireProtocol` - if set to true IsURL will return false if protocol is not present in the URL. <br/> `RequireValidProtocol` - IsURL will check if the URL's protocol is present in the protocols option. <br/> `protocols` - valid protocols can be modified with this option. <br/> `RequireHost` - if set to false IsURL will not check if host is present in the URL. <br/> `RequirePort` - if set to true IsURL will check if port is present in the URL. <br/> `AllowProtocolRelativeUrls` - if set to true protocol relative URLs will be allowed. <br/> `AllowFragments` - if set to false IsURL will return false if fragments are present. |
-| **[IsUUID(str, version string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsUUID)** | A validator that checks if the string is an RFC9562 UUID. <br/> version is one of ("1"-"5"). if none is not provided, it will validate any of them. <br/> AllowQueryComponents - if set to false IsURL will return false if query components are present. <br/> `ValidateLength` - if set to false IsURL will skip string length validation. MaxAllowedLength will be ignored if this is set as false. <br/> `MaxAllowedLength` - if set IsURL will not allow URLs longer than the specified value (default is 2084 that IE maximum URL length). |
-| **[IsVariableWidth(str string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsVariableWidth)** | A validator that checks if the string contains a mixture of full and half-width chars. |
-| **[IsVAT(str, countryCode string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsVAT)** | A validator that checks if the string is a valid VAT number if validation is available for the given country code matching ISO 3166-1 alpha-2. <br/> `countryCode` is one of `("AL", "AR", "AT", "AU", "BE", "BG", "BO", "BR", "BY", "CA", "CH", "CL", "CO", "CR", "CY", "CZ", "DE", "DK", "DO", "EC", "EE", "EL", "ES", "FI", "FR", "GB", "GT", "HN", "HR", "HU", "ID", "IE", "IL", "IN", "IS", "IT", "KZ", "LT", "LU", "LV", "MK", "MT", "MX", "NG", "NI", "NL", "NO", "NZ", "PA", "PE", "PH", "PL", "PT", "PY", "RO", "RS", "RU", "SA", "SE", "SI", "SK", "SM", "SV", "TR", "UA", "UY", "UZ", "VE")`. If no value or `"any"` is provided will match every one. |
-| **[IsWhitelisted(str, chars string)](https://pkg.go.dev/github.com/bube054/validatorgo#IsWhitelisted)** | A validator that checks if the string consists only of characters that appear in the whitelist chars. |
-| **[Matches(str string, re \*regexp.Regexp)](https://pkg.go.dev/github.com/bube054/validatorgo#IsWhitelisted)** | A validator that checks if the string matches the regex. |
+| --- | --- |
+| **[Contains](https://pkg.go.dev/github.com/bube054/validatorgo#Contains)**`(str, seed string, opts *ContainsOpt)` | Checks if a string contains a seed. `ContainsOpt` defaults to `{ IgnoreCase: false, MinOccurrences: 1 }`. |
+| **[Equals](https://pkg.go.dev/github.com/bube054/validatorgo#Equals)**`(str, comparison string)` | Checks if the string matches the comparison. |
+| **[Matches](https://pkg.go.dev/github.com/bube054/validatorgo#Matches)**`(str string, re *regexp.Regexp)` | Checks if the string matches the given regex. |
+| **[IsEmpty](https://pkg.go.dev/github.com/bube054/validatorgo#IsEmpty)**`(str string, opts *IsEmptyOpts)` | Checks if the string is zero-length. `IsEmptyOpts` defaults to `{ IgnoreWhitespace: false }`. |
+| **[IsLowerCase](https://pkg.go.dev/github.com/bube054/validatorgo#IsLowerCase)**`(str string)` | Checks if the string is lowercase. |
+| **[IsUpperCase](https://pkg.go.dev/github.com/bube054/validatorgo#IsUpperCase)**`(str string)` | Checks if the string is uppercase. |
+| **[IsAscii](https://pkg.go.dev/github.com/bube054/validatorgo#IsAscii)**`(str string)` | Checks if the string contains ASCII characters only. |
+| **[IsAlpha](https://pkg.go.dev/github.com/bube054/validatorgo#IsAlpha)**`(str string, opts *IsAlphaOpts)` | Checks if the string contains only letters (a-zA-Z). Supports `Ignore` and `Locale` options. Defaults to `en-US`. |
+| **[IsAlphanumeric](https://pkg.go.dev/github.com/bube054/validatorgo#IsAlphanumeric)**`(str string, opts *IsAlphanumericOpts)` | Checks if the string contains only letters and numbers (a-zA-Z0-9). Supports `Ignore` and `Locale`. |
+| **[IsByteLength](https://pkg.go.dev/github.com/bube054/validatorgo#IsByteLength)**`(str string, opts *IsByteLengthOpts)` | Checks if the string's UTF-8 byte length falls within a range. Defaults to `{ Min: 0, Max: nil }`. |
+| **[IsSlug](https://pkg.go.dev/github.com/bube054/validatorgo#IsSlug)**`(str string)` | Checks if the string is a valid slug. |
+| **[IsFullWidth](https://pkg.go.dev/github.com/bube054/validatorgo#IsFullWidth)**`(str string)` | Checks if the string contains any full-width characters. |
+| **[IsHalfWidth](https://pkg.go.dev/github.com/bube054/validatorgo#IsHalfWidth)**`(str string)` | Checks if the string contains any half-width characters. |
+| **[IsMultibyte](https://pkg.go.dev/github.com/bube054/validatorgo#IsMultibyte)**`(str string)` | Checks if the string contains one or more multibyte characters. |
+| **[IsSurrogatePair](https://pkg.go.dev/github.com/bube054/validatorgo#IsSurrogatePair)**`(str string)` | Checks if the string contains any surrogate pair characters. |
+| **[IsVariableWidth](https://pkg.go.dev/github.com/bube054/validatorgo#IsVariableWidth)**`(str string)` | Checks if the string contains a mixture of full and half-width characters. |
+| **[IsWhitelisted](https://pkg.go.dev/github.com/bube054/validatorgo#IsWhitelisted)**`(str, chars string)` | Checks if the string consists only of characters in the given whitelist. |
 
-> **⚠ Caution**  
-> When using a validator that requires an options struct (either a pointer or non-pointer), always provide values for all the struct fields explicitly.
-> Unlike in [validator.js](https://github.com/validatorjs/validator.js), where missing fields are automatically set to defaults, Go uses strict types.
-> This means missing values will default to false for booleans, 0 for number types, etc.
-> Not specifying all fields could lead to unexpected behavior if you're used to the JavaScript version.
+### Numbers & Booleans
 
-Examples
+| Validator | Description |
+| --- | --- |
+| **[IsBoolean](https://pkg.go.dev/github.com/bube054/validatorgo#IsBoolean)**`(str string, opts *IsBooleanOpts)` | Checks if the string is a boolean. |
+| **[IsInt](https://pkg.go.dev/github.com/bube054/validatorgo#IsInt)**`(str string, opts *IsIntOpts)` | Checks if the string is an integer. Supports `Min`, `Max`, `Gt`, `Lt`, and `AllowLeadingZeroes`. |
+| **[IsFloat](https://pkg.go.dev/github.com/bube054/validatorgo#IsFloat)**`(str string, opts *IsFloatOpts)` | Checks if the string is a float. Supports `Min`/`Max` (≤ ≥), `Gt`/`Lt` (strict), and `Locale`. |
+| **[IsDecimal](https://pkg.go.dev/github.com/bube054/validatorgo#IsDecimal)**`(str string, opts *IsDecimalOpts)` | Checks if the string represents a decimal number (`0.1`, `.3`, `1.1`, etc.). Supports `ForceDecimal`, `DecimalDigits`, and `Locale`. |
+| **[IsDivisibleBy](https://pkg.go.dev/github.com/bube054/validatorgo#IsDivisibleBy)**`(str string, num int)` | Checks if the string is an integer divisible by `num`. |
+| **[IsNumeric](https://pkg.go.dev/github.com/bube054/validatorgo#IsNumeric)**`(str string, opts *IsNumericOpts)` | Checks if the string is numeric. `NoSymbols` rejects `+`, `-`, `.`. Supports `Locale`. |
+| **[IsPort](https://pkg.go.dev/github.com/bube054/validatorgo#IsPort)**`(str string)` | Checks if the string is a valid port number (0–65535). |
+| **[IsHexadecimal](https://pkg.go.dev/github.com/bube054/validatorgo#IsHexadecimal)**`(str string)` | Checks if the string is a hexadecimal number. |
+| **[IsOctal](https://pkg.go.dev/github.com/bube054/validatorgo#IsOctal)**`(str string)` | Checks if the string is a valid octal number. |
+| **[IsLuhnNumber](https://pkg.go.dev/github.com/bube054/validatorgo#IsLuhnNumber)**`(str string)` | Checks if the string passes the [Luhn algorithm](https://en.wikipedia.org/wiki/Luhn_algorithm). |
+
+### Dates & Times
+
+| Validator | Description |
+| --- | --- |
+| **[IsDate](https://pkg.go.dev/github.com/bube054/validatorgo#IsDate)**`(str string, opts *IsDateOpts)` | Checks if the string is a valid date (e.g. `2002-07-15`). Supports `Format` and `StrictMode`. |
+| **[IsAfter](https://pkg.go.dev/github.com/bube054/validatorgo#IsAfter)**`(str string, opts *IsAfterOpts)` | Checks if the string is a date after the given `ComparisonDate` (defaults to now). |
+| **[IsBefore](https://pkg.go.dev/github.com/bube054/validatorgo#IsBefore)**`(str string, opts *IsBeforeOpts)` | Checks if the string is a date before the given `ComparisonDate` (defaults to now). |
+| **[IsTime](https://pkg.go.dev/github.com/bube054/validatorgo#IsTime)**`(str string, opts IsTimeOpts)` | Checks if the string is a valid time (e.g. `23:01:59`). Supports `HourFormat` (`hour12`/`hour24`) and `Mode` (`default`/`withSeconds`). |
+| **[IsRFC3339](https://pkg.go.dev/github.com/bube054/validatorgo#IsRFC3339)**`(str string)` | Checks if the string is a valid [RFC 3339](https://tools.ietf.org/html/rfc3339) date. |
+| **[IsISO8601](https://pkg.go.dev/github.com/bube054/validatorgo#IsISO8601)**`(str string, opts *IsISO8601Opts)` | Checks if the string is a valid [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date. Supports `Strict` and `StrictSeparator`. |
+
+> **Supported time layouts:** `Layout`, `ANSIC`, `UnixDate`, `RubyDate`, `RFC822(Z)`, `RFC850`, `RFC1123(Z)`, `Kitchen`, `Stamp`/`StampMilli`/`StampMicro`/`StampNano`, `DateTime`, `DateOnly`, `TimeOnly`, plus custom: `StandardDateLayout`, `SlashDateLayout`, `DateTimeLayout`, `ISO8601Layout`, `ISO8601ZuluLayout`, `ISO8601WithMillisecondsLayout`.
+
+### Network, Web & URIs
+
+| Validator | Description |
+| --- | --- |
+| **[IsEmail](https://pkg.go.dev/github.com/bube054/validatorgo#IsEmail)**`(str string, opts *IsEmailOpts)` | Checks if the string is an email. Supports `AllowDisplayName`, `RequireDisplayName`, `AllowUTF8LocalPart`, `RequireTld`, `AllowIpDomain`, `DomainSpecificValidation`, `BlacklistedChars`, `HostBlacklist`, `HostWhitelist`, `IgnoreMaxLength`. |
+| **[IsURL](https://pkg.go.dev/github.com/bube054/validatorgo#IsURL)**`(str string, opts *IsURLOpts)` | Checks if the string is a URL. Highly configurable — see godoc for full options including `Protocols`, `RequireTld`, `RequireProtocol`, `RequireHost`, `RequirePort`, `HostWhitelist`/`HostBlacklist`, `AllowFragments`, `MaxAllowedLength`, etc. |
+| **[IsIP](https://pkg.go.dev/github.com/bube054/validatorgo#IsIP)**`(str, version string)` | Checks if the string is an IP address. `version` is `"4"`, `"6"`, or empty for both. |
+| **[IsIPRange](https://pkg.go.dev/github.com/bube054/validatorgo#IsIPRange)**`(str, version string)` | Checks if the string is an IP range. `version` is `"4"`, `"6"`, or empty for both. |
+| **[IsFQDN](https://pkg.go.dev/github.com/bube054/validatorgo#IsFQDN)**`(str string, opts *IsFQDNOpts)` | Checks if the string is a fully qualified domain name. Supports `RequireTld`, `AllowUnderscores`, `AllowTrailingDot`, `AllowNumericTld`, `AllowWildcard`, `IgnoreMaxLength`. |
+| **[IsMagnetURI](https://pkg.go.dev/github.com/bube054/validatorgo#IsMagnetURI)**`(str string)` | Checks if the string is a [Magnet URI](https://en.wikipedia.org/wiki/Magnet_URI_scheme). |
+| **[IsMailtoURI](https://pkg.go.dev/github.com/bube054/validatorgo#IsMailtoURI)**`(str string, opts *IsMailToURIOpts)` | Checks if the string is a [Mailto URI](https://en.wikipedia.org/wiki/Mailto). Embeds `IsEmailOpts` for inner email validation. |
+| **[IsDataURI](https://pkg.go.dev/github.com/bube054/validatorgo#IsDataURI)**`(str string)` | Checks if the string is in `data:` URI format. |
+| **[IsMimeType](https://pkg.go.dev/github.com/bube054/validatorgo#IsMimeType)**`(str string)` | Checks if the string matches a valid MIME type format. |
+| **[IsMacAddress](https://pkg.go.dev/github.com/bube054/validatorgo#IsMacAddress)**`(str string, opts *IsMacAddressOpts)` | Checks if the string is a MAC address. Supports `NoSeparators` and `Type` (`"48"` or `"64"`). |
+
+### Encoding, Hashes & JSON
+
+| Validator | Description |
+| --- | --- |
+| **[IsBase32](https://pkg.go.dev/github.com/bube054/validatorgo#IsBase32)**`(str string, opts *IsBase32Opts)` | Checks if the string is Base32-encoded. `Crockford` enables [Crockford's variant](http://www.crockford.com/base32.html). |
+| **[IsBase58](https://pkg.go.dev/github.com/bube054/validatorgo#IsBase58)**`(str string)` | Checks if the string is Base58-encoded. |
+| **[IsBase64](https://pkg.go.dev/github.com/bube054/validatorgo#IsBase64)**`(str string, opts *IsBase64Opts)` | Checks if the string is Base64-encoded. `UrlSafe` enables [URL-safe Base64](https://base64.guru/standards/base64url). |
+| **[IsHash](https://pkg.go.dev/github.com/bube054/validatorgo#IsHash)**`(str, algorithm string)` | Checks if the string is a hash of the given algorithm: `crc32`, `crc32b`, `md4`, `md5`, `ripemd128`, `ripemd160`, `sha1`, `sha256`, `sha384`, `sha512`, `tiger128`, `tiger160`, `tiger192`. |
+| **[IsMD5](https://pkg.go.dev/github.com/bube054/validatorgo#IsMD5)**`(str string)` | Convenience for `IsHash(str, "md5")`. |
+| **[IsJSON](https://pkg.go.dev/github.com/bube054/validatorgo#IsJSON)**`(str string)` | Checks if the string is valid JSON (uses `json.Valid()`). |
+
+### Identifiers, Codes & Versioning
+
+| Validator | Description |
+| --- | --- |
+| **[IsUUID](https://pkg.go.dev/github.com/bube054/validatorgo#IsUUID)**`(str, version string)` | Checks if the string is an RFC 9562 UUID. `version` is `"1"`–`"5"`, or empty for any. |
+| **[IsMongoID](https://pkg.go.dev/github.com/bube054/validatorgo#IsMongoID)**`(str string)` | Checks if the string is a valid MongoDB ObjectId (hex-encoded). |
+| **[IsULID](https://pkg.go.dev/github.com/bube054/validatorgo#IsULID)**`(str string)` | Checks if the string is a [ULID](https://github.com/ulid/spec). |
+| **[IsSemVer](https://pkg.go.dev/github.com/bube054/validatorgo#IsSemVer)**`(str string)` | Checks if the string follows [Semantic Versioning](https://semver.org/). |
+| **[IsISIN](https://pkg.go.dev/github.com/bube054/validatorgo#IsISIN)**`(str string)` | Checks if the string is an [ISIN](https://en.wikipedia.org/wiki/International_Securities_Identification_Number) (stock/security identifier). |
+| **[IsISBN](https://pkg.go.dev/github.com/bube054/validatorgo#IsISBN)**`(str, version string)` | Checks if the string is an [ISBN](https://en.wikipedia.org/wiki/ISBN). `version` is `"10"`, `"13"`, or empty for both. |
+| **[IsISSN](https://pkg.go.dev/github.com/bube054/validatorgo#IsISSN)**`(str string, opts *IsISSNOpts)` | Checks if the string is an [ISSN](https://en.wikipedia.org/wiki/International_Standard_Serial_Number). Supports `CaseSensitive` and `RequireHyphen`. |
+| **[IsISRC](https://pkg.go.dev/github.com/bube054/validatorgo#IsISRC)**`(str string, allowHyphens bool)` | Checks if the string is an [ISRC](https://en.wikipedia.org/wiki/International_Standard_Recording_Code). |
+| **[IsEAN](https://pkg.go.dev/github.com/bube054/validatorgo#IsEAN)**`(str string)` | Checks if the string is a valid [EAN](https://en.wikipedia.org/wiki/International_Article_Number) (European Article Number). |
+| **[IsIMEI](https://pkg.go.dev/github.com/bube054/validatorgo#IsIMEI)**`(str string, opts *IsIMEIOpts)` | Checks if the string is a valid [IMEI](https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity). `AllowHyphens` switches between formats. |
+| **[IsFreightContainerID](https://pkg.go.dev/github.com/bube054/validatorgo#IsFreightContainerID)**`(str string)` | Alias for `IsISO6346`. |
+| **[IsISO6346](https://pkg.go.dev/github.com/bube054/validatorgo#IsISO6346)**`(str string)` | Checks if the string is a valid [ISO 6346](https://en.wikipedia.org/wiki/ISO_6346) shipping container ID. |
+
+### Geographic & Locale
+
+| Validator | Description |
+| --- | --- |
+| **[IsLocale](https://pkg.go.dev/github.com/bube054/validatorgo#IsLocale)**`(str string)` | Checks if the string is a valid locale identifier. |
+| **[IsISO6391](https://pkg.go.dev/github.com/bube054/validatorgo#IsISO6391)**`(str string)` | Checks if the string is a valid [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) language code. |
+| **[IsISO31661Alpha2](https://pkg.go.dev/github.com/bube054/validatorgo#IsISO31661Alpha2)**`(str string)` | Checks if the string is a valid [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code. |
+| **[IsISO31661Alpha3](https://pkg.go.dev/github.com/bube054/validatorgo#IsISO31661Alpha3)**`(str string)` | Checks if the string is a valid [ISO 3166-1 alpha-3](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3) country code. |
+| **[IsISO31661Numeric](https://pkg.go.dev/github.com/bube054/validatorgo#IsISO31661Numeric)**`(str string)` | Checks if the string is a valid [ISO 3166-1](https://en.wikipedia.org/wiki/ISO_3166-1_numeric) numeric country code. |
+| **[IsPostalCode](https://pkg.go.dev/github.com/bube054/validatorgo#IsPostalCode)**`(str, locale string)` | Checks if the string is a valid postal code. Pass `"any"` or empty to match any supported locale. |
+| **[IsLatLong](https://pkg.go.dev/github.com/bube054/validatorgo#IsLatLong)**`(str string, opts *IsLatLongOpts)` | Checks if the string is a valid `lat,long` pair. `CheckDMS` validates degrees-minutes-seconds format. |
+| **[IsLicensePlate](https://pkg.go.dev/github.com/bube054/validatorgo#IsLicensePlate)**`(str, locale string)` | Checks if the string matches a country's license plate format. Locales: `cs-CZ`, `de-DE`, `de-LI`, `en-IN`, `en-SG`, `en-PK`, `es-AR`, `hu-HU`, `pt-BR`, `pt-PT`, `sq-AL`, `sv-SE`, or `any`. |
+
+### Personal & Identity
+
+| Validator | Description |
+| --- | --- |
+| **[IsMobilePhone](https://pkg.go.dev/github.com/bube054/validatorgo#IsMobilePhone)**`(str string, locales []string, opts *IsMobilePhoneOpts)` | Checks if the string is a mobile phone number. Pass a slice of locales (e.g. `[]string{"sk-SK", "sr-RS"}`) or `nil` for any. `StrictMode` requires a leading `+`. Supports 150+ locales. |
+| **[IsIdentityCard](https://pkg.go.dev/github.com/bube054/validatorgo#IsIdentityCard)**`(str, locale string)` | Checks if the string is a valid identity card code. Locales include `LK`, `PL`, `ES`, `FI`, `IN`, `IT`, `IR`, `MZ`, `NO`, `TH`, `zh-TW`, `he-IL`, `ar-LY`, `ar-TN`, `zh-CN`, `zh-HK`, `PK`, or `any`. |
+| **[IsPassportNumber](https://pkg.go.dev/github.com/bube054/validatorgo#IsPassportNumber)**`(str, countryCode string)` | Checks if the string is a valid passport number for the given country. |
+| **[IsTaxID](https://pkg.go.dev/github.com/bube054/validatorgo#IsTaxID)**`(str, locale string)` | Checks if the string is a valid Tax Identification Number. Defaults to `en-US`; `any` matches any supported locale. |
+| **[IsVAT](https://pkg.go.dev/github.com/bube054/validatorgo#IsVAT)**`(str, countryCode string)` | Checks if the string is a valid VAT number for the given ISO 3166-1 alpha-2 country code (or `any`). |
+| **[IsStrongPassword](https://pkg.go.dev/github.com/bube054/validatorgo#IsStrongPassword)**`(str string, opts *IsStrongPasswordOpts)` | Checks password strength against configurable rules (min length, casing, numbers, symbols, scoring). |
+
+### Finance & Crypto
+
+| Validator | Description |
+| --- | --- |
+| **[IsCreditCard](https://pkg.go.dev/github.com/bube054/validatorgo#IsCreditCard)**`(str string, opts *IsCreditCardOpts)` | Checks if the string is a credit card number. `Provider` can restrict to: `amex`, `bcglobal`, `carteblanche`, `dinersclub`, `discover`, `instapayment`, `jcb`, `koreanlocal`, `laser`, `maestro`, `mastercard`, `solo`, `switch`, `unionpay`, `visa`, `visamastercard`. |
+| **[IsCurrency](https://pkg.go.dev/github.com/bube054/validatorgo#IsCurrency)**`(str string, opts *IsCurrencyOpts)` | Checks if the string is a valid currency amount. Highly configurable (symbol, separators, negatives, decimals — see godoc). |
+| **[IsBic](https://pkg.go.dev/github.com/bube054/validatorgo#IsBic)**`(str string)` | Checks if the string is a BIC (Bank Identifier Code) / SWIFT code. |
+| **[IsIBAN](https://pkg.go.dev/github.com/bube054/validatorgo#IsIBAN)**`(str, countryCode string)` | Checks if the string is a valid IBAN. Supports 70+ country codes (no checksum). |
+| **[IsAbaRouting](https://pkg.go.dev/github.com/bube054/validatorgo#IsAbaRouting)**`(str string)` | Checks if the string is a valid ABA routing number (US bank). |
+| **[IsIso4217](https://pkg.go.dev/github.com/bube054/validatorgo#IsIso4217)**`(str string)` | Checks if the string is a valid [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) currency code. |
+| **[IsBTCAddress](https://pkg.go.dev/github.com/bube054/validatorgo#IsBTCAddress)**`(str string)` | Checks if the string is a valid Bitcoin address. |
+| **[IsEthereumAddress](https://pkg.go.dev/github.com/bube054/validatorgo#IsEthereumAddress)**`(str string)` | Checks if the string is an [Ethereum address](https://ethereum.org/) (no checksum validation). |
+
+### Colors & Data Structures
+
+| Validator | Description |
+| --- | --- |
+| **[IsHexColor](https://pkg.go.dev/github.com/bube054/validatorgo#IsHexColor)**`(str string)` | Checks if the string is a hex color. |
+| **[IsHSL](https://pkg.go.dev/github.com/bube054/validatorgo#IsHSL)**`(str string)` | Checks if the string is an HSL color (CSS Colors Level 4). |
+| **[IsRgbColor](https://pkg.go.dev/github.com/bube054/validatorgo#IsRgbColor)**`(str string, opts *IsRgbOpts)` | Checks if the string is an RGB or RGBA color. Supports `IncludePercentValues` and `AllowSpaces`. |
+| **[IsArray](https://pkg.go.dev/github.com/bube054/validatorgo#IsArray)**`(str string, opts *IsArrayOpts)` | Checks if the value is an array. `Min`/`Max` constrain the length. |
+| **[IsObject](https://pkg.go.dev/github.com/bube054/validatorgo#IsObject)**`(str string, opts *IsObjectOpts)` | Checks if the value is a JSON object (e.g. `{}`, `{"foo":"bar"}`). With `Strict: false`, arrays and `null` also pass. |
+| **[IsIn](https://pkg.go.dev/github.com/bube054/validatorgo#IsIn)**`(str string, values []string)` | Checks if the string appears in a list of allowed values. |
+
+---
+
+## Sanitizers
 
 ```go
-  // do this (using the default options specified in the docs)
-  ok := validatorgo.IsFQDN("example", nil)
+import "github.com/bube054/validatorgo/sanitizer"
 
-  // or this (explicitly setting all possible fields for the structs)
-  ok := validatorgo.IsFQDN("example", &validatorgo.IsFQDNOpts{
-    RequireTld: false,
+clean := sanitizer.Whitelist("Hello123 World!", "a-zA-Z")
+fmt.Println(clean) // "HelloWorld"
+```
+
+| Sanitizer | Description |
+| --- | --- |
+| **[Blacklist](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Blacklist)**`(str, blacklistedChars string)` | Removes characters that match the blacklist (auto-escaped for regex). |
+| **[Whitelist](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Whitelist)**`(str, whitelistedChars string)` | Removes characters not in the whitelist (auto-escaped for regex). |
+| **[Escape](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Escape)**`(str string)` | Replaces `<`, `>`, `&`, `'`, and `"` with HTML entities. |
+| **[Unescape](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Unescape)**`(str string)` | Reverses `Escape` — replaces HTML entities with their characters. |
+| **[LTrim](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#LTrim)**`(str, chars string)` | Trims characters (whitespace by default) from the left side. |
+| **[RTrim](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#RTrim)**`(str, chars string)` | Trims characters (whitespace by default) from the right side. |
+| **[Trim](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Trim)**`(str, chars string)` | Trims characters (whitespace by default) from both sides. |
+| **[StripLow](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#StripLow)**`(str string, keepNewLines bool)` | Removes characters with code < 32 and code 127 (mostly control chars). Preserves newlines if `keepNewLines` is true. |
+| **[NormalizeEmail](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#NormalizeEmail)**`(email string, opts *NormalizeEmailOpts)` | Canonicalizes an email address. Provider-aware (Gmail, Outlook, Yahoo, iCloud) — handles dots, sub-addresses, and casing per provider rules. |
+| **[ToBoolean](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#ToBoolean)**`(str string, strict bool)` | Converts the string to a bool. Everything except `"0"`, `"false"`, and `""` returns `true`. In strict mode, only `"1"` and `"true"` return `true`. |
+| **[ToDate](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#ToDate)**`(str string)` | Converts the string to `*time.Time`, or `nil` if unparseable. |
+| **[ToFloat](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#ToFloat)**`(str string)` | Converts the string to `float64`, returning an error on failure. |
+| **[ToInt](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#ToInt)**`(str string)` | Converts the string to `int`, returning an error on failure. (Beware of octals.) |
+
+---
+
+## ⚠️ Important: Options Struct Behavior
+
+When using a validator that takes an options struct, **always set every field explicitly**.
+
+Unlike validator.js — where missing fields default to documented values — Go uses zero values: missing booleans become `false`, missing numbers become `0`, etc. This can cause unexpected behavior if you're used to the JavaScript version.
+
+```go
+// ✅ Recommended — pass nil to use built-in defaults
+ok := validatorgo.IsFQDN("example.com", nil)
+
+// ✅ Also good — set every field explicitly
+ok = validatorgo.IsFQDN("example.com", &validatorgo.IsFQDNOpts{
+    RequireTld:       false,
     AllowUnderscores: false,
     AllowTrailingDot: true,
-    AllowNumericTld: false,
-    IgnoreMaxLength: true
-  })
+    AllowNumericTld:  false,
+    IgnoreMaxLength:  true,
+})
 
-  // but rarely this(not explicitly setting all possible fields)
-  ok := validatorgo.IsFQDN("example", &validatorgo.IsFQDNOpts{ RequireTld: false, })
+// ⚠️ Risky — unset fields silently fall to Go zero values
+ok = validatorgo.IsFQDN("example.com", &validatorgo.IsFQDNOpts{
+    RequireTld: false,
+})
 ```
 
-# Simple sanitizer example
+---
 
-```go
-  import (
-   "fmt"
-   "github.com/bube054/validatorgo/sanitizer"
- )
+## Maintainers
 
- func main(){
-   str := sanitizer.Whitelist("Hello123 World!", "a-zA-Z")
-   fmt.Println(str) // "HelloWorld"
- }
-```
+- [**Attah Gbubemi David** (@bube054)](https://github.com/bube054) — author
 
-# Sanitizers
+## Contributing
 
-Here is a list of the sanitizers currently available.
-| Sanitizer | Description |
-|:----------|:------------|
-| **[Blacklist(str, blacklistedChars string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Blacklist)** | A sanitizer that remove characters that appear in the blacklist. <br/> The characters are used in a RegExp and will escaped for you. |
-| **[Escape(str string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Escape)** | A sanitizer that replaces <, >, &, ' and ". with HTML entities.|
-| **[LTrim(str, chars string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#LTrim)** | A sanitizer that trims characters (whitespace by default) from the left-side of the input. |
-| **[NormalizeEmail(email string, opts \*NormalizeEmailOpts)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#NormalizeEmail)** | A sanitizer that canonicalizes an email address. (This doesn't validate that the input is an email, if you want to validate the email use `IsEmail` beforehand). <br/> `NormalizeEmailOpts` is a struct with the following keys and default values: <br/> `AllLowercase`: `true` - Transforms the local part (before the @ symbol) of all email addresses to lowercase. Please note that this may violate RFC 5321, which gives providers the possibility to treat the local part of email addresses in a case sensitive way (although in practice most - yet not all - providers don't). The domain part of the email address is always lowercased, as it is case insensitive per RFC 1035. <br/> `GmailLowercase`: `true` - Gmail addresses are known to be case-insensitive, so this switch allows lowercasing them even when AllLowercase is set to `false`. Please note that when AllLowercase is `true`, Gmail addresses are lowercased regardless of the value of this setting. <br/> `GmailRemoveDots`: true: Removes dots from the local part of the email address, as Gmail ignores them (e.g. "john.doe" and "johndoe" are considered equal). <br/> `GmailRemoveSubaddress`: `true`: Normalizes addresses by removing "sub-addresses", which is the part following a "+" sign (e.g. "foo+bar@gmail.com" becomes "foo@gmail.com"). <br/> `GmailConvertGooglemaildotcom`: true: Converts addresses with domain @googlemail.com to @gmail.com, as they're equivalent. <br/> `OutlookdotcomLowercase`: `true` - Outlook.com addresses (including Windows Live and Hotmail) are known to be case-insensitive, so this switch allows lowercasing them even when AllLowercase is set to `false`. Please note that when AllLowercase is `true`, Outlook.com addresses are lowercased regardless of the value of this setting. <br/> `OutlookdotcomRemoveSubaddress`: `true`: Normalizes addresses by removing "sub-addresses", which is the part following a "+" sign (e.g. "foo+bar@outlook.com" becomes "foo@outlook.com"). <br/> `YahooLowercase`: `true` - Yahoo Mail addresses are known to be case-insensitive, so this switch allows lowercasing them even when AllLowercase is set to `false`. Please note that when AllLowercase is `true`, Yahoo Mail addresses are lowercased regardless of the value of this setting. <br/> `YahooRemoveSubaddress`: `true`: Normalizes addresses by removing "sub-addresses", which is the part following a "-" sign (e.g. "foo-bar@yahoo.com" becomes "foo@yahoo.com"). <br/> `IcloudLowercase`: `true` - iCloud addresses (including MobileMe) are known to be case-insensitive, so this switch allows lowercasing them even when AllLowercase is set to false. Please note that when AllLowercase is true, iCloud addresses are lowercased regardless of the value of this setting. <br/> `IcloudRemoveSubaddress`: `true`: Normalizes addresses by removing "sub-addresses", which is the part following a "+" sign (e.g. "foo+bar@icloud.com" becomes "foo@icloud.com"). |
-| **[RTrim(str, chars string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#RTrim)** | A sanitizer that trims characters (whitespace by default) from the right-side of the input. |
-| **[StripLow(str string, keepNewLines bool)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#StripLow)** | sanitizer that removes characters with a numerical value < `32` and `127`, mostly control characters. <br/> If `keepNewLines` is true, newline characters are preserved (\n and \r, hex 0xA and 0xD). |
-| **[ToBoolean(str string, strict bool)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#ToBoolean)** | A sanitizer that converts the input string to a boolean. <br/> Everything except for `"0"`, `"false"` and `""` returns `true`. <br/> In strict mode only `"1"` and `"true"` return `true`. |
-| **[ToDate(str string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#ToDate)** | A sanitizer that converts the input string to a pointer to `time.Time`, if the input is not of a time layout returns a nil pointer. e.g `(Layout, ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, Kitchen, Stamp, StampMilli, StampMicro, StampNano, DateTime, DateOnly, TimeOnly)` |
-| **[ToFloat(str string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#ToFloat)** | A sanitizer that converts the input string to a float64 and also returns an error if the input is not a float. |
-| **[ToInt(str string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#ToInt)** | A sanitizer that converts the input string to an int and also returns an error if the input is not a int. (Beware of octals) |
-| **[Trim(str, chars string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Trim)** | A sanitizer that trim characters (whitespace by default) from both sides of the input. |
-| **[Unescape(str string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Unescape)** | A sanitizer that replaces HTML encoded entities with <, >, &, ', ", `, \ and /. |
-| **[Whitelist(str, whitelistedChars string)](https://pkg.go.dev/github.com/bube054/validatorgo/sanitizer#Whitelist)** | A sanitizer that removes characters that do not appear in the whitelist. <br/> The characters are used in a RegExp and will escaped for you. |
+Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUCT.md) before opening a PR.
 
-# Maintainers
+A few quick guidelines:
+- Match the style and structure of existing validators.
+- Add tests for any new functionality (we aim for high coverage).
+- Update this README's table when adding a new validator or sanitizer.
 
-- [bube054](https://github.com/bube054) - **Attah Gbubemi David (author)**
+## License
 
-<!-- # Other related projects
-
-- [ginvalidator](https://github.com/bube054/ginvalidator)
-- [echovalidator](https://github.com/bube054/echovalidator)
-- [fibervalidator](https://github.com/bube054/fibervalidator)
-- [chivalidator](https://github.com/bube054/chivalidator) -->
-
-# License
-
-This project is licensed under the [MIT](https://opensource.org/license/mit). See the [LICENSE](https://github.com/bube054/validatorgo/blob/master/LICENSE) file for details.
+This project is licensed under the [MIT License](https://opensource.org/license/mit). See [LICENSE](LICENSE) for details.
