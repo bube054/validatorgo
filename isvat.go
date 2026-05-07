@@ -76,28 +76,31 @@ var countryCodeVATRegex = map[string]*regexp.Regexp{
 //
 // countryCode is one of ("AL", "AR", "AT", "AU", "BE", "BG", "BO", "BR", "BY", "CA", "CH", "CL", "CO", "CR", "CY", "CZ", "DE", "DK", "DO", "EC", "EE", "EL", "ES", "FI", "FR", "GB", "GT", "HN", "HR", "HU", "ID", "IE", "IL", "IN", "IS", "IT", "KZ", "LT", "LU", "LV", "MK", "MT", "MX", "NG", "NI", "NL", "NO", "NZ", "PA", "PE", "PH", "PL", "PT", "PY", "RO", "RS", "RU", "SA", "SE", "SI", "SK", "SM", "SV", "TR", "UA", "UY", "UZ", "VE"). If no value or "any" is provided will match every one.
 //
-//	ok := validatorgo.IsVAT("DE123456789", "DE")
+//	ok, _ := validatorgo.IsVAT("DE123456789", "DE")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsVAT("DE12345678", "DE")
+//	ok, _ = validatorgo.IsVAT("DE12345678", "DE")
 //	fmt.Println(ok) // false
-func IsVAT(str, countryCode string) bool {
+func IsVAT(str, countryCode string) (bool, error) {
 	re, ok := countryCodeVATRegex[countryCode]
 
 	if !ok {
 		if countryCode != "" && countryCode != "any" {
-			return false
+			return false, newValidationError("IsVAT", ErrInvalidFormat, "invalid vat")
 		}
 
 		for _, reg := range countryCodeVATRegex {
 			match := reg.MatchString(str)
 
 			if match {
-				return true
+				return true, nil
 			}
 		}
 
-		return false
+		return false, newValidationError("IsVAT", ErrInvalidFormat, "invalid vat")
 	}
 
-	return re.MatchString(str)
+	if re.MatchString(str) {
+		return true, nil
+	}
+	return false, newValidationError("IsVAT", ErrInvalidFormat, "invalid vat")
 }

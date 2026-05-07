@@ -2,16 +2,16 @@ package validatorgo
 
 // A validator that checks if the string contains ASCII chars only.
 //
-//	ok := validatorgo.IsAscii("Hello")
+//	ok, _ := validatorgo.IsAscii("Hello")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsAscii("こんにちは")
+//	ok, _ = validatorgo.IsAscii("こんにちは")
 //	fmt.Println(ok) // false
-func IsAscii(str string) bool {
+func IsAscii(str string) (bool, error) {
 	for _, char := range str {
 		if !(char >= 0 && char <= 127) {
-			return false
+			return false, newValidationError("IsAscii", ErrInvalidFormat, "invalid ascii")
 		}
 	}
 
-	return true
+	return true, nil
 }

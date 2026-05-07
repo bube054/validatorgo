@@ -21,12 +21,16 @@ var AllISO31661Alpha3 = [...]string{"AFG", "ALB", "DZA", "ASM", "AND", "AGO", "A
 
 // A validator that checks if the string is a valid ISO 3166-1 alpha-3 officially assigned country code.
 //
-//	ok := validatorgo.IsISO31661Alpha3("ABW")
+//	ok, _ := validatorgo.IsISO31661Alpha3("ABW")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsISO31661Alpha3("ES")
+//	ok, _ = validatorgo.IsISO31661Alpha3("ES")
 //	fmt.Println(ok) // false
 //
 // [ISO 3166-1 alpha-3]: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
-func IsISO31661Alpha3(str string) bool {
-	return IsIn(str, AllISO31661Alpha3[:])
+func IsISO31661Alpha3(str string) (bool, error) {
+	ok, _ := IsIn(str, AllISO31661Alpha3[:])
+	if ok {
+		return true, nil
+	}
+	return false, newValidationError("IsISO31661Alpha3", ErrInvalidValue, "invalid ISO 3166-1 alpha-3 code")
 }

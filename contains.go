@@ -24,20 +24,26 @@ type ContainsOpt struct {
 //
 // MinOccurrences: Minimum number of occurrences for the seed in the string. Defaults to 1.
 //
-//	ok := validatorgo.Contains("hello world", "world", &ContainsOpt{})
+//	ok, _ := validatorgo.Contains("hello world", "world", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.Contains("hello world", "earth", &ContainsOpt{})
+//	ok, _ = validatorgo.Contains("hello world", "earth", nil)
 //	fmt.Println(ok) // false
-func Contains(str, seed string, opts *ContainsOpt) bool {
+func Contains(str, seed string, opts *ContainsOpt) (bool, error) {
 	if opts == nil {
 		opts = setContainOptsToDefault()
 	}
 
 	if opts.IgnoreCase {
 		strLowerCase, seedLowerCase := strings.ToLower(str), strings.ToLower(seed)
-		return strings.Contains(strLowerCase, seedLowerCase) && strings.Count(strLowerCase, seedLowerCase) >= opts.MinOccurrences
+		if strings.Contains(strLowerCase, seedLowerCase) && strings.Count(strLowerCase, seedLowerCase) >= opts.MinOccurrences {
+			return true, nil
+		}
+		return false, newValidationError("Contains", ErrNotFound, "seed not found in string")
 	} else {
-		return strings.Contains(str, seed) && strings.Count(str, seed) >= opts.MinOccurrences
+		if strings.Contains(str, seed) && strings.Count(str, seed) >= opts.MinOccurrences {
+			return true, nil
+		}
+		return false, newValidationError("Contains", ErrNotFound, "seed not found in string")
 	}
 }
 

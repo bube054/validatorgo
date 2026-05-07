@@ -19,11 +19,11 @@ type IsArrayOpts struct {
 //
 // You can also check that the array's length is greater than or equal to IsArrayOpts.Min and/or that it's less than or equal to IsArrayOpts.Max.
 //
-//	ok := validatorgo.IsArray(`["item1", "item2"]`, nil)
+//	ok, _ := validatorgo.IsArray(`["item1", "item2"]`, nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsArray(`{"name": "John", "age": 30}`, nil)
+//	ok, _ = validatorgo.IsArray(`{"name": "John", "age": 30}`, nil)
 //	fmt.Println(ok) // false
-func IsArray(str string, opts *IsArrayOpts) bool {
+func IsArray(str string, opts *IsArrayOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsArrayOptsToDefault()
 	}
@@ -32,7 +32,7 @@ func IsArray(str string, opts *IsArrayOpts) bool {
 
 	err := json.Unmarshal([]byte(str), &arr)
 	if err != nil {
-		return false
+		return false, newValidationError("IsArray", ErrInvalidFormat, "invalid array")
 	}
 
 	arrLength := len(arr)
@@ -48,7 +48,10 @@ func IsArray(str string, opts *IsArrayOpts) bool {
 		withinLimits = withinLimits && isMax
 	}
 
-	return withinLimits
+	if withinLimits {
+		return true, nil
+	}
+	return false, newValidationError("IsArray", ErrInvalidFormat, "invalid array")
 
 }
 

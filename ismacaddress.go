@@ -26,11 +26,11 @@ type IsMacAddressOpts struct {
 //
 // The Type is a pointer to "48" or "64", defaults to "48"
 //
-//	ok := validatorgo.IsMacAddress("00:1A:2B:3C:4D:5E",  validatorgo.IsMacAddressOpts{})
+//	ok, _ := validatorgo.IsMacAddress("00:1A:2B:3C:4D:5E", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsMacAddress("00:1A:2B:3C:4D:ZZ",  validatorgo.IsMacAddressOpts{})
+//	ok, _ = validatorgo.IsMacAddress("00:1A:2B:3C:4D:ZZ", nil)
 //	fmt.Println(ok) // false
-func IsMacAddress(str string, opts *IsMacAddressOpts) bool {
+func IsMacAddress(str string, opts *IsMacAddressOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsMacAddressOptsToDefault()
 	}
@@ -42,7 +42,7 @@ func IsMacAddress(str string, opts *IsMacAddressOpts) bool {
 	}
 
 	if *opts.Type != eu48 && *opts.Type != eu64 {
-		return false
+		return false, newValidationError("IsMacAddress", ErrInvalidFormat, "invalid macaddress")
 	}
 
 	noSepReStr := `[\s:.-]?`
@@ -57,7 +57,10 @@ func IsMacAddress(str string, opts *IsMacAddressOpts) bool {
 
 	re := regexp.MustCompile(fmt.Sprintf(`^([[:xdigit:]]{2}%s){%s}[[:xdigit:]]{2}$`, noSepReStr, typeReStr))
 
-	return re.MatchString(str)
+	if re.MatchString(str) {
+		return true, nil
+	}
+	return false, newValidationError("IsMacAddress", ErrInvalidFormat, "invalid macaddress")
 }
 
 func setIsMacAddressOptsToDefault() *IsMacAddressOpts {

@@ -6,22 +6,22 @@ import (
 
 // IsEAN checks if the string is a valid [EAN] (European Article Number).
 //
-//	ok := validatorgo.IsDecimal("4006381333931")
+//	ok, _ := validatorgo.IsDecimal("4006381333931")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsDecimal("123456789012")
+//	ok, _ = validatorgo.IsDecimal("123456789012")
 //	fmt.Println(ok) // false
 //
 // [EAN]: https://en.wikipedia.org/wiki/International_Article_Number
-func IsEAN(str string) bool {
+func IsEAN(str string) (bool, error) {
 	length := len(str)
 	if length != 8 && length != 13 {
-		return false
+		return false, newValidationError("IsEAN", ErrInvalidChecksum, "invalid ean")
 	}
 
 	// Check if all characters are digits
 	for _, r := range str {
 		if r < '0' || r > '9' {
-			return false
+			return false, newValidationError("IsEAN", ErrInvalidChecksum, "invalid ean")
 		}
 	}
 
@@ -40,5 +40,8 @@ func IsEAN(str string) bool {
 	checksum := (10 - (sum % 10)) % 10
 	lastDigit, _ := strconv.Atoi(string(str[length-1]))
 
-	return checksum == lastDigit
+	if checksum == lastDigit {
+		return true, nil
+	}
+	return false, newValidationError("IsEAN", ErrInvalidChecksum, "invalid ean")
 }

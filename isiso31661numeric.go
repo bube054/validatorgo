@@ -4,12 +4,16 @@ var AllISO31661Numeric = [...]string{"004", "008", "010", "012", "016", "020", "
 
 // A validator that checks check if the string is a valid [ISO 3166-1] numeric officially assigned country code.
 //
-//	ok := validatorgo.IsISO31661Numeric("032")
+//	ok, _ := validatorgo.IsISO31661Numeric("032")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsISO31661Numeric("56")
+//	ok, _ = validatorgo.IsISO31661Numeric("56")
 //	fmt.Println(ok) // false
 //
 // [ISO 3166-1]: https://en.wikipedia.org/wiki/ISO_3166-1_numeric
-func IsISO31661Numeric(str string) bool {
-	return IsIn(str, AllISO31661Numeric[:])
+func IsISO31661Numeric(str string) (bool, error) {
+	ok, _ := IsIn(str, AllISO31661Numeric[:])
+	if ok {
+		return true, nil
+	}
+	return false, newValidationError("IsISO31661Numeric", ErrInvalidValue, "invalid ISO 3166-1 numeric code")
 }

@@ -49,11 +49,11 @@ var writingSystemAlphaNumRegex = map[string]string{
 //
 // locale is one of ("ar", "ar-AE", "ar-BH", "ar-DZ", "ar-EG", "ar-IQ", "ar-JO", "ar-KW", "ar-LB", "ar-LY", "ar-MA", "ar-QA", "ar-QM", "ar-SA", "ar-SD", "ar-SY", "ar-TN", "ar-YE", "bn", "bg-BG", "cs-CZ", "da-DK", "de-DE", "el-GR", "en-AU", "en-GB", "en-HK", "en-IN", "en-NZ", "en-US", "en-ZA", "en-ZM", "eo", "es-ES", "fa-IR", "fi-FI", "fr-CA", "fr-FR", "he", "hi-IN", "hu-HU", "it-IT", "kk-KZ", "ko-KR", "ja-JP","ku-IQ", "nb-NO", "nl-NL", "nn-NO", "pl-PL", "pt-BR", "pt-PT", "ru-RU", "si-LK", "sl-SI", "sk-SK", "sr-RS", "sr-RS@latin", "sv-SE", "th-TH", "tr-TR", "uk-UA") and defaults to en-US.
 //
-//	isAlpha := validatorgo.IsAlphanumeric("hello123", &validatorgo.IsAlphanumericOpts{})
-//	fmt.Println(isAlpha) // true
-//	isAlpha := validatorgo.IsAlphanumeric("hello!", &validatorgo.IsAlphanumericOpts{})
-//	fmt.Println(isAlpha) // false
-func IsAlphanumeric(str string, opts *IsAlphanumericOpts) bool {
+//	ok, _ := validatorgo.IsAlphanumeric("hello123", nil)
+//	fmt.Println(ok) // true
+//	ok, _ = validatorgo.IsAlphanumeric("hello!", nil)
+//	fmt.Println(ok) // false
+func IsAlphanumeric(str string, opts *IsAlphanumericOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsAlphanumericOptsToDefault()
 	}
@@ -70,7 +70,7 @@ func IsAlphanumeric(str string, opts *IsAlphanumericOpts) bool {
 	if opts.Ignore == "" && opts.Locale != "" {
 		wrtSys, ok := localeWritingSystems[opts.Locale]
 		if !ok {
-			return false
+			return false, newValidationError("IsAlphanumeric", ErrInvalidFormat, "invalid alphanumeric")
 		}
 		re = regexp.MustCompile(writingSystemAlphaNumRegex[wrtSys])
 	}
@@ -92,7 +92,10 @@ func IsAlphanumeric(str string, opts *IsAlphanumericOpts) bool {
 		re = rec
 	}
 
-	return re.MatchString(str)
+	if re.MatchString(str) {
+		return true, nil
+	}
+	return false, newValidationError("IsAlphanumeric", ErrInvalidFormat, "invalid alphanumeric")
 }
 
 func setIsAlphanumericOptsToDefault() *IsAlphanumericOpts {

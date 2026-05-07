@@ -48,11 +48,11 @@ type IsEmailOpts struct {
 // HostBlacklist: if set to an slice of strings and the part of the email after the @ symbol matches one of the strings defined in it, the validation fails.
 // HostWhitelist: if set to an slice of strings and the part of the email after the @ symbol matches none of the strings defined in it, the validation fails.
 //
-//	ok := validatorgo.IsEmail("test@example.com", &validatorgo.IsEmailOpts{})
+//	ok, _ := validatorgo.IsEmail("test@example.com", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsEmail("user.example.com", &validatorgo.IsEmailOpts{})
+//	ok, _ = validatorgo.IsEmail("user.example.com", nil)
 //	fmt.Println(ok) // false
-func IsEmail(str string, opts *IsEmailOpts) bool {
+func IsEmail(str string, opts *IsEmailOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsEmailOptsToDefault()
 	}
@@ -72,7 +72,7 @@ func IsEmail(str string, opts *IsEmailOpts) bool {
 		if len(matches) == 2 {
 			str = matches[1]
 		} else if opts.RequireDisplayName {
-			return false
+			return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
 		}
 	}
 
@@ -80,7 +80,7 @@ func IsEmail(str string, opts *IsEmailOpts) bool {
 	if !emailRegex.MatchString(str) {
 		// fmt.Println(emailRegex.String())
 		// fmt.Println("Basic email validation")
-		return false
+		return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
 	}
 
 	// Extract the domain part
@@ -90,19 +90,22 @@ func IsEmail(str string, opts *IsEmailOpts) bool {
 	// Handle IP domain if allowed
 	if opts.AllowIpDomain && strings.HasPrefix(domain, "[") && strings.HasSuffix(domain, "]") {
 		ip := domain[1 : len(domain)-1]
-		return net.ParseIP(ip) != nil
+		if net.ParseIP(ip) != nil {
+			return true, nil
+		}
+		return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
 	}
 
 	// Handle TLD requirement
 	if opts.RequireTld && !strings.Contains(domain, ".") {
-		return false
+		return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
 	}
 
 	// Domain-specific validation
 	if opts.DomainSpecificValidation && domain == "gmail.com" {
 		local := parts[0]
 		if strings.Contains(local, "+") {
-			return false
+			return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
 		}
 	}
 
@@ -110,7 +113,7 @@ func IsEmail(str string, opts *IsEmailOpts) bool {
 	if opts.BlacklistedChars != "" {
 		for _, char := range opts.BlacklistedChars {
 			if strings.ContainsRune(str, char) {
-				return false
+				return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
 			}
 		}
 	}
@@ -119,7 +122,7 @@ func IsEmail(str string, opts *IsEmailOpts) bool {
 	if len(opts.HostBlacklist) > 0 {
 		for _, blacklisted := range opts.HostBlacklist {
 			if strings.HasSuffix(domain, blacklisted) {
-				return false
+				return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
 			}
 		}
 	}
@@ -132,11 +135,11 @@ func IsEmail(str string, opts *IsEmailOpts) bool {
 			}
 		}
 		if !allowed {
-			return false
+			return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
 		}
 	}
 
-	return true
+	return true, nil
 }
 
 func setIsEmailOptsToDefault() *IsEmailOpts {

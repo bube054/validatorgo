@@ -4,12 +4,16 @@ var AllISO6391Codes = [...]string{"aa", "ab", "af", "ak", "am", "an", "ar", "as"
 
 // A validator that checks if the string is a valid [ISO 639-1] language code.
 //
-//	ok := validatorgo.IsISO6391("en")
+//	ok, _ := validatorgo.IsISO6391("en")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsISO6391("eng")
+//	ok, _ = validatorgo.IsISO6391("eng")
 //	fmt.Println(ok) // false
 //
 // [ISO 639-1]: https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
-func IsISO6391(str string) bool {
-	return IsIn(str, AllISO6391Codes[:])
+func IsISO6391(str string) (bool, error) {
+	ok, _ := IsIn(str, AllISO6391Codes[:])
+	if ok {
+		return true, nil
+	}
+	return false, newValidationError("IsISO6391", ErrInvalidValue, "invalid ISO 639-1 code")
 }

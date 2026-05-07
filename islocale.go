@@ -4,10 +4,14 @@ var AllLocales = [...]string{"ar_AE", "ar_BH", "ar_DJ", "ar_DZ", "ar_EG", "ar_EH
 
 // A validator that checks if the string is a locale.
 //
-//	ok := validatorgo.IsLocale("ca_ES")
+//	ok, _ := validatorgo.IsLocale("ca_ES")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsLocale("en_XY")
+//	ok, _ = validatorgo.IsLocale("en_XY")
 //	fmt.Println(ok) // false
-func IsLocale(str string) bool {
-	return IsIn(str, AllLocales[:])
+func IsLocale(str string) (bool, error) {
+	okIn, _ := IsIn(str, AllLocales[:])
+	if okIn {
+		return true, nil
+	}
+	return false, newValidationError("IsLocale", ErrInvalidLocale, "invalid locale")
 }

@@ -20,13 +20,13 @@ type IsIMEIOpts struct {
 //
 // If AllowHyphens is set to true, the validator will validate the second format.
 //
-//	ok := validatorgo.IsIMEI("490154203237518", &IsIMEIOpts{})
+//	ok, _ := validatorgo.IsIMEI("490154203237518", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsIMEI("359043377500085", &IsIMEIOpts{})
+//	ok, _ = validatorgo.IsIMEI("359043377500085", nil)
 //	fmt.Println(ok) // false
 //
 // [IMEI number]: https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity
-func IsIMEI(str string, opts *IsIMEIOpts) bool {
+func IsIMEI(str string, opts *IsIMEIOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsIMEIOptsToDefault()
 	}
@@ -40,7 +40,7 @@ func IsIMEI(str string, opts *IsIMEIOpts) bool {
 	}
 
 	if !re.MatchString(str) {
-		return false
+		return false, newValidationError("IsIMEI", ErrInvalidFormat, "string does not match IMEI format")
 	}
 
 	strWithoutHyphens := stripHyphens(str)
@@ -67,7 +67,10 @@ func IsIMEI(str string, opts *IsIMEIOpts) bool {
 		isSecond = !isSecond
 	}
 
-	return sum%10 == 0
+	if sum%10 != 0 {
+		return false, newValidationError("IsIMEI", ErrInvalidChecksum, "IMEI checksum is invalid")
+	}
+	return true, nil
 }
 
 func setIsIMEIOptsToDefault() *IsIMEIOpts {

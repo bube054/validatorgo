@@ -30,11 +30,11 @@ type IsTimeOpts struct {
 //
 // Mode can contain the values "default" or "withSeconds", "default" will validate HH:MM or HH:MM:SS format, "withSeconds" will validate only HH:MM:SS format.
 //
-//	ok := validatorgo.IsTime("14:30", &validatorgo.IsTime{})
+//	ok, _ := validatorgo.IsTime("14:30", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsTime("09:5", &validatorgo.IsTime{})
+//	ok, _ = validatorgo.IsTime("09:5", nil)
 //	fmt.Println(ok) // false
-func IsTime(str string, opts *IsTimeOpts) bool {
+func IsTime(str string, opts *IsTimeOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsTimeOptsToDefault()
 	}
@@ -44,7 +44,7 @@ func IsTime(str string, opts *IsTimeOpts) bool {
 	}
 
 	if opts.HourFormat != IsTimeOptsHourFormat12 && opts.HourFormat != IsTimeOptsHourFormat24 {
-		return false
+		return false, newValidationError("IsTime", ErrInvalidFormat, "invalid time")
 	}
 
 	if opts.Mode == "" {
@@ -52,7 +52,7 @@ func IsTime(str string, opts *IsTimeOpts) bool {
 	}
 
 	if opts.Mode != IsTimeOptsModeDefault && opts.Mode != IsTimeOptsModeWithSeconds {
-		return false
+		return false, newValidationError("IsTime", ErrInvalidFormat, "invalid time")
 	}
 
 	hourFmtStr1, hourFmtStr2 := "", ""
@@ -74,7 +74,10 @@ func IsTime(str string, opts *IsTimeOpts) bool {
 	reStr := fmt.Sprintf(`^%s:[0-5][0-9]%s%s$`, hourFmtStr1, minFmtStr, hourFmtStr2)
 	re := regexp.MustCompile(reStr)
 
-	return re.MatchString(str)
+	if re.MatchString(str) {
+		return true, nil
+	}
+	return false, newValidationError("IsTime", ErrInvalidFormat, "invalid time")
 }
 
 func setIsTimeOptsToDefault() *IsTimeOpts {

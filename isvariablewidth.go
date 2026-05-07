@@ -2,11 +2,11 @@ package validatorgo
 
 // A validator that checks if the string contains a mixture of full and half-width chars.
 //
-//	ok := validatorgo.IsVariableWidth("ａｂｃ123")
+//	ok, _ := validatorgo.IsVariableWidth("ａｂｃ123")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsVariableWidth("ａｂｃ１２３")
+//	ok, _ = validatorgo.IsVariableWidth("ａｂｃ１２３")
 //	fmt.Println(ok) // false
-func IsVariableWidth(str string) bool {
+func IsVariableWidth(str string) (bool, error) {
 	hasFullWidth := false
 	hasHalfWidth := false
 
@@ -23,9 +23,9 @@ func IsVariableWidth(str string) bool {
 		}
 
 		if hasFullWidth && hasHalfWidth {
-			return true
+			return true, nil
 		}
 	}
 
-	return false
+	return false, newValidationError("IsVariableWidth", ErrInvalidFormat, "invalid variablewidth")
 }

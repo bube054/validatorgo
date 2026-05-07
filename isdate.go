@@ -27,14 +27,14 @@ type IsDateOpts struct {
 	StrictMode bool
 }
 
-func dateMatchesAnyFormat(str string) bool {
+func dateMatchesAnyFormat(str string) (bool, error) {
 	for _, format := range dateLayouts {
 		_, err := time.Parse(format, str)
 		if err == nil {
-			return true
+			return true, nil
 		}
 	}
-	return false
+	return false, newValidationError("dateMatchesAnyFormat", ErrInvalidFormat, "invalid datematchesanyformat")
 }
 
 // A Validator that checks if the string is a valid date. e.g. 2002-07-15.
@@ -45,11 +45,11 @@ func dateMatchesAnyFormat(str string) bool {
 //
 // StrictMode: is a boolean and defaults to false. If StrictMode is set to true, the validator will reject strings different from Format.
 //
-//	ok := validatorgo.IsDate("2006-01-02", &validatorgo.IsDateOpts{})
+//	ok, _ := validatorgo.IsDate("2006-01-02", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsDate("01/023/2006", &validatorgo.IsDateOpts{})
+//	ok, _ = validatorgo.IsDate("01/023/2006", nil)
 //	fmt.Println(ok) // false
-func IsDate(str string, opts *IsDateOpts) bool {
+func IsDate(str string, opts *IsDateOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsDateOptsToDefault()
 	}
@@ -59,14 +59,21 @@ func IsDate(str string, opts *IsDateOpts) bool {
 	case "", "any":
 		opts.Format = isDateOptsDefaultFormat
 	default:
-		return false
+		return false, newValidationError("IsDate", ErrInvalidFormat, "invalid date")
 	}
 
 	if opts.StrictMode {
 		_, err := time.Parse(opts.Format, str)
-		return err == nil
+		if err == nil {
+			return true, nil
+		}
+		return false, newValidationError("IsDate", ErrInvalidFormat, "invalid date")
 	} else {
-		return dateMatchesAnyFormat(str)
+		ok, _ := dateMatchesAnyFormat(str)
+		if ok {
+			return true, nil
+		}
+		return false, newValidationError("IsDate", ErrInvalidFormat, "invalid date")
 	}
 }
 

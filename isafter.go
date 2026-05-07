@@ -28,11 +28,11 @@ type IsAfterOpts struct {
 // these are the only valid layouts from the time package
 // e.g Layout, ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, Kitchen, Stamp, StampMilli, StampMicro, StampNano, DateTime, DateOnly, TimeOnly, StandardDateLayout, SlashDateLayout, DateTimeLayout, ISO8601Layout, ISO8601ZuluLayout, ISO8601WithMillisecondsLayout.
 //
-//	ok := validatorgo.IsAfter("2023-09-15", &validatorgo.IsAfterOpts{ComparisonDate: "2023-01-01"})
+//	ok, _ := validatorgo.IsAfter("2023-09-15", &validatorgo.IsAfterOpts{ComparisonDate: "2023-01-01"})
 //	fmt.Println(ok) // true
-//	ok = validatorgo.IsAfter("2023-01-01", &validatorgo.IsAfterOpts{ComparisonDate: "2023-09-15"})
+//	ok, _ = validatorgo.IsAfter("2023-01-01", &validatorgo.IsAfterOpts{ComparisonDate: "2023-09-15"})
 //	fmt.Println(ok) // false
-func IsAfter(str string, opts *IsAfterOpts) bool {
+func IsAfter(str string, opts *IsAfterOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsAfterOptsToDefault()
 	}
@@ -48,9 +48,12 @@ func IsAfter(str string, opts *IsAfterOpts) bool {
 	}
 
 	if date1 == nil || date2 == nil {
-		return false
+		return false, newValidationError("IsAfter", ErrInvalidFormat, "invalid after")
 	}
-	return date1.After(*date2)
+	if date1.After(*date2) {
+		return true, nil
+	}
+	return false, newValidationError("IsAfter", ErrInvalidFormat, "invalid after")
 }
 
 func setIsAfterOptsToDefault() *IsAfterOpts {

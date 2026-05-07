@@ -37,7 +37,7 @@ func TestIsStrongPassword(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			result, score := IsStrongPassword(test.param1, test.param2)
+			result, score, _ := IsStrongPassword(test.param1, test.param2)
 
 			if result != test.want || score != test.score {
 				t.Errorf("got `%t` & `%.2f` but, wanted `%t` & `%.2f`", result, score, test.want, test.score)

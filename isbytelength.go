@@ -15,20 +15,26 @@ type IsByteLengthOpts struct {
 //
 // IsByteLengthOpts is a struct which defaults to { Min: 0, Max: nil }.
 //
-//	ok := validatorgo.IsByteLength("We♥Go", &IsByteLengthOpts{Min: 5})
+//	ok, _ := validatorgo.IsByteLength("We♥Go", &validatorgo.IsByteLengthOpts{Min: 5})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsByteLength("We♥Go", &IsByteLengthOpts{Min: 8})
+//	ok, _ = validatorgo.IsByteLength("We♥Go", &validatorgo.IsByteLengthOpts{Min: 8})
 //	fmt.Println(ok) // false
-func IsByteLength(str string, opts *IsByteLengthOpts) bool {
+func IsByteLength(str string, opts *IsByteLengthOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsByteLengthOptsToDefault()
 	}
 
 	lenInBytes := len(str)
 	if opts.Max == nil {
-		return lenInBytes >= int(opts.Min)
+		if lenInBytes >= int(opts.Min) {
+			return true, nil
+		}
+		return false, newValidationError("IsByteLength", ErrInvalidFormat, "invalid bytelength")
 	} else {
-		return lenInBytes >= int(opts.Min) && lenInBytes <= int(*opts.Max)
+		if lenInBytes >= int(opts.Min) && lenInBytes <= int(*opts.Max) {
+			return true, nil
+		}
+		return false, newValidationError("IsByteLength", ErrInvalidFormat, "invalid bytelength")
 	}
 }
 

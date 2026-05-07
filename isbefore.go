@@ -25,11 +25,11 @@ type IsBeforeOpts struct {
 // string layouts for str and ComparisonDate can be different layout.
 // these are the only valid layouts from the time package e.g Layout, ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, Kitchen, Stamp, StampMilli, StampMicro, StampNano, DateTime, DateOnly, TimeOnly, StandardDateLayout, SlashDateLayout, DateTimeLayout, ISO8601Layout, ISO8601ZuluLayout, ISO8601WithMillisecondsLayout.
 //
-//	ok := validatorgo.IsBefore("2023-01-01", &IsBeforeOpts{ComparisonDate: "2023-09-15"})
+//	ok, _ := validatorgo.IsBefore("2023-01-01", &validatorgo.IsBeforeOpts{ComparisonDate: "2023-09-15"})
 //	fmt.Println(ok) // true
-//	ok = validatorgo.IsBefore("2024-01-01", &IsBeforeOpts{ComparisonDate: "2023-01-01"})
+//	ok, _ = validatorgo.IsBefore("2024-01-01", &validatorgo.IsBeforeOpts{ComparisonDate: "2023-01-01"})
 //	fmt.Println(ok) // false
-func IsBefore(str string, opts *IsBeforeOpts) bool {
+func IsBefore(str string, opts *IsBeforeOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsBeforeOptsToDefault()
 	}
@@ -45,10 +45,13 @@ func IsBefore(str string, opts *IsBeforeOpts) bool {
 	}
 
 	if date1 == nil || date2 == nil {
-		return false
+		return false, newValidationError("IsBefore", ErrInvalidFormat, "invalid before")
 	}
 
-	return date1.Before(*date2)
+	if date1.Before(*date2) {
+		return true, nil
+	}
+	return false, newValidationError("IsBefore", ErrInvalidFormat, "invalid before")
 }
 
 func setIsBeforeOptsToDefault() (opts *IsBeforeOpts) {

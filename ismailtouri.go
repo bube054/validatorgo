@@ -15,28 +15,32 @@ type IsMailToURIOpts struct {
 //
 // IsMailToURIOpts validates emails inside the URI (check IsEmailOpts for details).
 //
-//	ok := validatorgo.IsMailtoURI("mailto:someone@example.com", nil)
+//	ok, _ := validatorgo.IsMailtoURI("mailto:someone@example.com", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsMailtoURI("someone@example.com", nil)
+//	ok, _ = validatorgo.IsMailtoURI("someone@example.com", nil)
 //	fmt.Println(ok) // false
 //
 // [Mailto URI]: https://en.wikipedia.org/wiki/Mailto
-func IsMailtoURI(str string, opts *IsMailToURIOpts) bool {
+func IsMailtoURI(str string, opts *IsMailToURIOpts) (bool, error) {
 	re := regexp.MustCompile(`^(mailto:)([^\?]+)(\?.*)?$`)
 
 	capGrp := re.FindStringSubmatch(str)
 
 	if capGrp == nil {
-		return false
+		return false, newValidationError("IsMailtoURI", ErrInvalidFormat, "invalid mailtouri")
 	}
 
 	email := capGrp[2]
 
 	if opts == nil {
-		return IsEmail(email, setIsEmailOptsToDefault())
+		ok, _ := IsEmail(email, setIsEmailOptsToDefault())
+		if ok {
+			return true, nil
+		}
+		return false, newValidationError("IsMailtoURI", ErrInvalidFormat, "invalid mailtouri")
 	}
 
-	return IsEmail(email, &IsEmailOpts{
+	ok, _ := IsEmail(email, &IsEmailOpts{
 		AllowDisplayName:         opts.AllowDisplayName,
 		RequireDisplayName:       opts.RequireDisplayName,
 		AllowUTF8LocalPart:       opts.AllowUTF8LocalPart,
@@ -48,4 +52,8 @@ func IsMailtoURI(str string, opts *IsMailToURIOpts) bool {
 		HostBlacklist:            opts.HostBlacklist,
 		HostWhitelist:            opts.HostWhitelist,
 	})
+	if ok {
+		return true, nil
+	}
+	return false, newValidationError("IsMailtoURI", ErrInvalidFormat, "invalid mailtouri")
 }

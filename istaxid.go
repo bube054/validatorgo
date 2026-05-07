@@ -45,7 +45,7 @@ var taxIdLocaleRegex = map[string]*regexp.Regexp{
 // A validator that checks if the string is a valid Tax Identification Number. Defaults locale is "en-US" and "any" will match any of them.
 //
 // Supported locales: ("bg-BG", "cs-CZ", "de-AT", "de-DE", "dk-DK", "el-CY", "el-GR", "en-CA", "en-GB", "en-IE", "en-US", "es-AR", "es-ES", "et-EE", "fi-FI", "fr-BE", "fr-CA", "fr-FR", "fr-LU", "hr-HR", "hu-HU", "it-IT", "lb-LU", "lt-LT", "lv-LV", "mt-MT", "nl-BE", "nl-NL", "pl-PL", "pt-BR", "pt-PT", "ro-RO", "sk-SK", "sl-SI", "sv-SE", "uk-UA").
-func IsTaxID(str, locale string) bool {
+func IsTaxID(str, locale string) (bool, error) {
 	if locale == "" {
 		locale = "en-US"
 	}
@@ -54,19 +54,22 @@ func IsTaxID(str, locale string) bool {
 
 	if !ok {
 		if locale != "any" {
-			return false
+			return false, newValidationError("IsTaxID", ErrInvalidFormat, "invalid taxid")
 		}
 
 		for _, reg := range taxIdLocaleRegex {
 			match := reg.MatchString(str)
 
 			if match {
-				return true
+				return true, nil
 			}
 		}
 
-		return false
+		return false, newValidationError("IsTaxID", ErrInvalidFormat, "invalid taxid")
 	}
 
-	return re.MatchString(str)
+	if re.MatchString(str) {
+		return true, nil
+	}
+	return false, newValidationError("IsTaxID", ErrInvalidFormat, "invalid taxid")
 }

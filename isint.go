@@ -32,11 +32,11 @@ type IsIntOpts struct {
 //
 // Finally, IsIntOpts can contain the keys Gt and/or Lt which will enforce integers being greater than or less than, respectively, the value provided (e.g. {Gt: ptr(1), Lt: ptr(4)} for a number between 1 and 4).
 //
-//	ok := validatorgo.IsInt("123", &IsIntOpts{})
+//	ok, _ := validatorgo.IsInt("123", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsInt("123.45", &IsIntOpts{})
+//	ok, _ = validatorgo.IsInt("123.45", nil)
 //	fmt.Println(ok) // false
-func IsInt(str string, opts *IsIntOpts) bool {
+func IsInt(str string, opts *IsIntOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsIntOptsToDefault()
 	}
@@ -50,14 +50,14 @@ func IsInt(str string, opts *IsIntOpts) bool {
 	}
 
 	if !matches {
-		return false
+		return false, newValidationError("IsInt", ErrInvalidFormat, "invalid int")
 	}
 
 	strInt, err := strconv.Atoi(str)
 
 	if err != nil {
 		// fmt.Println("failed parsing")
-		return false
+		return false, newValidationError("IsInt", ErrInvalidFormat, "invalid int")
 	}
 
 	// fmt.Println("Passes regex and conversion")
@@ -88,7 +88,10 @@ func IsInt(str string, opts *IsIntOpts) bool {
 		// fmt.Println("within gt", withinLimits)
 	}
 
-	return withinLimits
+	if withinLimits {
+		return true, nil
+	}
+	return false, newValidationError("IsInt", ErrInvalidFormat, "invalid int")
 }
 
 func setIsIntOptsToDefault() *IsIntOpts {

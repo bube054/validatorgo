@@ -7,15 +7,16 @@ import (
 
 // A validator that checks if the string is an ABA routing number for US bank account / cheque.
 //
-//	ok := govalidator.IsAbaRouting("123456789")
+//	ok, _ := validatorgo.IsAbaRouting("123456789")
 //	fmt.Println(ok) // false
-//	ok := govalidator.IsAbaRouting("021000021")
+//	ok, _ = validatorgo.IsAbaRouting("021000021")
 //	fmt.Println(ok) // true
-func IsAbaRouting(str string) bool {
+func IsAbaRouting(str string) (bool, error) {
 	strWithoutDashes := stripDashesAndSpaces(str)
 
-	if utf8.RuneCountInString(strWithoutDashes) != 9 || !IsNumeric(strWithoutDashes, &IsNumericOpts{NoSymbols: true}) {
-		return false
+	isNum, _ := IsNumeric(strWithoutDashes, &IsNumericOpts{NoSymbols: true})
+	if utf8.RuneCountInString(strWithoutDashes) != 9 || !isNum {
+		return false, newValidationError("IsAbaRouting", ErrInvalidChecksum, "invalid abarouting")
 	}
 
 	digits := make([]int, 9)
@@ -31,5 +32,8 @@ func IsAbaRouting(str string) bool {
 
 	checksum := 3*(digits[0]+digits[3]+digits[6]) + 7*(digits[1]+digits[4]+digits[7]) + 1*(digits[2]+digits[5]+digits[8])
 
-	return checksum%10 == 0
+	if checksum%10 == 0 {
+		return true, nil
+	}
+	return false, newValidationError("IsAbaRouting", ErrInvalidChecksum, "invalid abarouting")
 }

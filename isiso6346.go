@@ -15,17 +15,17 @@ var iso6346numValues = map[string]int{
 
 // A validator that checks if the string is a valid ISO 6346 shipping container identification.
 //
-//	ok := validatorgo.IsISO6346("CSQU3054383")
+//	ok, _ := validatorgo.IsISO6346("CSQU3054383")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsISO6346("CSQX3054383")
+//	ok, _ = validatorgo.IsISO6346("CSQX3054383")
 //	fmt.Println(ok) // false
 //
 // [ISO 6346]: https://en.wikipedia.org/wiki/ISO_6346
-func IsISO6346(str string) bool {
+func IsISO6346(str string) (bool, error) {
 	re := regexp.MustCompile(`^([A-Z]{3})([UJZR])(\d{6})(\d)$`)
 	capGrps := re.FindStringSubmatch(str)
 	if capGrps == nil {
-		return false
+		return false, newValidationError("IsISO6346", ErrInvalidFormat, "invalid iso6346")
 	}
 
 	checkDig := capGrps[4]
@@ -39,7 +39,7 @@ func IsISO6346(str string) bool {
 		numVal, ok := iso6346numValues[string(char)]
 
 		if !ok {
-			return false
+			return false, newValidationError("IsISO6346", ErrInvalidFormat, "invalid iso6346")
 		}
 
 		sum += int(float64(numVal) * math.Pow(2.00, float64(ind)))
@@ -48,5 +48,8 @@ func IsISO6346(str string) bool {
 	rem := sum % 11
 	remStr := strconv.Itoa(rem)
 
-	return remStr == checkDig
+	if remStr == checkDig {
+		return true, nil
+	}
+	return false, newValidationError("IsISO6346", ErrInvalidFormat, "invalid iso6346")
 }

@@ -21,28 +21,31 @@ var localeLicensePlateRegex = map[string]*regexp.Regexp{
 //
 // locale is one of ("cs-CZ", "de-DE", "de-LI", "en-IN", "en-SG", "en-PK", "es-AR", "hu-HU", "pt-BR", "pt-PT", "sq-AL", "sv-SE", "any")
 //
-//	ok := validatorgo.IsLength("hello", &validatorgo.IsLengthOpts{Min: 3})
+//	ok, _ := validatorgo.IsLicensePlate("ABC123", "sv-SE")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsLength("hi", &validatorgo.IsLengthOpts{Min: 3})
+//	ok, _ = validatorgo.IsLicensePlate("hello", "sv-SE")
 //	fmt.Println(ok) // false
-func IsLicensePlate(str string, locale string) bool {
+func IsLicensePlate(str string, locale string) (bool, error) {
 	re, ok := localeLicensePlateRegex[locale]
 
 	if !ok {
 		if locale != "any" && locale != "" {
-			return false
+			return false, newValidationError("IsLicensePlate", ErrInvalidFormat, "invalid licenseplate")
 		}
 
 		for _, reg := range localeLicensePlateRegex {
 			match := reg.MatchString(str)
 
 			if match {
-				return true
+				return true, nil
 			}
 
 		}
-		return false
+		return false, newValidationError("IsLicensePlate", ErrInvalidFormat, "invalid licenseplate")
 	}
 
-	return re.MatchString(str)
+	if re.MatchString(str) {
+		return true, nil
+	}
+	return false, newValidationError("IsLicensePlate", ErrInvalidFormat, "invalid licenseplate")
 }

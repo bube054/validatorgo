@@ -9,13 +9,13 @@ import (
 //
 // allowHyphens will allow codes with dashes present CC-XXX-YY-NNNNN
 //
-//	ok := validatorgo.IsISRC("AASKG1912345", false)
+//	ok, _ := validatorgo.IsISRC("AASKG1912345", false)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsISRC("AA-SKG-19-12345", false)
+//	ok, _ = validatorgo.IsISRC("AA-SKG-19-12345", false)
 //	fmt.Println(ok) // false
 //
 // [ISRC]: https://en.wikipedia.org/wiki/International_Standard_Recording_Code
-func IsISRC(str string, allowHyphens bool) bool {
+func IsISRC(str string, allowHyphens bool) (bool, error) {
 	var char string
 
 	if allowHyphens {
@@ -26,10 +26,14 @@ func IsISRC(str string, allowHyphens bool) bool {
 	capGrp := re.FindStringSubmatch(str)
 
 	if capGrp == nil {
-		return false
+		return false, newValidationError("IsISRC", ErrInvalidFormat, "invalid isrc")
 	}
 
 	cntryCode := capGrp[1]
 
-	return IsISO31661Alpha2(cntryCode)
+	okAlpha2, _ := IsISO31661Alpha2(cntryCode)
+	if okAlpha2 {
+		return true, nil
+	}
+	return false, newValidationError("IsISRC", ErrInvalidFormat, "invalid isrc")
 }

@@ -48,22 +48,22 @@ var alphaFreightNumVal = map[string]int{
 
 // A validator that checks alias for IsISO6346, check if the string is a valid [ISO 6346] shipping container identification.
 //
-//	ok := validatorgo.IsFreightContainerID("ABCU1234567")
+//	ok, _ := validatorgo.IsFreightContainerID("ABCU1234567")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsFreightContainerID("AB123456789")
+//	ok, _ = validatorgo.IsFreightContainerID("AB123456789")
 //	fmt.Println(ok) // false
 //
 // [ISO 6346]: https://en.wikipedia.org/wiki/ISO_6346
-func IsFreightContainerID(str string) bool {
+func IsFreightContainerID(str string) (bool, error) {
 	// Check if length is 11
 	if utf8.RuneCountInString(str) != 11 {
-		return false
+		return false, newValidationError("IsFreightContainerID", ErrInvalidFormat, "invalid freightcontainerid")
 	}
 
 	re := regexp.MustCompile(`^([A-Z]{3})([UJZ])([0-9]{6})([0-9])$`)
 	match := re.MatchString(str)
 	if !match {
-		return false
+		return false, newValidationError("IsFreightContainerID", ErrInvalidFormat, "invalid freightcontainerid")
 	}
 
 	sum := 0
@@ -72,7 +72,7 @@ func IsFreightContainerID(str string) bool {
 		mag, ok := alphaFreightNumVal[char]
 
 		if !ok {
-			return false
+			return false, newValidationError("IsFreightContainerID", ErrInvalidFormat, "invalid freightcontainerid")
 		}
 
 		mul := math.Pow(2.00, float64(i))
@@ -84,8 +84,11 @@ func IsFreightContainerID(str string) bool {
 	givCheck, err := strconv.Atoi(string(str[10]))
 
 	if err != nil {
-		return false
+		return false, newValidationError("IsFreightContainerID", ErrInvalidFormat, "invalid freightcontainerid")
 	}
 
-	return actCheck == givCheck
+	if actCheck == givCheck {
+		return true, nil
+	}
+	return false, newValidationError("IsFreightContainerID", ErrInvalidFormat, "invalid freightcontainerid")
 }

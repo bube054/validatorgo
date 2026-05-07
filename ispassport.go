@@ -70,16 +70,19 @@ var countryCodePassportNumberRegex = map[string]*regexp.Regexp{
 //
 // countryCode is one of ("AM", "AR", "AT", "AU", "AZ", "BE", "BG", "BY", "BR", "CA", "CH", "CN", "CY", "CZ", "DE", "DK", "DZ", "EE", "ES", "FI", "FR", "GB", "GR", "HR", "HU", "IE", "IN", "IR", "ID", "IS", "IT", "JM", "JP", "KR", "KZ", "LI", "LT", "LU", "LV", "LY", "MT", "MX", "MY", "MZ", "NL", "NZ", "PH", "PK", "PL", "PT", "RO", "RU", "SE", "SL", "SK", "TH", "TR", "UA", "US", "ZA").
 //
-//	ok := validatorgo.IsPassportNumber("123456789", "US")
+//	ok, _ := validatorgo.IsPassportNumber("123456789", "US")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsPassportNumber("A12345678", "US")
+//	ok, _ = validatorgo.IsPassportNumber("A12345678", "US")
 //	fmt.Println(ok) // false
-func IsPassportNumber(str, countryCode string) bool {
+func IsPassportNumber(str, countryCode string) (bool, error) {
 	re, exists := countryCodePassportNumberRegex[countryCode]
 
 	if !exists {
-		return false
+		return false, newValidationError("IsPassportNumber", ErrInvalidFormat, "invalid passportnumber")
 	}
 
-	return re.MatchString(str)
+	if re.MatchString(str) {
+		return true, nil
+	}
+	return false, newValidationError("IsPassportNumber", ErrInvalidFormat, "invalid passportnumber")
 }

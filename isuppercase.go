@@ -4,10 +4,13 @@ import "strings"
 
 // A validator that checks if the string is uppercase.
 //
-//	ok := validatorgo.IsUpperCase("HELLO")
+//	ok, _ := validatorgo.IsUpperCase("HELLO")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsUpperCase("world")
+//	ok, _ = validatorgo.IsUpperCase("world")
 //	fmt.Println(ok) // false
-func IsUpperCase(str string) bool {
-	return str == strings.ToUpper(str) && str != strings.ToLower(str)
+func IsUpperCase(str string) (bool, error) {
+	if str == strings.ToUpper(str) && str != strings.ToLower(str) {
+		return true, nil
+	}
+	return false, newValidationError("IsUpperCase", ErrInvalidFormat, "invalid uppercase")
 }
