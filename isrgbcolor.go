@@ -21,23 +21,35 @@ type IsRgbOpts struct {
 //
 // AllowSpaces defaults to false, which prohibits whitespace. If set to false, whitespace between color values is allowed, such as rgb(255, 255, 255) or even rgba(255,       128,        0,      0.7).
 //
-//	ok := validatorgo.IsRgbColor("rgb(255,0,0)", validatorgo.IsRgbColor{})
+//	ok, _ := validatorgo.IsRgbColor("rgb(255,0,0)", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsRgbColor("rgb( 255 , 0 , 0 )", validatorgo.IsRgbColor{})
+//	ok, _ = validatorgo.IsRgbColor("rgb( 255 , 0 , 0 )", nil)
 //	fmt.Println(ok) // false
-func IsRgbColor(str string, opts *IsRgbOpts) bool {
+func IsRgbColor(str string, opts *IsRgbOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsRgbOptsToDefault()
 	}
 
 	if opts.IncludePercentValues && opts.AllowSpaces {
-		return regexp.MustCompile(`^rgba?\((\d{0,100}(\.[0-9]*)?%|\d{0,255}),\s*(\d{0,100}(\.[0-9]*)?%|\d{0,255}),\s*(\d{0,100}(\.[0-9]*)?%|\d{0,255})(,\s*(1|0?\.[0-9])?)?\)$`).MatchString(str)
+		if regexp.MustCompile(`^rgba?\((\d{0,100}(\.[0-9]*)?%|\d{0,255}),\s*(\d{0,100}(\.[0-9]*)?%|\d{0,255}),\s*(\d{0,100}(\.[0-9]*)?%|\d{0,255})(,\s*(1|0?\.[0-9])?)?\)$`).MatchString(str) {
+			return true, nil
+		}
+		return false, newValidationError("IsRgbColor", ErrInvalidFormat, "invalid rgbcolor")
 	} else if !opts.IncludePercentValues && opts.AllowSpaces {
-		return regexp.MustCompile(`^rgba?\(\d{0,255},\s*\d{0,255},\s*\d{0,255}(,\s*(1|0?\.[1-9])*)?\)$`).MatchString(str)
+		if regexp.MustCompile(`^rgba?\(\d{0,255},\s*\d{0,255},\s*\d{0,255}(,\s*(1|0?\.[1-9])*)?\)$`).MatchString(str) {
+			return true, nil
+		}
+		return false, newValidationError("IsRgbColor", ErrInvalidFormat, "invalid rgbcolor")
 	} else if opts.IncludePercentValues && !opts.AllowSpaces {
-		return regexp.MustCompile(`^rgba?\((\d{0,100}(\.[0-9]*)?%|\d{0,255}),(\d{0,100}(\.[0-9]*)?%|\d{0,255}),(\d{0,100}(\.[0-9]*)?%|\d{0,255})(,(1|0?\.[0-9])?)?\)$`).MatchString(str)
+		if regexp.MustCompile(`^rgba?\((\d{0,100}(\.[0-9]*)?%|\d{0,255}),(\d{0,100}(\.[0-9]*)?%|\d{0,255}),(\d{0,100}(\.[0-9]*)?%|\d{0,255})(,(1|0?\.[0-9])?)?\)$`).MatchString(str) {
+			return true, nil
+		}
+		return false, newValidationError("IsRgbColor", ErrInvalidFormat, "invalid rgbcolor")
 	} else {
-		return regexp.MustCompile(`^rgba?\(\d{0,255},\d{0,255},\d{0,255}(,(1|0?\.[1-9])*)?\)$`).MatchString(str)
+		if regexp.MustCompile(`^rgba?\(\d{0,255},\d{0,255},\d{0,255}(,(1|0?\.[1-9])*)?\)$`).MatchString(str) {
+			return true, nil
+		}
+		return false, newValidationError("IsRgbColor", ErrInvalidFormat, "invalid rgbcolor")
 	}
 }
 

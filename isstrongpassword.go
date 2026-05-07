@@ -50,11 +50,11 @@ type uppLwrSpecNumChars struct {
 //
 // Default IsStrongPasswordOpts: { MinLength: 8, MinLowercase: 1, MinUppercase: 1, MinNumbers: 1, MinSymbols: 1,  PointsPerUnique: 1, PointsPerRepeat: 0.5, PointsForContainingLower: 10, PointsForContainingUpper: 10, PointsForContainingNumber: 10, PointsForContainingSymbol: 10 }
 //
-//	ok, score := validatorgo.IsStrongPassword("Password123!", &validatorgo.IsStrongPasswordOpts{})
-//	fmt.Println(ok, score) // true, 130.5
-//	ok, score := validatorgo.IsStrongPassword("P@ss1", &validatorgo.IsStrongPasswordOpts{})
-//	fmt.Println(ok, score) // false, 53.50
-func IsStrongPassword(str string, opts *IsStrongPasswordOpts) (bool, float64) {
+//	ok, _, _ := validatorgo.IsStrongPassword("Password123!", nil)
+//	fmt.Println(ok) // true
+//	ok, _, _ = validatorgo.IsStrongPassword("P@ss1", nil)
+//	fmt.Println(ok) // false
+func IsStrongPassword(str string, opts *IsStrongPasswordOpts) (bool, float64, error) {
 	var optsWithDefaults *IsStrongPasswordOpts
 	if opts == nil {
 		optsWithDefaults = setStrongPasswordOptsToDefault()
@@ -78,26 +78,26 @@ func IsStrongPassword(str string, opts *IsStrongPasswordOpts) (bool, float64) {
 	// fmt.Println("score", score)
 
 	if len(str) < *optsWithDefaults.MinLength {
-		return false, score
+		return false, score, newValidationError("IsStrongPassword", ErrInvalidFormat, "password is not strong enough")
 	}
 
 	if ulsc.lowercase < *optsWithDefaults.MinLowercase {
-		return false, score
+		return false, score, newValidationError("IsStrongPassword", ErrInvalidFormat, "password is not strong enough")
 	}
 
 	if ulsc.uppercase < *optsWithDefaults.MinUppercase {
-		return false, score
+		return false, score, newValidationError("IsStrongPassword", ErrInvalidFormat, "password is not strong enough")
 	}
 
 	if ulsc.numbers < *optsWithDefaults.MinNumbers {
-		return false, score
+		return false, score, newValidationError("IsStrongPassword", ErrInvalidFormat, "password is not strong enough")
 	}
 
 	if ulsc.symbol < *optsWithDefaults.MinSymbols {
-		return false, score
+		return false, score, newValidationError("IsStrongPassword", ErrInvalidFormat, "password is not strong enough")
 	}
 
-	return valid, score
+	return valid, score, nil
 }
 
 func strongPasswordOptsToDefault(opts IsStrongPasswordOpts) *IsStrongPasswordOpts {

@@ -79,28 +79,31 @@ var localePostalCodeRegex = map[string]*regexp.Regexp{
 //
 // locale is one of ("AD", "AT", "AU", "AZ", "BA", "BE", "BG", "BR", "BY", "CA", "CH", "CN", "CO", "CZ", "DE", "DK", "DO", "DZ", "EE", "ES", "FI", "FR", "GB", "GR", "HR", "HT", "HU", "ID", "IE", "IL", "IN", "IR", "IS", "IT", "JP", "KE", "KR", "LI", "LK", "LT", "LU", "LV", "MG", "MT", "MX", "MY", "NL", "NO", "NP", "NZ", "PL", "PR", "PT", "RO", "RU", "SA", "SE", "SG", "SI", "SK", "TH", "TN", "TW", "UA", "US", "ZA", "ZM"). If "any" or no locale is used, function will check if any of the locales match.
 //
-//	ok := validatorgo.IsPostalCode("90210", "US")
+//	ok, _ := validatorgo.IsPostalCode("90210", "US")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsPostalCode("902101", "DE")
+//	ok, _ = validatorgo.IsPostalCode("902101", "DE")
 //	fmt.Println(ok) // false
-func IsPostalCode(str, locale string) bool {
+func IsPostalCode(str, locale string) (bool, error) {
 	re, exists := localePostalCodeRegex[locale]
 
 	if !exists {
 		if locale != "" && locale != "any" {
-			return false
+			return false, newValidationError("IsPostalCode", ErrInvalidFormat, "invalid postalcode")
 		}
 
 		for _, reg := range localePostalCodeRegex {
 			match := reg.MatchString(str)
 
 			if match {
-				return true
+				return true, nil
 			}
 		}
 
-		return false
+		return false, newValidationError("IsPostalCode", ErrInvalidFormat, "invalid postalcode")
 	}
 
-	return re.MatchString(str)
+	if re.MatchString(str) {
+		return true, nil
+	}
+	return false, newValidationError("IsPostalCode", ErrInvalidFormat, "invalid postalcode")
 }

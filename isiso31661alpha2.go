@@ -31,12 +31,16 @@ var AllISO31661Alpha2 = [...]string{"AA", "AB", "AC", "AD", "AE", "AF", "AG", "A
 
 // A validator that checks if the string is a valid [ISO 3166-1 alpha-2] officially assigned country code.
 //
-//	ok := validatorgo.IsISO31661Alpha2("EN")
+//	ok, _ := validatorgo.IsISO31661Alpha2("EN")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsISO31661Alpha2("eng")
+//	ok, _ = validatorgo.IsISO31661Alpha2("eng")
 //	fmt.Println(ok) // false
 //
 // [ISO 3166-1 alpha-2]: https://en.wikipedia.org/wiki/ISO_4217
-func IsISO31661Alpha2(str string) bool {
-	return IsIn(str, AllISO31661Alpha2[:])
+func IsISO31661Alpha2(str string) (bool, error) {
+	ok, _ := IsIn(str, AllISO31661Alpha2[:])
+	if ok {
+		return true, nil
+	}
+	return false, newValidationError("IsISO31661Alpha2", ErrInvalidValue, "invalid ISO 3166-1 alpha-2 code")
 }

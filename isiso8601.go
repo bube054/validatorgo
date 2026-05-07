@@ -23,13 +23,13 @@ type IsISO8601Opts struct {
 //
 // If StrictSeparator is true, date strings with date and time separated by anything other than a T will be invalid.
 //
-//	ok := validatorgo.IsISO8601("2023-09-05", &validatorgo.IsISO8601Opts{})
+//	ok, _ := validatorgo.IsISO8601("2023-09-05", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsISO8601("2023-13-05T14:30:00", &validatorgo.IsISO8601Opts{})
+//	ok, _ = validatorgo.IsISO8601("2023-13-05T14:30:00", nil)
 //	fmt.Println(ok) // false
 //
 // [ISO 8601]: https://en.wikipedia.org/wiki/ISO_8601
-func IsISO8601(str string, opts *IsISO8601Opts) bool {
+func IsISO8601(str string, opts *IsISO8601Opts) (bool, error) {
 	if opts == nil {
 		opts = setIsISO8601OptsToDefault()
 	}
@@ -45,16 +45,19 @@ func IsISO8601(str string, opts *IsISO8601Opts) bool {
 	capGrps := re.FindStringSubmatch(str)
 
 	if capGrps == nil {
-		return false
+		return false, newValidationError("IsISO8601", ErrInvalidFormat, "invalid iso8601")
 	}
 
 	if opts.Strict {
 		year, month, day := capGrps[1], capGrps[3], capGrps[5]
 
-		return validYearMonthDay(year, month, day)
+		if validYearMonthDay(year, month, day) {
+			return true, nil
+		}
+		return false, newValidationError("IsISO8601", ErrInvalidFormat, "invalid iso8601")
 	}
 
-	return true
+	return true, nil
 }
 
 func setIsISO8601OptsToDefault() *IsISO8601Opts {

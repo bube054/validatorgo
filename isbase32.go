@@ -21,13 +21,13 @@ type IsBase32Opts struct {
 // IsBase32Opts defaults to { Crockford: false }.
 // When Crockford is true it tests the given base32 encoded string using [crockford's] base32 alternative.
 //
-//	isAlpha := validatorgo.IsBase32("JBSWY3DPEBLW64TMMQ", &validatorgo.IsBase32Opts{})
-//	fmt.Println(isAlpha) // true
-//	isAlpha := validatorgo.IsBase32("jbswy3dpeblw64tmmq======", &validatorgo.IsBase32Opts{})
-//	fmt.Println(isAlpha) // false
+//	ok, _ := validatorgo.IsBase32("JBSWY3DPEBLW64TMMQ", nil)
+//	fmt.Println(ok) // true
+//	ok, _ = validatorgo.IsBase32("jbswy3dpeblw64tmmq======", nil)
+//	fmt.Println(ok) // false
 //
 // [crockford's]: http://www.crockford.com/base32.html
-func IsBase32(str string, opts *IsBase32Opts) bool {
+func IsBase32(str string, opts *IsBase32Opts) (bool, error) {
 	if opts == nil {
 		opts = setIsBase32OptsToDefault()
 	}
@@ -36,13 +36,19 @@ func IsBase32(str string, opts *IsBase32Opts) bool {
 	strWithoutHyp := stripHyphens(strWithoutEq)
 
 	if len(strWithoutHyp) < 2 {
-		return false
+		return false, newValidationError("IsBase32", ErrTooShort, "string is too short to be valid base32")
 	}
 
 	if opts.Crockford {
-		return regexp.MustCompile(`^[A-HJ-KM-NP-TV-Z0-9]+$`).MatchString(strings.ToUpper(strWithoutHyp))
+		if !regexp.MustCompile(`^[A-HJ-KM-NP-TV-Z0-9]+$`).MatchString(strings.ToUpper(strWithoutHyp)) {
+			return false, newValidationError("IsBase32", ErrInvalidFormat, "string is not valid crockford base32")
+		}
+		return true, nil
 	} else {
-		return regexp.MustCompile(`^[A-Z2-7]+$`).MatchString(strWithoutHyp)
+		if !regexp.MustCompile(`^[A-Z2-7]+$`).MatchString(strWithoutHyp) {
+			return false, newValidationError("IsBase32", ErrInvalidFormat, "string is not valid standard base32")
+		}
+		return true, nil
 	}
 }
 

@@ -28,7 +28,7 @@ func TestIsISRC(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			result := IsISRC(test.param1, test.param2)
+			result, _ := IsISRC(test.param1, test.param2)
 
 			if result != test.want {
 				t.Errorf("got `%t`, wanted `%t`", result, test.want)

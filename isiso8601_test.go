@@ -57,7 +57,7 @@ func TestIsISO8601(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			result := IsISO8601(test.param1, test.param2)
+			result, _ := IsISO8601(test.param1, test.param2)
 
 			if result != test.want {
 				t.Errorf("got `%t`, wanted `%t`", result, test.want)

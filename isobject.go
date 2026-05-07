@@ -20,11 +20,11 @@ type IsObjectOpts struct {
 //
 // If the Strict option is set to false, then this validator works, where both arrays ("[]") and the null ("null") value are considered objects.
 //
-//	ok := validatorgo.IsObject(`{"name": "John", "age": 30}`, &validatorgo.IsObjectOpts{Strict: true})
+//	ok, _ := validatorgo.IsObject(`{"name": "John", "age": 30}`, &validatorgo.IsObjectOpts{Strict: true})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsObject(`{"name": "John", "age`, &validatorgo.IsObjectOpts{Strict: true})
+//	ok, _ = validatorgo.IsObject(`{"name": "John", "age`, &validatorgo.IsObjectOpts{Strict: true})
 //	fmt.Println(ok) // false
-func IsObject(str string, opts *IsObjectOpts) bool {
+func IsObject(str string, opts *IsObjectOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsObjectOptsToDefault()
 	}
@@ -33,19 +33,22 @@ func IsObject(str string, opts *IsObjectOpts) bool {
 
 	err := json.Unmarshal([]byte(str), &obj)
 	if err != nil {
-		return false
+		return false, newValidationError("IsObject", ErrInvalidFormat, "invalid object")
 	}
 
 	switch obj.(type) {
 	case map[string]interface{}:
-		return true
+		return true, nil
 	case []interface{}:
-		return !opts.Strict
+		if !opts.Strict {
+			return true, nil
+		}
+		return false, newValidationError("IsObject", ErrInvalidFormat, "invalid object")
 	default:
 		if str == "null" && !opts.Strict {
-			return true
+			return true, nil
 		}
-		return false
+		return false, newValidationError("IsObject", ErrInvalidFormat, "invalid object")
 	}
 }
 

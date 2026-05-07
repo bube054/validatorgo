@@ -30,13 +30,13 @@ type IsISSNOpts struct {
 //
 // If CaseSensitive is true, ISSNs with a lowercase "x" as the check digit are rejected.
 //
-//	ok := validatorgo.IsISSN("0378-5955", &validatorgo.IsISSNOpts{})
+//	ok, _ := validatorgo.IsISSN("0378-5955", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsISSN("1234567", &validatorgo.IsISSNOpts{})
+//	ok, _ = validatorgo.IsISSN("1234567", nil)
 //	fmt.Println(ok) // false
 //
 // [ISSN]: https://en.wikipedia.org/wiki/International_Standard_Serial_Number
-func IsISSN(str string, opts *IsISSNOpts) bool {
+func IsISSN(str string, opts *IsISSNOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsISSNOptsToDefault()
 	}
@@ -55,7 +55,7 @@ func IsISSN(str string, opts *IsISSNOpts) bool {
 	capGrp := re.FindStringSubmatch(str)
 
 	if len(capGrp) == 0 {
-		return false
+		return false, newValidationError("IsISSN", ErrInvalidFormat, "invalid issn")
 	}
 
 	strWithoutDashes := stripDashesAndSpaces(str)
@@ -75,7 +75,7 @@ func IsISSN(str string, opts *IsISSNOpts) bool {
 		charInt, err := strconv.Atoi(charVal)
 
 		if err != nil {
-			return false
+			return false, newValidationError("IsISSN", ErrInvalidFormat, "invalid issn")
 		}
 
 		// fmt.Printf("%d x %d\n", charInt, pos)
@@ -88,23 +88,32 @@ func IsISSN(str string, opts *IsISSNOpts) bool {
 	checkDig, err := strconv.Atoi(checkVal)
 
 	if checkValIsNotX && err != nil {
-		return false
+		return false, newValidationError("IsISSN", ErrInvalidFormat, "invalid issn")
 	}
 
 	rem := sum % 11
 
 	if rem == 0 {
 		// fmt.Printf("There is no rem and check digit: %d", checkDig)
-		return checkDig == 0
+		if checkDig == 0 {
+			return true, nil
+		}
+		return false, newValidationError("IsISSN", ErrInvalidFormat, "invalid issn")
 	}
 
 	remSub11 := 11 - rem
 
 	if remSub11 < 10 {
 		// fmt.Printf("rem sub is less than 10 check digit: %d, remSub: %d\n", checkDig, remSub11)
-		return remSub11 == checkDig
+		if remSub11 == checkDig {
+			return true, nil
+		}
+		return false, newValidationError("IsISSN", ErrInvalidFormat, "invalid issn")
 	}
 
 	// fmt.Printf("rem sub is greater than 10 check val: %s", checkVal)
-	return checkVal == "X" || checkVal == "x"
+	if checkVal == "X" || checkVal == "x" {
+		return true, nil
+	}
+	return false, newValidationError("IsISSN", ErrInvalidFormat, "invalid issn")
 }

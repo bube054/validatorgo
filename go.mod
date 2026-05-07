@@ -1,3 +1,3 @@
 module github.com/bube054/validatorgo
 
-go 1.13.0
+go 1.22.0

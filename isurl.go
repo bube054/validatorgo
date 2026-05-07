@@ -68,11 +68,11 @@ type IsURLOpts struct {
 //
 // MaxAllowedLength - if set IsURL will not allow URLs longer than the specified value (default is 2084 that IE maximum URL length).
 //
-//	ok := validatorgo.IsURL("http://localhost", &validatorgo.IsURLOpts{RequireTld: false, AllowProtocolRelativeUrls: true})
+//	ok, _ := validatorgo.IsURL("http://localhost", &validatorgo.IsURLOpts{RequireTld: false, AllowProtocolRelativeUrls: true})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsURL("example.com", &validatorgo.IsURLOpts{RequireProtocol: true, AllowProtocolRelativeUrls: true})
+//	ok, _ = validatorgo.IsURL("example.com", &validatorgo.IsURLOpts{RequireProtocol: true, AllowProtocolRelativeUrls: true})
 //	fmt.Println(ok) // false
-func IsURL(str string, opts *IsURLOpts) bool {
+func IsURL(str string, opts *IsURLOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsURLOptsToDefault()
 	}
@@ -96,7 +96,7 @@ func IsURL(str string, opts *IsURLOpts) bool {
 	capGrp := re.FindStringSubmatch(str)
 
 	if len(capGrp) == 0 {
-		return false
+		return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 	}
 
 	proto := capGrp[1]  // http
@@ -111,95 +111,96 @@ func IsURL(str string, opts *IsURLOpts) bool {
 
 	if opts.RequireTld {
 		if dom == "" {
-			return false
+			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
 	if opts.RequireProtocol {
 		if proto == "" || slash == "" {
-			return false
+			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
 	if opts.RequireHost {
 		if dom == "" {
-			return false
+			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
 	if opts.RequirePort {
 		if port == "" {
-			return false
+			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
 	if opts.RequireValidProtocol {
-		if !IsIn(proto, opts.Protocols) {
-			return false
+		ok, _ := IsIn(proto, opts.Protocols)
+		if !ok {
+			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
 	if !opts.AllowUnderscores {
 		if strings.Contains(subdom, "_") {
-			return false
+			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
 	if len(opts.HostWhitelist) > 0 {
 		subdomPlusDom := subdom + dom
-		isin := IsIn(subdomPlusDom, opts.HostWhitelist)
+		isin, _ := IsIn(subdomPlusDom, opts.HostWhitelist)
 
 		if !isin {
-			return false
+			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
 	if len(opts.HostBlacklist) > 0 {
 		subdomPlusDom := subdom + dom
-		isin := IsIn(subdomPlusDom, opts.HostBlacklist)
+		isin, _ := IsIn(subdomPlusDom, opts.HostBlacklist)
 
 		if isin {
-			return false
+			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
 	if !opts.AllowTrailingDot {
 		if trlDot == "." {
-			return false
+			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
 	if !opts.AllowProtocolRelativeUrls {
 		if proto != "" || slash != "//" {
-			return false
+			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
 	if !opts.AllowFragments {
 		if hash != "" {
-			return false
+			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
 	if !opts.AllowQueryComponents {
 		if param != "" {
-			return false
+			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
 	if opts.DisallowAuth {
 		if auth != "" {
-			return false
+			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
 	if opts.ValidateLength {
 		if len(str) > opts.MaxAllowedLength {
-			return false
+			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
-	return true
+	return true, nil
 }
 
 func setIsURLOptsToDefault() *IsURLOpts {

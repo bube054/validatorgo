@@ -7,16 +7,16 @@ import (
 
 // A validator that checks if the string is an HSL (hue, saturation, lightness, optional alpha) color based on CSS Colors Level 4 specification.
 //
-//	ok := validatorgo.IsHSL("hsl(360, 100%, 50%)")
+//	ok, _ := validatorgo.IsHSL("hsl(360, 100%, 50%)")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsHSL("hsl(360, 100%)")
+//	ok, _ = validatorgo.IsHSL("hsl(360, 100%)")
 //	fmt.Println(ok) // false
-func IsHSL(str string) bool {
+func IsHSL(str string) (bool, error) {
 	re := regexp.MustCompile(`^hsl(a)?\(\s?([^-+].*),\s?([^-+].*)%,\s?([^-+].*)%(,\s?([^-+].*))?\)$`)
 	capGrp := re.FindStringSubmatch(str)
 
 	if len(capGrp) == 0 {
-		return false
+		return false, newValidationError("IsHSL", ErrInvalidFormat, "invalid hsl")
 	}
 
 	a := capGrp[1]        // "a"
@@ -26,42 +26,42 @@ func IsHSL(str string) bool {
 	alphaVal := capGrp[6] // "0.5"
 
 	if hueFlt, err := strconv.ParseFloat(hueVal, 64); err != nil {
-		return false
+		return false, newValidationError("IsHSL", ErrInvalidFormat, "invalid hsl")
 	} else {
 		if hueFlt < 0 || hueFlt > 360 {
-			return false
+			return false, newValidationError("IsHSL", ErrInvalidFormat, "invalid hsl")
 		}
 	}
 
 	if satFlt, err := strconv.ParseFloat(satVal, 64); err != nil {
-		return false
+		return false, newValidationError("IsHSL", ErrInvalidFormat, "invalid hsl")
 	} else {
 		if satFlt < 0 || satFlt > 100 {
-			return false
+			return false, newValidationError("IsHSL", ErrInvalidFormat, "invalid hsl")
 		}
 	}
 
 	if lightFlt, err := strconv.ParseFloat(lightVal, 64); err != nil {
-		return false
+		return false, newValidationError("IsHSL", ErrInvalidFormat, "invalid hsl")
 	} else {
 		if lightFlt < 0 || lightFlt > 100 {
-			return false
+			return false, newValidationError("IsHSL", ErrInvalidFormat, "invalid hsl")
 		}
 	}
 
 	if alphaVal != "" {
 		if a == "" {
-			return false
+			return false, newValidationError("IsHSL", ErrInvalidFormat, "invalid hsl")
 		}
 
 		if alphaVal, err := strconv.ParseFloat(alphaVal, 64); err != nil {
-			return false
+			return false, newValidationError("IsHSL", ErrInvalidFormat, "invalid hsl")
 		} else {
 			if alphaVal < 0 || alphaVal > 1 {
-				return false
+				return false, newValidationError("IsHSL", ErrInvalidFormat, "invalid hsl")
 			}
 		}
 	}
 
-	return true
+	return true, nil
 }

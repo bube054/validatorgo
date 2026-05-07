@@ -4,14 +4,17 @@ import "regexp"
 
 // A validator that checks if the string matches the regex.
 //
-//	ok := validatorgo.Matches("foo", regexp.MustCompile(`^foo$`))
+//	ok, _ := validatorgo.Matches("foo", regexp.MustCompile(`^foo$`))
 //	fmt.Println(ok) // true
-//	ok := validatorgo.Matches("foo", regexp.MustCompile(`^foobar$`))
+//	ok, _ = validatorgo.Matches("foo", regexp.MustCompile(`^foobar$`))
 //	fmt.Println(ok) // false
-func Matches(str string, re *regexp.Regexp) bool {
+func Matches(str string, re *regexp.Regexp) (bool, error) {
 	if re == nil {
-		return false
+		return false, newValidationError("Matches", ErrInvalidFormat, "string does not match pattern")
 	}
 
-	return re.MatchString(str)
+	if re.MatchString(str) {
+		return true, nil
+	}
+	return false, newValidationError("Matches", ErrInvalidFormat, "string does not match pattern")
 }

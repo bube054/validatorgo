@@ -27,7 +27,7 @@
   - [Finance & Crypto](#finance--crypto)
   - [Colors & Data Structures](#colors--data-structures)
 - [Sanitizers](#sanitizers)
-- [Important: Options Struct Behavior](#-important-options-struct-behavior)
+- [Error Handling](#error-handling)
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
 - [License](#license)
@@ -36,8 +36,9 @@
 
 ## Features
 
-- **80+ validators** covering everything from emails and URLs to IBANs and ISO codes
+- **89+ validators** covering everything from emails and URLs to IBANs and ISO codes
 - **13 sanitizers** for cleaning, normalizing, and converting input strings
+- **Structured errors** — every validator returns `(bool, error)` with machine-readable error codes
 - **Locale-aware** — many validators accept locale options for region-specific formats
 - **Pure Go**, no heavy dependencies
 - **Comprehensive tests** with ~87% coverage
@@ -93,24 +94,25 @@ import (
 
 func main() {
     id := "5f2a6c69e1d7a4e0077b4e6b"
-    fmt.Println(vgo.IsMongoID(id)) // true
+    ok, err := vgo.IsMongoID(id)
+    fmt.Println(ok)  // true
+    fmt.Println(err) // <nil>
 }
 ```
 
 **Validate an email with options:**
 
 ```go
-ok := vgo.IsEmail("user@example.com", &vgo.IsEmailOpts{
-    AllowDisplayName:         false,
-    RequireDisplayName:       false,
-    AllowUTF8LocalPart:       true,
-    RequireTld:               true,
-    AllowIpDomain:            false,
-    DomainSpecificValidation: false,
-    BlacklistedChars:         "",
-    HostBlacklist:            nil,
-})
+// Pass nil to use all defaults
+ok, _ := vgo.IsEmail("user@example.com", nil)
 fmt.Println(ok) // true
+
+// Or customize only what you need
+ok, err := vgo.IsEmail("user@example.com", &vgo.IsEmailOpts{
+    RequireTld:               vgo.Bool(false), // override default (true)
+    DomainSpecificValidation: true,
+})
+fmt.Println(ok, err) // true <nil>
 ```
 
 **Sanitize a string:**
@@ -298,28 +300,42 @@ fmt.Println(clean) // "HelloWorld"
 
 ---
 
-## ⚠️ Important: Options Struct Behavior
+## Error Handling
 
-When using a validator that takes an options struct, **always set every field explicitly**.
-
-Unlike validator.js — where missing fields default to documented values — Go uses zero values: missing booleans become `false`, missing numbers become `0`, etc. This can cause unexpected behavior if you're used to the JavaScript version.
+All validators return `(bool, error)`. On success, `err` is `nil`. On failure, `err` is a `*ValidationError` with machine-readable context:
 
 ```go
-// ✅ Recommended — pass nil to use built-in defaults
-ok := validatorgo.IsFQDN("example.com", nil)
+ok, err := validatorgo.IsEmail("bad-email", nil)
+if err != nil {
+    var ve *validatorgo.ValidationError
+    if errors.As(err, &ve) {
+        fmt.Println(ve.Validator) // "IsEmail"
+        fmt.Println(ve.Code)     // "INVALID_FORMAT"
+        fmt.Println(ve.Message)  // "invalid email format"
+    }
+}
+```
 
-// ✅ Also good — set every field explicitly
-ok = validatorgo.IsFQDN("example.com", &validatorgo.IsFQDNOpts{
-    RequireTld:       false,
-    AllowUnderscores: false,
+**Error codes:** `INVALID_FORMAT`, `TOO_SHORT`, `TOO_LONG`, `MISSING_TLD`, `BLACKLISTED_HOST`, `NOT_WHITELISTED_HOST`, `BLACKLISTED_CHAR`, `INVALID_LOCALE`, `OUT_OF_RANGE`, `INVALID_CHECKSUM`, `INVALID_LENGTH`, `MISSING_REQUIRED`, `INVALID_DOMAIN`, `UNSUPPORTED_VERSION`, `INVALID_VALUE`, `NOT_FOUND`.
+
+### Pointer-typed option fields
+
+Option fields whose defaults differ from Go's zero value use pointer types (e.g., `RequireTld *bool` defaults to `true`). Pass `nil` for the struct to get all defaults, or use the exported helpers to set specific fields:
+
+```go
+validatorgo.Bool(true)     // *bool
+validatorgo.String("foo")  // *string
+validatorgo.Int(42)        // *int
+validatorgo.Uint(10)       // *uint
+validatorgo.Float64(3.14)  // *float64
+```
+
+Example:
+
+```go
+ok, _ := validatorgo.IsFQDN("example.com", &validatorgo.IsFQDNOpts{
+    RequireTld:      validatorgo.Bool(false), // override default (true)
     AllowTrailingDot: true,
-    AllowNumericTld:  false,
-    IgnoreMaxLength:  true,
-})
-
-// ⚠️ Risky — unset fields silently fall to Go zero values
-ok = validatorgo.IsFQDN("example.com", &validatorgo.IsFQDNOpts{
-    RequireTld: false,
 })
 ```
 

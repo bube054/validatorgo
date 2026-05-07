@@ -12,26 +12,29 @@ var ipVersionRegex = map[string]*regexp.Regexp{
 
 // A validator that checks if the string is an IP (version 4 or 6). If version is not provide, both versions "4" and "6" will be checked.
 //
-//	ok := validatorgo.IsIP("192.168.0.1", "4")
+//	ok, _ := validatorgo.IsIP("192.168.0.1", "4")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsIP("256.256.256.256", "4")
+//	ok, _ = validatorgo.IsIP("256.256.256.256", "4")
 //	fmt.Println(ok) // false
-func IsIP(str, version string) bool {
+func IsIP(str, version string) (bool, error) {
 	if version == "" {
 		for _, re := range ipVersionRegex {
 			matches := re.MatchString(str)
 			if matches {
-				return true
+				return true, nil
 			}
 		}
-		return false
+		return false, newValidationError("IsIP", ErrInvalidFormat, "invalid ip")
 	} else {
 		re, ok := ipVersionRegex[version]
 
 		if !ok {
-			return false
+			return false, newValidationError("IsIP", ErrInvalidFormat, "invalid ip")
 		}
 
-		return re.MatchString(str)
+		if re.MatchString(str) {
+			return true, nil
+		}
+		return false, newValidationError("IsIP", ErrInvalidFormat, "invalid ip")
 	}
 }

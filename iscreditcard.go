@@ -37,11 +37,11 @@ var creditCardProviderRegex = map[string]string{
 // Provider: is a key whose value should be a string, and defines the company issuing the credit card.
 // Valid values include amex, bcglobal, carteblanche, dinersclub, discover, instapayment, jcb, koreanlocal, laser, maestro, mastercard, solo, switch, unionpay, visa, visamastercard or blank will check for any provider.
 //
-//	ok := validatorgo.IsCreditCard("378282246310005", &validatorgo.IsCreditCardOpts{Provider: "amex"})
+//	ok, _ := validatorgo.IsCreditCard("378282246310005", &validatorgo.IsCreditCardOpts{Provider: "amex"})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsCreditCard("37828224631000", &validatorgo.IsCreditCardOpts{Provider: "amex"})
+//	ok, _ = validatorgo.IsCreditCard("37828224631000", &validatorgo.IsCreditCardOpts{Provider: "amex"})
 //	fmt.Println(ok) // false
-func IsCreditCard(str string, opts *IsCreditCardOpts) bool {
+func IsCreditCard(str string, opts *IsCreditCardOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsCreditCardOptsToDefault()
 	}
@@ -50,19 +50,22 @@ func IsCreditCard(str string, opts *IsCreditCardOpts) bool {
 
 	if !ok {
 		if opts.Provider != "" {
-			return false
+			return false, newValidationError("IsCreditCard", ErrInvalidFormat, "invalid creditcard")
 		}
 
 		for _, val := range creditCardProviderRegex {
 			if isVal := regexp.MustCompile(val).MatchString(str); isVal {
-				return true
+				return true, nil
 			}
 		}
 	} else {
-		return regexp.MustCompile(reStr).MatchString(str)
+		if regexp.MustCompile(reStr).MatchString(str) {
+			return true, nil
+		}
+		return false, newValidationError("IsCreditCard", ErrInvalidFormat, "invalid creditcard")
 	}
 
-	return false
+	return false, newValidationError("IsCreditCard", ErrInvalidFormat, "invalid creditcard")
 }
 
 func setIsCreditCardOptsToDefault() (opts *IsCreditCardOpts) {

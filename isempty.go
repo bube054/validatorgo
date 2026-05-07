@@ -15,19 +15,25 @@ type IsEmptyOpts struct {
 //
 // IsEmptyOpts is a struct which defaults to { IgnoreWhitespace: false }.
 //
-//	ok := validatorgo.IsEmpty("", &validatorgo.IsEmpty{})
+//	ok, _ := validatorgo.IsEmpty("", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsEmpty("abc", &validatorgo.IsEmpty{})
+//	ok, _ = validatorgo.IsEmpty("abc", nil)
 //	fmt.Println(ok) // false
-func IsEmpty(str string, opts *IsEmptyOpts) bool {
+func IsEmpty(str string, opts *IsEmptyOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsEmptyOptsToDefault()
 	}
 
 	if opts.IgnoreWhitespace {
-		return regexp.MustCompile(`^(\s+)?$`).MatchString(str)
+		if !regexp.MustCompile(`^(\s+)?$`).MatchString(str) {
+			return false, newValidationError("IsEmpty", ErrInvalidValue, "string is not empty")
+		}
+		return true, nil
 	} else {
-		return regexp.MustCompile(`^$`).MatchString(str)
+		if !regexp.MustCompile(`^$`).MatchString(str) {
+			return false, newValidationError("IsEmpty", ErrInvalidValue, "string is not empty")
+		}
+		return true, nil
 	}
 }
 

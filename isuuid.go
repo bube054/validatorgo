@@ -17,28 +17,31 @@ var uuidRegex = map[string]*regexp.Regexp{
 //
 // version is one of ("1"-"5"). if none is not provided, it will validate any of them.
 //
-//	ok := validatorgo.IsUUID("550e8400-e29b-11d4-a716-446655440000", "1")
+//	ok, _ := validatorgo.IsUUID("550e8400-e29b-11d4-a716-446655440000", "1")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsUUID("f47ac10b-58cc-4372-a567-0e02b2c3d479", "1")
+//	ok, _ = validatorgo.IsUUID("f47ac10b-58cc-4372-a567-0e02b2c3d479", "1")
 //	fmt.Println(ok) // false
-func IsUUID(str, version string) bool {
+func IsUUID(str, version string) (bool, error) {
 	re, exists := uuidRegex[version]
 
 	if !exists {
 		if version != "" {
-			return false
+			return false, newValidationError("IsUUID", ErrInvalidFormat, "invalid uuid")
 		}
 
 		for _, uiRe := range uuidRegex {
 			match := uiRe.MatchString(str)
 
 			if match {
-				return true
+				return true, nil
 			}
 		}
 
-		return false
+		return false, newValidationError("IsUUID", ErrInvalidFormat, "invalid uuid")
 	}
 
-	return re.MatchString(str)
+	if re.MatchString(str) {
+		return true, nil
+	}
+	return false, newValidationError("IsUUID", ErrInvalidFormat, "invalid uuid")
 }

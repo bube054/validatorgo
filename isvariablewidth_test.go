@@ -32,7 +32,7 @@ func TestIsVariableWidth(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			result := IsVariableWidth(test.param1)
+			result, _ := IsVariableWidth(test.param1)
 
 			if result != test.want {
 				t.Errorf("got `%t`, wanted `%t`", result, test.want)

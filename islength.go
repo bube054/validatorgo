@@ -21,11 +21,11 @@ type IsLengthOpts struct {
 //
 // Note: this function takes into account surrogate pairs.
 //
-//	ok := validatorgo.IsLength("hello", &validatorgo.IsLengthOpts{Min: 3})
+//	ok, _ := validatorgo.IsLength("hello", &validatorgo.IsLengthOpts{Min: 3})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsLength("hi", &validatorgo.IsLengthOpts{Min: 3})
+//	ok, _ = validatorgo.IsLength("hi", &validatorgo.IsLengthOpts{Min: 3})
 //	fmt.Println(ok) // false
-func IsLength(str string, opts *IsLengthOpts) bool {
+func IsLength(str string, opts *IsLengthOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsLengthOptsToDefault()
 	}
@@ -42,7 +42,10 @@ func IsLength(str string, opts *IsLengthOpts) bool {
 	isMin := opts.Min <= length
 	withinLimits = withinLimits && isMin
 
-	return withinLimits
+	if withinLimits {
+		return true, nil
+	}
+	return false, newValidationError("IsLength", ErrInvalidFormat, "invalid length")
 }
 
 func setIsLengthOptsToDefault() *IsLengthOpts {

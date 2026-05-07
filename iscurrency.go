@@ -52,13 +52,13 @@ type IsCurrencyOpts struct {
 //
 // IsCurrencyOpts is a struct which defaults to { Symbol: '$', RequireSymbol: false, AllowSpaceAfterSymbol: false, SymbolAfterDigits: false, AllowNegatives: true, ParensForNegatives: false, NegativeSignBeforeDigits: false, NegativeSignAfterDigits: false, AllowNegativeSignPlaceholder: false, ThousandsSeparator: ',', DecimalSeparator: '.', AllowDecimal: true, RequireDecimal: false, MaxDigitsAfterDecimal: 2, AllowSpaceAfterDigits: false }.
 //
-//	ok := validatorgo.IsCurrency("$100,000.00", nil)
+//	ok, _ := validatorgo.IsCurrency("$100,000.00", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsCurrency("¥100", &validatorgo.IsCurrencyOpts{Symbol: "¥", RequireSymbol: true})
+//	ok, _ = validatorgo.IsCurrency("¥100", &validatorgo.IsCurrencyOpts{Symbol: "¥", RequireSymbol: true})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsCurrency("100.50", &validatorgo.IsCurrencyOpts{Symbol: "$", RequireSymbol: true})
+//	ok, _ = validatorgo.IsCurrency("100.50", &validatorgo.IsCurrencyOpts{Symbol: "$", RequireSymbol: true})
 //	fmt.Println(ok) // false
-func IsCurrency(str string, opts *IsCurrencyOpts) bool {
+func IsCurrency(str string, opts *IsCurrencyOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsCurrencyOptsToDefault()
 	}
@@ -81,14 +81,14 @@ func IsCurrency(str string, opts *IsCurrencyOpts) bool {
 	re, err := regexp.Compile(reStr)
 
 	if err != nil {
-		return false
+		return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 	}
 
 	capGrp := re.FindStringSubmatch(str)
 	// fmt.Println(re.String())
 
 	if len(capGrp) == 0 {
-		return false
+		return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 	}
 
 	// fmt.Println(capGrp, len(capGrp))
@@ -109,87 +109,88 @@ func IsCurrency(str string, opts *IsCurrencyOpts) bool {
 	if opts.RequireSymbol {
 		if begSym != opts.Symbol && endSym != opts.Symbol {
 			// fmt.Println("opts.RequireSymbol")
-			return false
+			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
 	if !opts.AllowSpaceAfterSymbol {
 		if space != "" {
 			// fmt.Println("opts.AllowSpaceAfterSymbol")
-			return false
+			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
 	if opts.SymbolAfterDigits {
 		if endSym != opts.Symbol {
 			// fmt.Println("opts.SymbolAfterDigits 1")
-			return false
+			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	} else {
 		// fmt.Println("uvyctuyi")
 		if endSym == opts.Symbol {
 			// fmt.Println("opts.SymbolAfterDigits 2")
-			return false
+			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
 	if !opts.AllowNegatives {
 		if beg1Op == "-" || beg2Op == "-" || endOp == "-" {
 			// fmt.Println("opts.AllowNegatives")
-			return false
+			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
 	if opts.ParensForNegatives {
 		if leftBrack != "(" || rightBrack != ")" || beg1Op != "" || beg2Op != "" || endOp != "" {
 			// fmt.Println("opts.ParensForNegatives")
-			return false
+			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
 	if opts.NegativeSignBeforeDigits {
 		if beg1Op != "-" {
 			// fmt.Println("opts.NegativeSignBeforeDigits")
-			return false
+			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
 	if opts.NegativeSignAfterDigits {
 		if endOp != "-" {
 			// fmt.Println("opts.NegativeSignAfterDigits", beg2Op)
-			return false
+			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
 	if !opts.AllowNegativeSignPlaceholder {
 		if endOp != "" {
 			// fmt.Println("opts.AllowNegativeSignPlaceholder", beg2Op)
-			return false
+			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
 	if !opts.AllowDecimal {
 		if decPart != "" {
 			// fmt.Println("opts.AllowDecimal")
-			return false
+			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
 	if opts.RequireDecimal {
 		if decPart == "" {
 			// fmt.Println("opts.RequireDecimal", decPart)
-			return false
+			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
 	if !opts.AllowSpaceAfterDigits && endOp != "-" {
 		// fmt.Printf("`%s`\n", endOp)
-		if !IsEmpty(endOp, &IsEmptyOpts{IgnoreWhitespace: false}) {
+		okEmpty, _ := IsEmpty(endOp, &IsEmptyOpts{IgnoreWhitespace: false})
+		if !okEmpty {
 			// fmt.Println("opts.AllowSpaceAfterDigits")
-			return false
+			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
-	return true
+	return true, nil
 }
 
 func setIsCurrencyOptsToDefault() *IsCurrencyOpts {

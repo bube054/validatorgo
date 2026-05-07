@@ -18,19 +18,25 @@ type IsBooleanOpts struct {
 // Loose: If Loose is set to false, the validator will strictly match ['true', 'false', '0', '1'].
 // If Loose is set to true, the validator will also match 'yes', 'no', and will match a valid boolean string of any case. (e.g.: ['true', 'True', 'TRUE', "false", "False", "FALSE"]).
 //
-//	ok := validatorgo.IsBoolean("true", &validatorgo.IsBooleanOpts{Loose: false})
+//	ok, _ := validatorgo.IsBoolean("true", &validatorgo.IsBooleanOpts{Loose: false})
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsBoolean("bool", &validatorgo.IsBooleanOpts{Loose: false})
+//	ok, _ = validatorgo.IsBoolean("bool", &validatorgo.IsBooleanOpts{Loose: false})
 //	fmt.Println(ok) // false
-func IsBoolean(str string, opts *IsBooleanOpts) bool {
+func IsBoolean(str string, opts *IsBooleanOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsBooleanOptsToDefault()
 	}
 
 	if opts.Loose {
-		return regexp.MustCompile("^(true|True|TRUE|false|False|FALSE|yes|no|0|1)$").MatchString(str)
+		if !regexp.MustCompile("^(true|True|TRUE|false|False|FALSE|yes|no|0|1)$").MatchString(str) {
+			return false, newValidationError("IsBoolean", ErrInvalidValue, "string is not a valid boolean value")
+		}
+		return true, nil
 	} else {
-		return regexp.MustCompile("^(true|false|0|1)$").MatchString(str)
+		if !regexp.MustCompile("^(true|false|0|1)$").MatchString(str) {
+			return false, newValidationError("IsBoolean", ErrInvalidValue, "string is not a valid strict boolean value")
+		}
+		return true, nil
 	}
 }
 

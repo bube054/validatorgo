@@ -4,13 +4,13 @@ import "strconv"
 
 // A validator that checks if the string passes the [Luhn algorithm] check.
 //
-//	ok := validatorgo.IsLuhnNumber("4532015112830366")
+//	ok, _ := validatorgo.IsLuhnNumber("4532015112830366")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsLuhnNumber("4532015112830367")
+//	ok, _ = validatorgo.IsLuhnNumber("4532015112830367")
 //	fmt.Println(ok) // false
 //
 // [Luhn algorithm]: https://en.wikipedia.org/wiki/Luhn_algorithm
-func IsLuhnNumber(str string) bool {
+func IsLuhnNumber(str string) (bool, error) {
 	var (
 		len      = len(str)
 		sum      = 0
@@ -22,7 +22,7 @@ func IsLuhnNumber(str string) bool {
 		d, err := strconv.Atoi(string(char))
 
 		if err != nil {
-			return false
+			return false, newValidationError("IsLuhnNumber", ErrInvalidChecksum, "invalid luhnnumber")
 		}
 
 		if isSecond {
@@ -36,5 +36,8 @@ func IsLuhnNumber(str string) bool {
 		isSecond = !isSecond
 	}
 
-	return sum%10 == 0
+	if sum%10 == 0 {
+		return true, nil
+	}
+	return false, newValidationError("IsLuhnNumber", ErrInvalidChecksum, "invalid luhnnumber")
 }

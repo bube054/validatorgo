@@ -29,11 +29,11 @@ type IsFQDNOpts struct {
 //
 // IsFQDNOpts is a struct which defaults to { RequireTld: true, AllowUnderscores: false, AllowTrailingDot: false, AllowNumericTld: false, allow_wildcard: false, IgnoreMaxLength: false }.
 //
-//	ok := validatorgo.IsFQDN("localhost",  &validatorgo.IsFQDNOpts{})
+//	ok, _ := validatorgo.IsFQDN("localhost", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsFQDN("example..com", &validatorgo.IsFQDNOpts{})
+//	ok, _ = validatorgo.IsFQDN("example..com", nil)
 //	fmt.Println(ok) // false
-func IsFQDN(str string, opts *IsFQDNOpts) bool {
+func IsFQDN(str string, opts *IsFQDNOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsFQDNOptsToDefault()
 	}
@@ -65,7 +65,10 @@ func IsFQDN(str string, opts *IsFQDNOpts) bool {
 	reStr := fmt.Sprintf(`^([%s])+(\.[%s]+)?\.%s%s+%s$`, allowUnderScoreRe, allowUnderScoreRe, requireTldRe, allowNumTldRe, allowTrailingDotRe)
 	re := regexp.MustCompile(reStr)
 	isValid := re.MatchString(str)
-	return isValid && ignMaxLength
+	if isValid && ignMaxLength {
+		return true, nil
+	}
+	return false, newValidationError("IsFQDN", ErrInvalidFormat, "invalid fqdn")
 }
 
 func setIsFQDNOptsToDefault() *IsFQDNOpts {

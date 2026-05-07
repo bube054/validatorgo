@@ -24,12 +24,16 @@ var AllISO4217Codes = [...]string{
 
 // A validator that checks if the string is a valid [ISO 4217] officially assigned currency code.
 //
-//	ok := validatorgo.IsIso4217("AED")
+//	ok, _ := validatorgo.IsIso4217("AED")
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsIso4217("AE")
+//	ok, _ = validatorgo.IsIso4217("AE")
 //	fmt.Println(ok) // false
 //
 // [ISO 4217]: https://en.wikipedia.org/wiki/ISO_4217
-func IsIso4217(str string) bool {
-	return IsIn(str, AllISO4217Codes[:])
+func IsIso4217(str string) (bool, error) {
+	ok, _ := IsIn(str, AllISO4217Codes[:])
+	if ok {
+		return true, nil
+	}
+	return false, newValidationError("IsIso4217", ErrInvalidValue, "invalid ISO 4217 code")
 }

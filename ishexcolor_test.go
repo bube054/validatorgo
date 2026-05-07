@@ -24,7 +24,7 @@ func TestIsHexColor(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			result := IsHexColor(test.param1)
+			result, _ := IsHexColor(test.param1)
 
 			if result != test.want {
 				t.Errorf("got `%t`, wanted `%t`", result, test.want)

@@ -152,11 +152,11 @@ var floatDecimalFormats = map[string]string{
 //
 // Locale determines the decimal separator and is one of ("ar", "ar-AE", "ar-BH", "ar-DZ", "ar-EG", "ar-IQ", "ar-JO", "ar-KW", "ar-LB", "ar-LY", "ar-MA", "ar-QA", "ar-QM", "ar-SA", "ar-SD", "ar-SY", "ar-TN", "ar-YE", "bg-BG", "cs-CZ", "da-DK", "de-DE", "en-AU", "en-GB", "en-HK", "en-IN", "en-NZ", "en-US", "en-ZA", "en-ZM", "eo", "es-ES", "fr-CA", "fr-FR", "hu-HU", "it-IT", "nb-NO", "nl-NL", "nn-NO", "pl-PL", "pt-BR", "pt-PT", "ru-RU", "sl-SI", "sr-RS", "sr-RS@latin", "sv-SE", "tr-TR", "uk-UA").
 //
-//	ok := validatorgo.IsFloat("123.45",  &validatorgo.IsFloatOpts{})
+//	ok, _ := validatorgo.IsFloat("123.45", nil)
 //	fmt.Println(ok) // true
-//	ok := validatorgo.IsFloat("123", &validatorgo.IsFloatOpts{})
+//	ok, _ = validatorgo.IsFloat("123", nil)
 //	fmt.Println(ok) // false
-func IsFloat(str string, opts *IsFloatOpts) bool {
+func IsFloat(str string, opts *IsFloatOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsFloatOptsToDefault()
 	}
@@ -167,7 +167,7 @@ func IsFloat(str string, opts *IsFloatOpts) bool {
 
 	format, ok := floatDecimalFormats[opts.Locale]
 	if !ok {
-		return false
+		return false, newValidationError("IsFloat", ErrInvalidFormat, "invalid float")
 	}
 
 	parsableFltFunc := formatFloat[format]
@@ -176,7 +176,7 @@ func IsFloat(str string, opts *IsFloatOpts) bool {
 	flt, err := strconv.ParseFloat(parsableFlt, 64)
 
 	if err != nil {
-		return false
+		return false, newValidationError("IsFloat", ErrInvalidFormat, "invalid float")
 	}
 
 	re := floatFormats[format]
@@ -199,7 +199,10 @@ func IsFloat(str string, opts *IsFloatOpts) bool {
 		inRange = flt > *opts.Gt && inRange
 	}
 
-	return re.MatchString(str) && inRange
+	if re.MatchString(str) && inRange {
+		return true, nil
+	}
+	return false, newValidationError("IsFloat", ErrInvalidFormat, "invalid float")
 }
 
 func setIsFloatOptsToDefault() *IsFloatOpts {
