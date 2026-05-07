@@ -2,13 +2,15 @@ package validatorgo
 
 import "regexp"
 
-var (
-	isEmptyOptsDefaultIgnoreWhitespace bool = false
-)
-
 // IsEmptyOpts is used to configure IsEmpty
 type IsEmptyOpts struct {
-	IgnoreWhitespace bool
+	IgnoreWhitespace *bool
+}
+
+func (o *IsEmptyOpts) mergeDefaults() {
+	if o.IgnoreWhitespace == nil {
+		o.IgnoreWhitespace = Bool(false)
+	}
 }
 
 // A validator check if the string has a length of zero.
@@ -21,10 +23,11 @@ type IsEmptyOpts struct {
 //	fmt.Println(ok) // false
 func IsEmpty(str string, opts *IsEmptyOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsEmptyOptsToDefault()
+		opts = &IsEmptyOpts{}
 	}
+	opts.mergeDefaults()
 
-	if opts.IgnoreWhitespace {
+	if *opts.IgnoreWhitespace {
 		if !regexp.MustCompile(`^(\s+)?$`).MatchString(str) {
 			return false, newValidationError("IsEmpty", ErrInvalidValue, "string is not empty")
 		}
@@ -37,8 +40,3 @@ func IsEmpty(str string, opts *IsEmptyOpts) (bool, error) {
 	}
 }
 
-func setIsEmptyOptsToDefault() *IsEmptyOpts {
-	return &IsEmptyOpts{
-		IgnoreWhitespace: isEmptyOptsDefaultIgnoreWhitespace,
-	}
-}

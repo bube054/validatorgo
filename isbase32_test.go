@@ -21,11 +21,11 @@ func TestIsBase32(t *testing.T) {
 		{name: "Nil config basic valid Base32", param1: "JBSWY3DPEBLW64TMMQ======", param2: nil, want: true},
 
 		// Crockford Base32 tests
-		{name: "Crockford Base32 valid", param1: "91JPRV3F41VPYWKCCG", param2: &IsBase32Opts{Crockford: true}, want: true},
-		{name: "Crockford Base32 valid with hyphens", param1: "91-JP-RV-3F-41-VP-YW-KC-CG", param2: &IsBase32Opts{Crockford: true}, want: true},
-		{name: "Crockford Base32 lowercase", param1: "91jprv3f41vpywkccg", param2: &IsBase32Opts{Crockford: true}, want: true},
-		{name: "Crockford Base32 with special characters", param1: "91JPRV3F!41VPYWKCCG", param2: &IsBase32Opts{Crockford: true}, want: false},
-		{name: "Crockford Base32 invalid due to incorrect padding", param1: "A1B2C3D4E5F6G7H8I9J", param2: &IsBase32Opts{Crockford: true}, want: false},
+		{name: "Crockford Base32 valid", param1: "91JPRV3F41VPYWKCCG", param2: &IsBase32Opts{Crockford: Bool(true)}, want: true},
+		{name: "Crockford Base32 valid with hyphens", param1: "91-JP-RV-3F-41-VP-YW-KC-CG", param2: &IsBase32Opts{Crockford: Bool(true)}, want: true},
+		{name: "Crockford Base32 lowercase", param1: "91jprv3f41vpywkccg", param2: &IsBase32Opts{Crockford: Bool(true)}, want: true},
+		{name: "Crockford Base32 with special characters", param1: "91JPRV3F!41VPYWKCCG", param2: &IsBase32Opts{Crockford: Bool(true)}, want: false},
+		{name: "Crockford Base32 invalid due to incorrect padding", param1: "A1B2C3D4E5F6G7H8I9J", param2: &IsBase32Opts{Crockford: Bool(true)}, want: false},
 		{name: "Nil config invalid Base32 with special character", param1: "JBSWY3DP$BLW64TMMQ======", param2: nil, want: false},
 		{name: "Nil config empty string", param1: "", param2: nil, want: false},
 

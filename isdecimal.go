@@ -10,7 +10,7 @@ var (
 
 // DecimalDigits is used to configure IsDecimalOpts
 type DecimalDigits struct {
-	Min uint  // minimum allowed decimal range
+	Min *uint // minimum allowed decimal range
 	Max *uint // maximum allowed decimal range
 }
 
@@ -18,7 +18,7 @@ type DecimalDigits struct {
 type IsDecimalOpts struct {
 	DecimalDigits
 
-	ForceDecimal bool    // decimal/radix point must be present
+	ForceDecimal *bool   // decimal/radix point must be present
 	Locale       *string // locale used
 }
 
@@ -64,6 +64,12 @@ func IsDecimal(str string, opts *IsDecimalOpts) (bool, error) {
 }
 
 func (o *IsDecimalOpts) mergeDefaults() {
+	if o.ForceDecimal == nil {
+		o.ForceDecimal = Bool(false)
+	}
+	if o.DecimalDigits.Min == nil {
+		o.DecimalDigits.Min = Uint(0)
+	}
 	if o.Locale == nil {
 		o.Locale = String("en-US")
 	}

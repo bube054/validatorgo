@@ -21,12 +21,12 @@ func TestIsAlphanumeric(t *testing.T) {
 		{name: "Spanish locale with ñ", param1: "niño123", param2: &IsAlphanumericOpts{Locale: String("es-ES")}, want: true},
 		{name: "French locale alphanumeric check", param1: "çàèéêô123", param2: &IsAlphanumericOpts{Locale: String("fr-FR")}, want: true},
 		{name: "French locale with mixed case", param1: "élève123", param2: &IsAlphanumericOpts{Locale: String("fr-FR")}, want: true},
-		{name: "Ignore hyphen option", param1: "hello-123", param2: &IsAlphanumericOpts{Ignore: "-"}, want: true},
-		{name: "Ignore space option", param1: "Hello 123", param2: &IsAlphanumericOpts{Ignore: " "}, want: true},
+		{name: "Ignore hyphen option", param1: "hello-123", param2: &IsAlphanumericOpts{Ignore: String("-")}, want: true},
+		{name: "Ignore space option", param1: "Hello 123", param2: &IsAlphanumericOpts{Ignore: String(" ")}, want: true},
 		{name: "Nil config, basic alphanumeric check", param1: "hello123", param2: nil, want: true},
-		{name: "German locale with ignore hyphen", param1: "Schön-123", param2: &IsAlphanumericOpts{Locale: String("de-DE"), Ignore: "-"}, want: true},
-		{name: "Spanish locale with ignore digits", param1: "niño123", param2: &IsAlphanumericOpts{Locale: String("es-ES"), Ignore: "123"}, want: true},
-		{name: "French locale with ignore space", param1: "élève 123", param2: &IsAlphanumericOpts{Locale: String("fr-FR"), Ignore: " "}, want: true},
+		{name: "German locale with ignore hyphen", param1: "Schön-123", param2: &IsAlphanumericOpts{Locale: String("de-DE"), Ignore: String("-")}, want: true},
+		{name: "Spanish locale with ignore digits", param1: "niño123", param2: &IsAlphanumericOpts{Locale: String("es-ES"), Ignore: String("123")}, want: true},
+		{name: "French locale with ignore space", param1: "élève 123", param2: &IsAlphanumericOpts{Locale: String("fr-FR"), Ignore: String(" ")}, want: true},
 
 		// Invalid alphanumeric
 		{name: "Invalid with special character", param1: "hello!", param2: &IsAlphanumericOpts{}, want: false},
@@ -34,13 +34,13 @@ func TestIsAlphanumeric(t *testing.T) {
 		{name: "German with special character", param1: "äöüß!123", param2: &IsAlphanumericOpts{Locale: String("de-DE")}, want: false},
 		{name: "Spanish with special character", param1: "ÁÉÍÓÚ!123", param2: &IsAlphanumericOpts{Locale: String("es-ES")}, want: false},
 		{name: "French with special character", param1: "çàèéêô!123", param2: &IsAlphanumericOpts{Locale: String("fr-FR")}, want: false},
-		{name: "Ignore option fails", param1: "hello-123", param2: &IsAlphanumericOpts{Ignore: "!"}, want: false},
-		{name: "Ignore incorrect characters", param1: "Hello123!", param2: &IsAlphanumericOpts{Ignore: "-"}, want: false},
+		{name: "Ignore option fails", param1: "hello-123", param2: &IsAlphanumericOpts{Ignore: String("!")}, want: false},
+		{name: "Ignore incorrect characters", param1: "Hello123!", param2: &IsAlphanumericOpts{Ignore: String("-")}, want: false},
 		{name: "Invalid locale", param1: "hello123", param2: &IsAlphanumericOpts{Locale: String("invalid-locale")}, want: false},
 		{name: "Nil config, invalid with special character", param1: "hello!", param2: nil, want: false},
 		{name: "Nil config, only special characters", param1: "!!!", param2: nil, want: false},
-		{name: "German locale with unignored special character", param1: "Schön!123", param2: &IsAlphanumericOpts{Locale: String("de-DE"), Ignore: "-"}, want: false},
-		{name: "French locale with unignored special character", param1: "élève!123", param2: &IsAlphanumericOpts{Locale: String("fr-FR"), Ignore: " "}, want: false},
+		{name: "German locale with unignored special character", param1: "Schön!123", param2: &IsAlphanumericOpts{Locale: String("de-DE"), Ignore: String("-")}, want: false},
+		{name: "French locale with unignored special character", param1: "élève!123", param2: &IsAlphanumericOpts{Locale: String("fr-FR"), Ignore: String(" ")}, want: false},
 	}
 
 	for _, test := range tests {

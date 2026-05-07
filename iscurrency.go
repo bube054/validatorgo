@@ -28,24 +28,24 @@ var (
 type IsCurrencyOpts struct {
 	// deals with the options for currency
 	Symbol                *string // '$10.50'
-	RequireSymbol         bool    // $10.50
-	AllowSpaceAfterSymbol bool    // $ 10.50
-	SymbolAfterDigits     bool    // 10.50$
+	RequireSymbol         *bool   // $10.50
+	AllowSpaceAfterSymbol *bool   // $ 10.50
+	SymbolAfterDigits     *bool   // 10.50$
 
 	// deals with the numeric signs
 	AllowNegatives               *bool // -$10.50
-	ParensForNegatives           bool  // ($10.50)
-	NegativeSignBeforeDigits     bool  // $-10.50
-	NegativeSignAfterDigits      bool  // $10.50-
-	AllowNegativeSignPlaceholder bool  // $ 10.50
+	ParensForNegatives           *bool // ($10.50)
+	NegativeSignBeforeDigits     *bool // $-10.50
+	NegativeSignAfterDigits      *bool // $10.50-
+	AllowNegativeSignPlaceholder *bool // $ 10.50
 
 	// deals with the decimals/separator
 	ThousandSeparator     *string // 10,000.50
 	DecimalSeparator      *string // 10.50
 	AllowDecimal          *bool   // $10.00
-	RequireDecimal        bool    // $10.00
+	RequireDecimal        *bool   // $10.00
 	MaxDigitsAfterDecimal *uint   // $10.50
-	AllowSpaceAfterDigits bool    // '$ 10.50
+	AllowSpaceAfterDigits *bool   // '$ 10.50
 }
 
 // A validator that checks if the string is a valid currency amount.
@@ -54,9 +54,9 @@ type IsCurrencyOpts struct {
 //
 //	ok, _ := validatorgo.IsCurrency("$100,000.00", nil)
 //	fmt.Println(ok) // true
-//	ok, _ = validatorgo.IsCurrency("¥100", &validatorgo.IsCurrencyOpts{Symbol: String("¥"), RequireSymbol: true})
+//	ok, _ = validatorgo.IsCurrency("¥100", &validatorgo.IsCurrencyOpts{Symbol: String("¥"), RequireSymbol: Bool(true)})
 //	fmt.Println(ok) // true
-//	ok, _ = validatorgo.IsCurrency("100.50", &validatorgo.IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true})
+//	ok, _ = validatorgo.IsCurrency("100.50", &validatorgo.IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true)})
 //	fmt.Println(ok) // false
 func IsCurrency(str string, opts *IsCurrencyOpts) (bool, error) {
 	if opts == nil {
@@ -102,21 +102,21 @@ func IsCurrency(str string, opts *IsCurrencyOpts) (bool, error) {
 	endOp := capGrp[10]      // -/+ or a space
 	rightBrack := capGrp[11] // )
 
-	if opts.RequireSymbol {
+	if *opts.RequireSymbol {
 		if begSym != *opts.Symbol && endSym != *opts.Symbol {
 			// fmt.Println("opts.RequireSymbol")
 			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
-	if !opts.AllowSpaceAfterSymbol {
+	if !*opts.AllowSpaceAfterSymbol {
 		if space != "" {
 			// fmt.Println("opts.AllowSpaceAfterSymbol")
 			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
-	if opts.SymbolAfterDigits {
+	if *opts.SymbolAfterDigits {
 		if endSym != *opts.Symbol {
 			// fmt.Println("opts.SymbolAfterDigits 1")
 			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
@@ -136,28 +136,28 @@ func IsCurrency(str string, opts *IsCurrencyOpts) (bool, error) {
 		}
 	}
 
-	if opts.ParensForNegatives {
+	if *opts.ParensForNegatives {
 		if leftBrack != "(" || rightBrack != ")" || beg1Op != "" || beg2Op != "" || endOp != "" {
 			// fmt.Println("opts.ParensForNegatives")
 			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
-	if opts.NegativeSignBeforeDigits {
+	if *opts.NegativeSignBeforeDigits {
 		if beg1Op != "-" {
 			// fmt.Println("opts.NegativeSignBeforeDigits")
 			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
-	if opts.NegativeSignAfterDigits {
+	if *opts.NegativeSignAfterDigits {
 		if endOp != "-" {
 			// fmt.Println("opts.NegativeSignAfterDigits", beg2Op)
 			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
-	if !opts.AllowNegativeSignPlaceholder {
+	if !*opts.AllowNegativeSignPlaceholder {
 		if endOp != "" {
 			// fmt.Println("opts.AllowNegativeSignPlaceholder", beg2Op)
 			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
@@ -171,16 +171,16 @@ func IsCurrency(str string, opts *IsCurrencyOpts) (bool, error) {
 		}
 	}
 
-	if opts.RequireDecimal {
+	if *opts.RequireDecimal {
 		if decPart == "" {
 			// fmt.Println("opts.RequireDecimal", decPart)
 			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
 		}
 	}
 
-	if !opts.AllowSpaceAfterDigits && endOp != "-" {
+	if !*opts.AllowSpaceAfterDigits && endOp != "-" {
 		// fmt.Printf("`%s`\n", endOp)
-		okEmpty, _ := IsEmpty(endOp, &IsEmptyOpts{IgnoreWhitespace: false})
+		okEmpty, _ := IsEmpty(endOp, &IsEmptyOpts{IgnoreWhitespace: Bool(false)})
 		if !okEmpty {
 			// fmt.Println("opts.AllowSpaceAfterDigits")
 			return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")
@@ -193,8 +193,29 @@ func (opts *IsCurrencyOpts) mergeDefaults() {
 	if opts.Symbol == nil {
 		opts.Symbol = &isCurrencyOptsDefaultSymbol
 	}
+	if opts.RequireSymbol == nil {
+		opts.RequireSymbol = &isCurrencyOptsDefaultRequireSymbol
+	}
+	if opts.AllowSpaceAfterSymbol == nil {
+		opts.AllowSpaceAfterSymbol = &isCurrencyOptsDefaultAllowSpaceAfterSymbol
+	}
+	if opts.SymbolAfterDigits == nil {
+		opts.SymbolAfterDigits = &isCurrencyOptsDefaultSymbolAfterDigits
+	}
 	if opts.AllowNegatives == nil {
 		opts.AllowNegatives = &isCurrencyOptsDefaultAllowNegatives
+	}
+	if opts.ParensForNegatives == nil {
+		opts.ParensForNegatives = &isCurrencyOptsDefaultParensForNegatives
+	}
+	if opts.NegativeSignBeforeDigits == nil {
+		opts.NegativeSignBeforeDigits = &isCurrencyOptsDefaultNegativeSignBeforeDigits
+	}
+	if opts.NegativeSignAfterDigits == nil {
+		opts.NegativeSignAfterDigits = &isCurrencyOptsDefaultNegativeSignAfterDigits
+	}
+	if opts.AllowNegativeSignPlaceholder == nil {
+		opts.AllowNegativeSignPlaceholder = &isCurrencyOptsDefaultAllowNegativeSignPlaceholder
 	}
 	if opts.ThousandSeparator == nil {
 		opts.ThousandSeparator = &isCurrencyOptsDefaultThousandSeparator
@@ -205,29 +226,35 @@ func (opts *IsCurrencyOpts) mergeDefaults() {
 	if opts.AllowDecimal == nil {
 		opts.AllowDecimal = &isCurrencyOptsDefaultAllowDecimal
 	}
+	if opts.RequireDecimal == nil {
+		opts.RequireDecimal = &isCurrencyOptsDefaultRequireDecimal
+	}
 	if opts.MaxDigitsAfterDecimal == nil {
 		opts.MaxDigitsAfterDecimal = &isCurrencyOptsDefaultMaxDigitsAfterDecimal
+	}
+	if opts.AllowSpaceAfterDigits == nil {
+		opts.AllowSpaceAfterDigits = &isCurrencyOptsDefaultAllowSpaceAfterDigits
 	}
 }
 
 func setIsCurrencyOptsToDefault() *IsCurrencyOpts {
 	return &IsCurrencyOpts{
 		Symbol:                &isCurrencyOptsDefaultSymbol,
-		RequireSymbol:         isCurrencyOptsDefaultRequireSymbol,
-		AllowSpaceAfterSymbol: isCurrencyOptsDefaultAllowSpaceAfterSymbol,
-		SymbolAfterDigits:     isCurrencyOptsDefaultSymbolAfterDigits,
+		RequireSymbol:         &isCurrencyOptsDefaultRequireSymbol,
+		AllowSpaceAfterSymbol: &isCurrencyOptsDefaultAllowSpaceAfterSymbol,
+		SymbolAfterDigits:     &isCurrencyOptsDefaultSymbolAfterDigits,
 
 		AllowNegatives:               &isCurrencyOptsDefaultAllowNegatives,
-		ParensForNegatives:           isCurrencyOptsDefaultParensForNegatives,
-		NegativeSignBeforeDigits:     isCurrencyOptsDefaultNegativeSignBeforeDigits,
-		NegativeSignAfterDigits:      isCurrencyOptsDefaultNegativeSignAfterDigits,
-		AllowNegativeSignPlaceholder: isCurrencyOptsDefaultAllowNegativeSignPlaceholder,
+		ParensForNegatives:           &isCurrencyOptsDefaultParensForNegatives,
+		NegativeSignBeforeDigits:     &isCurrencyOptsDefaultNegativeSignBeforeDigits,
+		NegativeSignAfterDigits:      &isCurrencyOptsDefaultNegativeSignAfterDigits,
+		AllowNegativeSignPlaceholder: &isCurrencyOptsDefaultAllowNegativeSignPlaceholder,
 
 		ThousandSeparator:     &isCurrencyOptsDefaultThousandSeparator,
 		DecimalSeparator:      &isCurrencyOptsDefaultDecimalSeparator,
 		AllowDecimal:          &isCurrencyOptsDefaultAllowDecimal,
-		RequireDecimal:        isCurrencyOptsDefaultRequireDecimal,
+		RequireDecimal:        &isCurrencyOptsDefaultRequireDecimal,
 		MaxDigitsAfterDecimal: &isCurrencyOptsDefaultMaxDigitsAfterDecimal,
-		AllowSpaceAfterDigits: isCurrencyOptsDefaultAllowSpaceAfterDigits,
+		AllowSpaceAfterDigits: &isCurrencyOptsDefaultAllowSpaceAfterDigits,
 	}
 }

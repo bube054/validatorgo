@@ -10,7 +10,7 @@ import (
 var decimalFormats = map[string]func(IsDecimalOpts) (*regexp.Regexp, error){
 	"dot_decimal_comma_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) { // 1,234.56
 		var q = "?"
-		if ido.ForceDecimal {
+		if *ido.ForceDecimal {
 			q = ""
 		}
 		var maxStr string
@@ -19,11 +19,11 @@ var decimalFormats = map[string]func(IsDecimalOpts) (*regexp.Regexp, error){
 		} else {
 			maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
 		}
-		return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}(,\d{3})*)(\.\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))
+		return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}(,\d{3})*)(\.\d{%d,%s})%s$`, *ido.DecimalDigits.Min, maxStr, q))
 	},
 	"comma_decimal_dot_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) { // 1.234,56
 		var q = "?"
-		if ido.ForceDecimal {
+		if *ido.ForceDecimal {
 			q = ""
 		}
 		var maxStr string
@@ -32,11 +32,11 @@ var decimalFormats = map[string]func(IsDecimalOpts) (*regexp.Regexp, error){
 		} else {
 			maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
 		}
-		return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}(\.\d{3})*)(\,\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))
+		return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}(\.\d{3})*)(\,\d{%d,%s})%s$`, *ido.DecimalDigits.Min, maxStr, q))
 	},
 	"comma_decimal_space_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) { // 1 234,56
 		var q = "?"
-		if ido.ForceDecimal {
+		if *ido.ForceDecimal {
 			q = ""
 		}
 		var maxStr string
@@ -45,11 +45,11 @@ var decimalFormats = map[string]func(IsDecimalOpts) (*regexp.Regexp, error){
 		} else {
 			maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
 		}
-		return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}( \d{3})*)(\,\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))
+		return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}( \d{3})*)(\,\d{%d,%s})%s$`, *ido.DecimalDigits.Min, maxStr, q))
 	},
 	// "dot_decimal_space_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) { // 1 234.56
 	// 	var q = "?"
-	// 	if ido.ForceDecimal {
+	// 	if *ido.ForceDecimal {
 	// 		q = ""
 	// 	}
 	// 	var maxStr string
@@ -58,11 +58,11 @@ var decimalFormats = map[string]func(IsDecimalOpts) (*regexp.Regexp, error){
 	// 	} else {
 	// 		maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
 	// 	}
-	// 	return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}( \d{3})*)(\.\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))
+	// 	return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}( \d{3})*)(\.\d{%d,%s})%s$`, *ido.DecimalDigits.Min, maxStr, q))
 	// },
 	// "dot_decimal_apostrophe_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) { // 1'234.56
 	// 	var q = "?"
-	// 	if ido.ForceDecimal {
+	// 	if *ido.ForceDecimal {
 	// 		q = ""
 	// 	}
 	// 	var maxStr string
@@ -71,11 +71,11 @@ var decimalFormats = map[string]func(IsDecimalOpts) (*regexp.Regexp, error){
 	// 	} else {
 	// 		maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
 	// 	}
-	// 	return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}('\d{3})*)(\.\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))
+	// 	return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}('\d{3})*)(\.\d{%d,%s})%s$`, *ido.DecimalDigits.Min, maxStr, q))
 	// },
 	// "comma_decimal_apostrophe_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) { // 1'234,56
 	// 	var q = "?"
-	// 	if ido.ForceDecimal {
+	// 	if *ido.ForceDecimal {
 	// 		q = ""
 	// 	}
 	// 	var maxStr string
@@ -84,11 +84,11 @@ var decimalFormats = map[string]func(IsDecimalOpts) (*regexp.Regexp, error){
 	// 	} else {
 	// 		maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
 	// 	}
-	// 	return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}('\d{3})*)(\,\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))
+	// 	return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,3}('\d{3})*)(\,\d{%d,%s})%s$`, *ido.DecimalDigits.Min, maxStr, q))
 	// },
 	"dot_decimal_no_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) { // 123456.78
 		var q = "?"
-		if ido.ForceDecimal {
+		if *ido.ForceDecimal {
 			q = ""
 		}
 		var maxStr string
@@ -97,11 +97,11 @@ var decimalFormats = map[string]func(IsDecimalOpts) (*regexp.Regexp, error){
 		} else {
 			maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
 		}
-		return regexp.Compile(fmt.Sprintf(`^[+-]?(\d+)?(\.\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))
+		return regexp.Compile(fmt.Sprintf(`^[+-]?(\d+)?(\.\d{%d,%s})%s$`, *ido.DecimalDigits.Min, maxStr, q))
 	},
 	// "comma_decimal_no_thousands": func(ido IsDecimalOpts) (*regexp.Regexp, error) { // 123456,78
 	// 	var q = "?"
-	// 	if ido.ForceDecimal {
+	// 	if *ido.ForceDecimal {
 	// 		q = ""
 	// 	}
 	// 	var maxStr string
@@ -110,11 +110,11 @@ var decimalFormats = map[string]func(IsDecimalOpts) (*regexp.Regexp, error){
 	// 	} else {
 	// 		maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
 	// 	}
-	// 	return regexp.Compile(fmt.Sprintf(`^[+-]?(\d+)?(\,\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))
+	// 	return regexp.Compile(fmt.Sprintf(`^[+-]?(\d+)?(\,\d{%d,%s})%s$`, *ido.DecimalDigits.Min, maxStr, q))
 	// },
 	"indian_numbering_system": func(ido IsDecimalOpts) (*regexp.Regexp, error) { // 1,23,456.78
 		var q = "?"
-		if ido.ForceDecimal {
+		if *ido.ForceDecimal {
 			q = ""
 		}
 		var maxStr string
@@ -123,11 +123,11 @@ var decimalFormats = map[string]func(IsDecimalOpts) (*regexp.Regexp, error){
 		} else {
 			maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
 		}
-		return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,2}(,\d{2})*(,\d{3}))?(\.\d{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))
+		return regexp.Compile(fmt.Sprintf(`^[+-]?(\d{1,2}(,\d{2})*(,\d{3}))?(\.\d{%d,%s})%s$`, *ido.DecimalDigits.Min, maxStr, q))
 	},
 	"arabic_numerals_dot_decimal": func(ido IsDecimalOpts) (*regexp.Regexp, error) {
 		var q = "?"
-		if ido.ForceDecimal {
+		if *ido.ForceDecimal {
 			q = ""
 		}
 		var maxStr string
@@ -136,11 +136,11 @@ var decimalFormats = map[string]func(IsDecimalOpts) (*regexp.Regexp, error){
 		} else {
 			maxStr = strconv.Itoa(int(*ido.DecimalDigits.Max))
 		}
-		return regexp.Compile(fmt.Sprintf(`^[+-]?[٠١٢٣٤٥٦٧٨٩]+(٫[٠١٢٣٤٥٦٧٨٩]{%d,%s})%s$`, ido.DecimalDigits.Min, maxStr, q))
+		return regexp.Compile(fmt.Sprintf(`^[+-]?[٠١٢٣٤٥٦٧٨٩]+(٫[٠١٢٣٤٥٦٧٨٩]{%d,%s})%s$`, *ido.DecimalDigits.Min, maxStr, q))
 	},
 	"arabic_numerals_comma_decimal": func(ido IsDecimalOpts) (*regexp.Regexp, error) {
 		var q = "?" // Optional decimal part by default
-		if ido.ForceDecimal {
+		if *ido.ForceDecimal {
 			q = "" // Force the decimal part to appear
 		}
 		var maxStr string
@@ -153,7 +153,7 @@ var decimalFormats = map[string]func(IsDecimalOpts) (*regexp.Regexp, error){
 		// General regex for decimal numbers with comma as a thousand separator and locale-based numerals
 		return regexp.Compile(fmt.Sprintf(
 			`^[+-]?[۰۱۲۳۴۵۶۷۸۹١٢٣٤٥٦٧٨٩0-9]+(\,?[۰۱۲۳۴۵۶۷۸۹١٢٣٤٥٦٧٨٩0-9]{3})*(\.|٫)[۰۱۲۳۴۵۶۷۸۹١٢٣٤٥٦٧٨٩0-9]{%d,%s}%s$`,
-			ido.DecimalDigits.Min, maxStr, q))
+			*ido.DecimalDigits.Min, maxStr, q))
 	},
 }
 

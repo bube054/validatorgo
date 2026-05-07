@@ -58,7 +58,7 @@ func TestIsURL(t *testing.T) {
 		{
 			name:   "Missing Protocol",
 			param1: "example.com",
-			param2: &IsURLOpts{RequireProtocol: true, AllowProtocolRelativeUrls: Bool(true)}, // Require protocol
+			param2: &IsURLOpts{RequireProtocol: Bool(true), AllowProtocolRelativeUrls: Bool(true)}, // Require protocol
 			want:   false,
 		},
 		// Test: Allow protocol-relative URL (//example.com)
@@ -79,7 +79,7 @@ func TestIsURL(t *testing.T) {
 		{
 			name:   "Valid with Underscore in Domain",
 			param1: "http://example_domain.com",
-			param2: &IsURLOpts{AllowUnderscores: true, AllowProtocolRelativeUrls: Bool(true)}, // Allow underscores
+			param2: &IsURLOpts{AllowUnderscores: Bool(true), AllowProtocolRelativeUrls: Bool(true)}, // Allow underscores
 			want:   true,
 		},
 		// Test: URL with trailing dot (invalid by default)
@@ -93,7 +93,7 @@ func TestIsURL(t *testing.T) {
 		{
 			name:   "Valid with Trailing Dot",
 			param1: "http://example.com.",
-			param2: &IsURLOpts{AllowTrailingDot: true, AllowProtocolRelativeUrls: Bool(true)}, // Allow trailing dot
+			param2: &IsURLOpts{AllowTrailingDot: Bool(true), AllowProtocolRelativeUrls: Bool(true)}, // Allow trailing dot
 			want:   true,
 		},
 		// Test: Disallow query components (by default, query components are allowed)
@@ -121,7 +121,7 @@ func TestIsURL(t *testing.T) {
 		{
 			name:   "Invalid URL with Auth",
 			param1: "http://user:pass@example.com",
-			param2: &IsURLOpts{DisallowAuth: true, AllowProtocolRelativeUrls: Bool(true)}, // Disallow authentication info
+			param2: &IsURLOpts{DisallowAuth: Bool(true), AllowProtocolRelativeUrls: Bool(true)}, // Disallow authentication info
 			want:   false,
 		},
 		// Test: Validate length (exceeds default limit)
@@ -198,21 +198,21 @@ func TestIsURL(t *testing.T) {
 		{
 			name:   "Valid - Port present",
 			param1: "http://example.com:8080",
-			param2: &IsURLOpts{RequirePort: true, AllowProtocolRelativeUrls: Bool(true)}, // Port is required
+			param2: &IsURLOpts{RequirePort: Bool(true), AllowProtocolRelativeUrls: Bool(true)}, // Port is required
 			want:   true,
 		},
 		// Test: Port is missing (invalid because RequirePort is true)
 		{
 			name:   "Invalid - Port missing",
 			param1: "http://example.com",
-			param2: &IsURLOpts{RequirePort: true, AllowProtocolRelativeUrls: Bool(true)}, // Port is required
+			param2: &IsURLOpts{RequirePort: Bool(true), AllowProtocolRelativeUrls: Bool(true)}, // Port is required
 			want:   false,
 		},
 		// Test: Port is missing but not required (valid)
 		{
 			name:   "Valid - Port missing but not required",
 			param1: "http://example.com",
-			param2: &IsURLOpts{RequirePort: false, AllowProtocolRelativeUrls: Bool(true)}, // Port is not required
+			param2: &IsURLOpts{RequirePort: Bool(false), AllowProtocolRelativeUrls: Bool(true)}, // Port is not required
 			want:   true,
 		},
 		// Test: Not a url
@@ -514,19 +514,19 @@ func TestIsURL(t *testing.T) {
 		{
 			name:   "RequireProto valid - http://foobar.com/",
 			param1: "http://foobar.com/",
-			param2: &IsURLOpts{RequireProtocol: true, AllowProtocolRelativeUrls: Bool(true)},
+			param2: &IsURLOpts{RequireProtocol: Bool(true), AllowProtocolRelativeUrls: Bool(true)},
 			want:   true,
 		},
 		{
 			name:   "RequireProto invalid - foobar.com",
 			param1: "foobar.com",
-			param2: &IsURLOpts{RequireProtocol: true, AllowProtocolRelativeUrls: Bool(true)},
+			param2: &IsURLOpts{RequireProtocol: Bool(true), AllowProtocolRelativeUrls: Bool(true)},
 			want:   false,
 		},
 		{
 			name:   "RequireProto invalid - foobar",
 			param1: "foobar",
-			param2: &IsURLOpts{RequireProtocol: true, AllowProtocolRelativeUrls: Bool(true)},
+			param2: &IsURLOpts{RequireProtocol: Bool(true), AllowProtocolRelativeUrls: Bool(true)},
 			want:   false,
 		},
 
@@ -596,20 +596,20 @@ func TestIsURL(t *testing.T) {
 		{
 			name:   "DisallowAuth valid - doe.com",
 			param1: "doe.com",
-			param2: &IsURLOpts{DisallowAuth: true, AllowProtocolRelativeUrls: Bool(true), RequireValidProtocol: Bool(false)},
+			param2: &IsURLOpts{DisallowAuth: Bool(true), AllowProtocolRelativeUrls: Bool(true), RequireValidProtocol: Bool(false)},
 			want:   true,
 		},
 		{
 			// TODO: implementation regex requires user:pass@ format; john@ alone is not matched
 			name:   "DisallowAuth invalid - john@doe.com",
 			param1: "john@doe.com",
-			param2: &IsURLOpts{DisallowAuth: true, AllowProtocolRelativeUrls: Bool(true), RequireValidProtocol: Bool(false), RequireTld: Bool(false), RequireHost: Bool(false)},
+			param2: &IsURLOpts{DisallowAuth: Bool(true), AllowProtocolRelativeUrls: Bool(true), RequireValidProtocol: Bool(false), RequireTld: Bool(false), RequireHost: Bool(false)},
 			want:   true, // TODO: should be false, user-only auth not detected by regex
 		},
 		{
 			name:   "DisallowAuth invalid - john:john@doe.com",
 			param1: "john:john@doe.com",
-			param2: &IsURLOpts{DisallowAuth: true, AllowProtocolRelativeUrls: Bool(true)},
+			param2: &IsURLOpts{DisallowAuth: Bool(true), AllowProtocolRelativeUrls: Bool(true)},
 			want:   false,
 		},
 
@@ -620,38 +620,38 @@ func TestIsURL(t *testing.T) {
 			// TODO: regex cannot parse www.foobar.com multi-label domain, so port :1 is not captured
 			name:   "RequirePort valid - http://user:pass@www.foobar.com:1",
 			param1: "http://user:pass@www.foobar.com:1",
-			param2: &IsURLOpts{RequirePort: true, AllowProtocolRelativeUrls: Bool(true)},
+			param2: &IsURLOpts{RequirePort: Bool(true), AllowProtocolRelativeUrls: Bool(true)},
 			want:   false, // TODO: should be true, www. subdomain causes port capture failure
 		},
 		{
 			// TODO: regex captures 127 as subdom, .0 as dom; remaining .0.1:23 is uncaptured, port missed
 			name:   "RequirePort valid - http://127.0.0.1:23",
 			param1: "http://127.0.0.1:23",
-			param2: &IsURLOpts{RequirePort: true, AllowProtocolRelativeUrls: Bool(true)},
+			param2: &IsURLOpts{RequirePort: Bool(true), AllowProtocolRelativeUrls: Bool(true)},
 			want:   false, // TODO: should be true, IP address with port not parsed correctly
 		},
 		{
 			name:   "RequirePort valid - http://duckduckgo.com:65535?q=%2F",
 			param1: "http://duckduckgo.com:65535?q=%2F",
-			param2: &IsURLOpts{RequirePort: true, AllowProtocolRelativeUrls: Bool(true)},
+			param2: &IsURLOpts{RequirePort: Bool(true), AllowProtocolRelativeUrls: Bool(true)},
 			want:   true,
 		},
 		{
 			name:   "RequirePort invalid - http://user:pass@www.foobar.com/",
 			param1: "http://user:pass@www.foobar.com/",
-			param2: &IsURLOpts{RequirePort: true, AllowProtocolRelativeUrls: Bool(true)},
+			param2: &IsURLOpts{RequirePort: Bool(true), AllowProtocolRelativeUrls: Bool(true)},
 			want:   false,
 		},
 		{
 			name:   "RequirePort invalid - http://127.0.0.1/",
 			param1: "http://127.0.0.1/",
-			param2: &IsURLOpts{RequirePort: true, AllowProtocolRelativeUrls: Bool(true)},
+			param2: &IsURLOpts{RequirePort: Bool(true), AllowProtocolRelativeUrls: Bool(true)},
 			want:   false,
 		},
 		{
 			name:   "RequirePort invalid - http://duckduckgo.com/?q=%2F",
 			param1: "http://duckduckgo.com/?q=%2F",
-			param2: &IsURLOpts{RequirePort: true, AllowProtocolRelativeUrls: Bool(true)},
+			param2: &IsURLOpts{RequirePort: Bool(true), AllowProtocolRelativeUrls: Bool(true)},
 			want:   false,
 		},
 
@@ -749,13 +749,13 @@ func TestIsURL(t *testing.T) {
 		{
 			name:   "AllowUnderscores valid - http://foo_bar.com",
 			param1: "http://foo_bar.com",
-			param2: &IsURLOpts{AllowUnderscores: true, AllowProtocolRelativeUrls: Bool(true)},
+			param2: &IsURLOpts{AllowUnderscores: Bool(true), AllowProtocolRelativeUrls: Bool(true)},
 			want:   true,
 		},
 		{
 			name:   "AllowUnderscores valid - http://pr.example_com.294.example.com/",
 			param1: "http://pr.example_com.294.example.com/",
-			param2: &IsURLOpts{AllowUnderscores: true, AllowProtocolRelativeUrls: Bool(true)},
+			param2: &IsURLOpts{AllowUnderscores: Bool(true), AllowProtocolRelativeUrls: Bool(true)},
 			want:   true,
 		},
 
@@ -765,13 +765,13 @@ func TestIsURL(t *testing.T) {
 		{
 			name:   "AllowTrailingDot valid - http://example.com.",
 			param1: "http://example.com.",
-			param2: &IsURLOpts{AllowTrailingDot: true, AllowProtocolRelativeUrls: Bool(true)},
+			param2: &IsURLOpts{AllowTrailingDot: Bool(true), AllowProtocolRelativeUrls: Bool(true)},
 			want:   true,
 		},
 		{
 			name:   "AllowTrailingDot valid - foobar.",
 			param1: "foobar.",
-			param2: &IsURLOpts{AllowTrailingDot: true, AllowProtocolRelativeUrls: Bool(true), RequireValidProtocol: Bool(false)},
+			param2: &IsURLOpts{AllowTrailingDot: Bool(true), AllowProtocolRelativeUrls: Bool(true), RequireValidProtocol: Bool(false)},
 			want:   true,
 		},
 	}

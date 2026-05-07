@@ -2,13 +2,15 @@ package validatorgo
 
 import "regexp"
 
-var (
-	isBooleanOptsDefaultLoose bool = false
-)
-
 // IsBooleanOpts is used to configure IsBoolean
 type IsBooleanOpts struct {
-	Loose bool // strictness of the equality
+	Loose *bool // strictness of the equality
+}
+
+func (o *IsBooleanOpts) mergeDefaults() {
+	if o.Loose == nil {
+		o.Loose = Bool(false)
+	}
 }
 
 // A validator that check if the string is a boolean.
@@ -24,10 +26,11 @@ type IsBooleanOpts struct {
 //	fmt.Println(ok) // false
 func IsBoolean(str string, opts *IsBooleanOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsBooleanOptsToDefault()
+		opts = &IsBooleanOpts{}
 	}
+	opts.mergeDefaults()
 
-	if opts.Loose {
+	if *opts.Loose {
 		if !regexp.MustCompile("^(true|True|TRUE|false|False|FALSE|yes|no|0|1)$").MatchString(str) {
 			return false, newValidationError("IsBoolean", ErrInvalidValue, "string is not a valid boolean value")
 		}
@@ -40,8 +43,3 @@ func IsBoolean(str string, opts *IsBooleanOpts) (bool, error) {
 	}
 }
 
-func setIsBooleanOptsToDefault() (opts *IsBooleanOpts) {
-	return &IsBooleanOpts{
-		Loose: isBooleanOptsDefaultLoose,
-	}
-}

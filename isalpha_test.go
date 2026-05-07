@@ -21,11 +21,11 @@ func TestIsAlpha(t *testing.T) {
 		{name: "Spanish locale with ñ", param1: "niño", param2: &IsAlphaOpts{Locale: String("es-ES")}, want: true},
 		{name: "French locale alpha check", param1: "çàèéêô", param2: &IsAlphaOpts{Locale: String("fr-FR")}, want: true},
 		{name: "French locale with mixed case", param1: "élève", param2: &IsAlphaOpts{Locale: String("fr-FR")}, want: true},
-		{name: "Ignore hyphen option", param1: "hello-world", param2: &IsAlphaOpts{Ignore: "-"}, want: true},
-		{name: "Ignore digits option", param1: "Hello123", param2: &IsAlphaOpts{Ignore: "123"}, want: true},
-		{name: "German locale with ignore hyphen", param1: "Schön-world", param2: &IsAlphaOpts{Locale: String("de-DE"), Ignore: "-"}, want: true},
-		{name: "Spanish locale with ignore digits", param1: "niño123", param2: &IsAlphaOpts{Locale: String("es-ES"), Ignore: "123"}, want: true},
-		{name: "French locale with ignore special character", param1: "élève-ç", param2: &IsAlphaOpts{Locale: String("fr-FR"), Ignore: "-"}, want: true},
+		{name: "Ignore hyphen option", param1: "hello-world", param2: &IsAlphaOpts{Ignore: String("-")}, want: true},
+		{name: "Ignore digits option", param1: "Hello123", param2: &IsAlphaOpts{Ignore: String("123")}, want: true},
+		{name: "German locale with ignore hyphen", param1: "Schön-world", param2: &IsAlphaOpts{Locale: String("de-DE"), Ignore: String("-")}, want: true},
+		{name: "Spanish locale with ignore digits", param1: "niño123", param2: &IsAlphaOpts{Locale: String("es-ES"), Ignore: String("123")}, want: true},
+		{name: "French locale with ignore special character", param1: "élève-ç", param2: &IsAlphaOpts{Locale: String("fr-FR"), Ignore: String("-")}, want: true},
 
 		// Invalid alpha
 		{name: "Invalid with digits", param1: "hello123", param2: &IsAlphaOpts{}, want: false},
@@ -37,12 +37,12 @@ func TestIsAlpha(t *testing.T) {
 		{name: "Spanish with special character", param1: "niño!", param2: &IsAlphaOpts{Locale: String("es-ES")}, want: false},
 		{name: "French with digits", param1: "çàèéêô123", param2: &IsAlphaOpts{Locale: String("fr-FR")}, want: false},
 		{name: "French with special character", param1: "élève!", param2: &IsAlphaOpts{Locale: String("fr-FR")}, want: false},
-		{name: "Ignore option fails", param1: "hello-world", param2: &IsAlphaOpts{Ignore: "!"}, want: false},
-		{name: "Ignore incorrect digits", param1: "Hello123", param2: &IsAlphaOpts{Ignore: "456"}, want: false},
+		{name: "Ignore option fails", param1: "hello-world", param2: &IsAlphaOpts{Ignore: String("!")}, want: false},
+		{name: "Ignore incorrect digits", param1: "Hello123", param2: &IsAlphaOpts{Ignore: String("456")}, want: false},
 		{name: "Invalid locale", param1: "hello", param2: &IsAlphaOpts{Locale: String("invalid-locale")}, want: false},
-		{name: "German locale with unignored special character", param1: "Schön!", param2: &IsAlphaOpts{Locale: String("de-DE"), Ignore: "-"}, want: false},
-		{name: "Spanish locale with unignored digits", param1: "niño456", param2: &IsAlphaOpts{Locale: String("es-ES"), Ignore: "123"}, want: false},
-		{name: "French locale with unignored special character", param1: "élève!", param2: &IsAlphaOpts{Locale: String("fr-FR"), Ignore: "-"}, want: false},
+		{name: "German locale with unignored special character", param1: "Schön!", param2: &IsAlphaOpts{Locale: String("de-DE"), Ignore: String("-")}, want: false},
+		{name: "Spanish locale with unignored digits", param1: "niño456", param2: &IsAlphaOpts{Locale: String("es-ES"), Ignore: String("123")}, want: false},
+		{name: "French locale with unignored special character", param1: "élève!", param2: &IsAlphaOpts{Locale: String("fr-FR"), Ignore: String("-")}, want: false},
 
 		// Nil configs
 		{name: "Nil config, basic alpha check", param1: "hello", param2: nil, want: true},
@@ -65,12 +65,12 @@ func TestIsAlpha(t *testing.T) {
 		{name: "JS en-US invalid: Heiß", param1: "Heiß", param2: &IsAlphaOpts{}, want: false},
 
 		// Ignore option with string (en-US)
-		{name: "JS ignore '- /' valid: en-US", param1: "en-US", param2: &IsAlphaOpts{Locale: String("en-US"), Ignore: "- /"}, want: true},
-		{name: "JS ignore '- /' valid: alpha with spaces", param1: "this is a valid alpha string", param2: &IsAlphaOpts{Locale: String("en-US"), Ignore: "- /"}, want: true},
-		{name: "JS ignore '- /' valid: us/usa", param1: "us/usa", param2: &IsAlphaOpts{Locale: String("en-US"), Ignore: "- /"}, want: true},
-		{name: "JS ignore '- /' invalid: leading digit and dot", param1: "1. this is not a valid alpha string", param2: &IsAlphaOpts{Locale: String("en-US"), Ignore: "- /"}, want: false},
-		{name: "JS ignore '- /' invalid: dollar and dot", param1: "this$is also not a valid.alpha string", param2: &IsAlphaOpts{Locale: String("en-US"), Ignore: "- /"}, want: false},
-		{name: "JS ignore '- /' invalid: trailing dot", param1: "this is also not a valid alpha string.", param2: &IsAlphaOpts{Locale: String("en-US"), Ignore: "- /"}, want: false},
+		{name: "JS ignore '- /' valid: en-US", param1: "en-US", param2: &IsAlphaOpts{Locale: String("en-US"), Ignore: String("- /")}, want: true},
+		{name: "JS ignore '- /' valid: alpha with spaces", param1: "this is a valid alpha string", param2: &IsAlphaOpts{Locale: String("en-US"), Ignore: String("- /")}, want: true},
+		{name: "JS ignore '- /' valid: us/usa", param1: "us/usa", param2: &IsAlphaOpts{Locale: String("en-US"), Ignore: String("- /")}, want: true},
+		{name: "JS ignore '- /' invalid: leading digit and dot", param1: "1. this is not a valid alpha string", param2: &IsAlphaOpts{Locale: String("en-US"), Ignore: String("- /")}, want: false},
+		{name: "JS ignore '- /' invalid: dollar and dot", param1: "this$is also not a valid.alpha string", param2: &IsAlphaOpts{Locale: String("en-US"), Ignore: String("- /")}, want: false},
+		{name: "JS ignore '- /' invalid: trailing dot", param1: "this is also not a valid alpha string.", param2: &IsAlphaOpts{Locale: String("en-US"), Ignore: String("- /")}, want: false},
 
 		// Bulgarian (bg-BG) — uses cyrillic regex
 		{name: "JS bg-BG valid: абв", param1: "абв", param2: &IsAlphaOpts{Locale: String("bg-BG")}, want: true},

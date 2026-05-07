@@ -188,12 +188,12 @@ func TestUnicodeEdgeCases(t *testing.T) {
 	t.Run("IsByteLength with multi-byte chars", func(t *testing.T) {
 		// "é" is 2 bytes in UTF-8, "漢" is 3 bytes
 		max2 := uint(2)
-		result, _ := IsByteLength("é", &IsByteLengthOpts{Min: 1, Max: &max2})
+		result, _ := IsByteLength("é", &IsByteLengthOpts{Min: Uint(1), Max: &max2})
 		if !result {
 			t.Error("expected 'é' (2 bytes) to fit in 1-2 byte range")
 		}
 
-		result2, _ := IsByteLength("漢", &IsByteLengthOpts{Min: 1, Max: &max2})
+		result2, _ := IsByteLength("漢", &IsByteLengthOpts{Min: Uint(1), Max: &max2})
 		if result2 {
 			t.Error("expected '漢' (3 bytes) to exceed 2 byte max")
 		}
@@ -202,7 +202,7 @@ func TestUnicodeEdgeCases(t *testing.T) {
 	t.Run("IsLength with multi-byte chars", func(t *testing.T) {
 		// IsLength should count runes, not bytes
 		max3 := uint(3)
-		result, _ := IsLength("漢字テ", &IsLengthOpts{Min: 1, Max: &max3})
+		result, _ := IsLength("漢字テ", &IsLengthOpts{Min: Uint(1), Max: &max3})
 		if !result {
 			t.Error("expected '漢字テ' (3 runes) to fit in 1-3 range")
 		}

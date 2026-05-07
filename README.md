@@ -318,9 +318,9 @@ if err != nil {
 
 **Error codes:** `INVALID_FORMAT`, `TOO_SHORT`, `TOO_LONG`, `MISSING_TLD`, `BLACKLISTED_HOST`, `NOT_WHITELISTED_HOST`, `BLACKLISTED_CHAR`, `INVALID_LOCALE`, `OUT_OF_RANGE`, `INVALID_CHECKSUM`, `INVALID_LENGTH`, `MISSING_REQUIRED`, `INVALID_DOMAIN`, `UNSUPPORTED_VERSION`, `INVALID_VALUE`, `NOT_FOUND`.
 
-### Pointer-typed option fields
+### Option fields
 
-Option fields whose defaults differ from Go's zero value use pointer types (e.g., `RequireTld *bool` defaults to `true`). Pass `nil` for the struct to get all defaults, or use the exported helpers to set specific fields:
+All option struct fields use pointer types. Pass `nil` for the opts parameter to use defaults, or set only the fields you care about using the exported helpers:
 
 ```go
 validatorgo.Bool(true)     // *bool
@@ -334,10 +334,12 @@ Example:
 
 ```go
 ok, _ := validatorgo.IsFQDN("example.com", &validatorgo.IsFQDNOpts{
-    RequireTld:      validatorgo.Bool(false), // override default (true)
-    AllowTrailingDot: true,
+    RequireTld:       validatorgo.Bool(false), // override default (true)
+    AllowTrailingDot: validatorgo.Bool(true),
 })
 ```
+
+Any field left as `nil` gets its default value automatically.
 
 ---
 

@@ -2,15 +2,19 @@ package validatorgo
 
 import "regexp"
 
-var (
-	isRgbOptsDefaultIncludePercentValues bool = false
-	isRgbOptsDefaultAllowSpaces          bool = false
-)
-
 // IsRgbOpts is used to configure IsRgbColor
 type IsRgbOpts struct {
-	IncludePercentValues bool // must use percent values 90% not 0-255
-	AllowSpaces          bool // whether to include spaces
+	IncludePercentValues *bool // must use percent values 90% not 0-255
+	AllowSpaces          *bool // whether to include spaces
+}
+
+func (o *IsRgbOpts) mergeDefaults() {
+	if o.IncludePercentValues == nil {
+		o.IncludePercentValues = Bool(false)
+	}
+	if o.AllowSpaces == nil {
+		o.AllowSpaces = Bool(false)
+	}
 }
 
 // A validator that checks if the string is a rgb or rgba color.
@@ -27,20 +31,21 @@ type IsRgbOpts struct {
 //	fmt.Println(ok) // false
 func IsRgbColor(str string, opts *IsRgbOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsRgbOptsToDefault()
+		opts = &IsRgbOpts{}
 	}
+	opts.mergeDefaults()
 
-	if opts.IncludePercentValues && opts.AllowSpaces {
+	if *opts.IncludePercentValues && *opts.AllowSpaces {
 		if regexp.MustCompile(`^rgba?\((\d{0,100}(\.[0-9]*)?%|\d{0,255}),\s*(\d{0,100}(\.[0-9]*)?%|\d{0,255}),\s*(\d{0,100}(\.[0-9]*)?%|\d{0,255})(,\s*(1|0?\.[0-9])?)?\)$`).MatchString(str) {
 			return true, nil
 		}
 		return false, newValidationError("IsRgbColor", ErrInvalidFormat, "invalid rgbcolor")
-	} else if !opts.IncludePercentValues && opts.AllowSpaces {
+	} else if !*opts.IncludePercentValues && *opts.AllowSpaces {
 		if regexp.MustCompile(`^rgba?\(\d{0,255},\s*\d{0,255},\s*\d{0,255}(,\s*(1|0?\.[1-9])*)?\)$`).MatchString(str) {
 			return true, nil
 		}
 		return false, newValidationError("IsRgbColor", ErrInvalidFormat, "invalid rgbcolor")
-	} else if opts.IncludePercentValues && !opts.AllowSpaces {
+	} else if *opts.IncludePercentValues && !*opts.AllowSpaces {
 		if regexp.MustCompile(`^rgba?\((\d{0,100}(\.[0-9]*)?%|\d{0,255}),(\d{0,100}(\.[0-9]*)?%|\d{0,255}),(\d{0,100}(\.[0-9]*)?%|\d{0,255})(,(1|0?\.[0-9])?)?\)$`).MatchString(str) {
 			return true, nil
 		}
@@ -53,9 +58,3 @@ func IsRgbColor(str string, opts *IsRgbOpts) (bool, error) {
 	}
 }
 
-func setIsRgbOptsToDefault() *IsRgbOpts {
-	return &IsRgbOpts{
-		IncludePercentValues: isRgbOptsDefaultIncludePercentValues,
-		AllowSpaces:          isRgbOptsDefaultAllowSpaces,
-	}
-}

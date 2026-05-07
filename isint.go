@@ -5,15 +5,6 @@ import (
 	"strconv"
 )
 
-var (
-	isIntOptsDefaultMin *int = nil
-	isIntOptsDefaultMax *int = nil
-	isIntOptsDefaultGt  *int = nil
-	isIntOptsDefaultLt  *int = nil
-
-	isIntOptsDefaultAllowLeadingZeroes bool = false
-)
-
 type IsIntOpts struct {
 	Min *int // minimum integer
 	Max *int // maximum integer
@@ -21,7 +12,13 @@ type IsIntOpts struct {
 	Gt *int // integer to exceeds
 	Lt *int // integer to subceed
 
-	AllowLeadingZeroes bool
+	AllowLeadingZeroes *bool
+}
+
+func (o *IsIntOpts) mergeDefaults() {
+	if o.AllowLeadingZeroes == nil {
+		o.AllowLeadingZeroes = Bool(false)
+	}
 }
 
 // A validator that checks if the string is an integer.
@@ -38,12 +35,13 @@ type IsIntOpts struct {
 //	fmt.Println(ok) // false
 func IsInt(str string, opts *IsIntOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsIntOptsToDefault()
+		opts = &IsIntOpts{}
 	}
+	opts.mergeDefaults()
 
 	var matches bool
 
-	if opts.AllowLeadingZeroes {
+	if *opts.AllowLeadingZeroes {
 		matches = regexp.MustCompile(`^([+-]?0*\d+)(\.0+)?$`).MatchString(str)
 	} else {
 		matches = regexp.MustCompile(`^([+-]?)((0|[1-9]\d*)(\.0*)?|0)$`).MatchString(str)
@@ -94,12 +92,3 @@ func IsInt(str string, opts *IsIntOpts) (bool, error) {
 	return false, newValidationError("IsInt", ErrInvalidFormat, "invalid int")
 }
 
-func setIsIntOptsToDefault() *IsIntOpts {
-	return &IsIntOpts{
-		Min:                isIntOptsDefaultMin,
-		Max:                isIntOptsDefaultMax,
-		Gt:                 isIntOptsDefaultGt,
-		Lt:                 isIntOptsDefaultLt,
-		AllowLeadingZeroes: isIntOptsDefaultAllowLeadingZeroes,
-	}
-}

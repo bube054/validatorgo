@@ -29,79 +29,79 @@ func TestIsCurrency(t *testing.T) {
 		{
 			name:   "Valid currency with symbol before digits, no decimals",
 			param1: "¥100",
-			param2: &IsCurrencyOpts{Symbol: String("¥"), RequireSymbol: true},
+			param2: &IsCurrencyOpts{Symbol: String("¥"), RequireSymbol: Bool(true)},
 			want:   true,
 		},
 		{
 			name:   "Valid currency with symbol before digits, no decimals, symbol not required but present",
 			param1: "£100",
-			param2: &IsCurrencyOpts{Symbol: String("£"), RequireSymbol: false},
+			param2: &IsCurrencyOpts{Symbol: String("£"), RequireSymbol: Bool(false)},
 			want:   true,
 		},
 		{
 			name:   "Valid currency with symbol before digits, with decimals",
 			param1: "$100.50",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Valid currency with symbol after digits",
 			param1: "100₣",
-			param2: &IsCurrencyOpts{Symbol: String("₣"), RequireSymbol: true, SymbolAfterDigits: true},
+			param2: &IsCurrencyOpts{Symbol: String("₣"), RequireSymbol: Bool(true), SymbolAfterDigits: Bool(true)},
 			want:   true,
 		},
 		{
 			name:   "Valid currency with thousand separator and decimals",
 			param1: "$1,000.50",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, ThousandSeparator: String(","), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), ThousandSeparator: String(","), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Valid currency with optional symbol",
 			param1: "100.50",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: false, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(false), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Valid currency with space after symbol",
 			param1: "$ 100.50",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowSpaceAfterSymbol: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowSpaceAfterSymbol: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Valid currency with negative sign before symbol",
 			param1: "-$100.50",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), NegativeSignBeforeDigits: true, MaxDigitsAfterDecimal: Uint(2), AllowDecimal: Bool(true)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), NegativeSignBeforeDigits: Bool(true), MaxDigitsAfterDecimal: Uint(2), AllowDecimal: Bool(true)},
 			want:   true,
 		},
 		{
 			name:   "Valid currency with parentheses for negative values",
 			param1: "($100.50)",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, ParensForNegatives: true, MaxDigitsAfterDecimal: Uint(2), AllowDecimal: Bool(true)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), ParensForNegatives: Bool(true), MaxDigitsAfterDecimal: Uint(2), AllowDecimal: Bool(true)},
 			want:   true,
 		},
 		{
 			name:   "Valid currency with decimal requirement",
 			param1: "$100.00",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Valid currency with multiple decimal digits options",
 			param1: "$100.5",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Valid currency with negative sign after digits",
 			param1: "$100.50-",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowDecimal: Bool(true), AllowNegatives: Bool(true), NegativeSignAfterDigits: true, AllowNegativeSignPlaceholder: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowDecimal: Bool(true), AllowNegatives: Bool(true), NegativeSignAfterDigits: Bool(true), AllowNegativeSignPlaceholder: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Valid currency with space after digits",
 			param1: "$100.50 ",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowSpaceAfterDigits: true, RequireSymbol: true, AllowDecimal: Bool(true), AllowNegatives: Bool(true), NegativeSignAfterDigits: false, AllowNegativeSignPlaceholder: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowSpaceAfterDigits: Bool(true), RequireSymbol: Bool(true), AllowDecimal: Bool(true), AllowNegatives: Bool(true), NegativeSignAfterDigits: Bool(false), AllowNegativeSignPlaceholder: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 
@@ -109,73 +109,73 @@ func TestIsCurrency(t *testing.T) {
 		{
 			name:   "Invalid currency with missing required symbol",
 			param1: "100.50",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true)},
 			want:   false,
 		},
 		{
 			name:   "Invalid currency with incorrect thousand separator",
 			param1: "$1.000,50",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, ThousandSeparator: String(","), DecimalSeparator: String(".")},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), ThousandSeparator: String(","), DecimalSeparator: String(".")},
 			want:   false,
 		},
 		{
 			name:   "Invalid currency with missing decimal when required",
 			param1: "$100",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Invalid currency with more than allowed decimal digits",
 			param1: "$100.500",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Invalid currency with space after symbol when not allowed",
 			param1: "$ 100",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowSpaceAfterSymbol: false},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowSpaceAfterSymbol: Bool(false)},
 			want:   false,
 		},
 		{
 			name:   "Invalid currency with negative sign after digits when not allowed",
 			param1: "$100-",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), NegativeSignAfterDigits: false},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), NegativeSignAfterDigits: Bool(false)},
 			want:   false,
 		},
 		{
 			name:   "Invalid currency with negative value but parentheses required",
 			param1: "-$100.50",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), ParensForNegatives: true},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), ParensForNegatives: Bool(true)},
 			want:   false,
 		},
 		{
 			name:   "Invalid currency with multiple negative signs",
 			param1: "--$100.50",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true)},
 			want:   false,
 		},
 		{
 			name:   "Invalid currency with multiple negative disallowed",
 			param1: "-$100.50",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(false)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(false)},
 			want:   false,
 		},
 		{
 			name:   "Invalid currency with symbol after digits when not allowed",
 			param1: "100$",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, SymbolAfterDigits: false},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), SymbolAfterDigits: Bool(false)},
 			want:   false,
 		},
 		{
 			name:   "Invalid currency with disallowed decimal",
 			param1: "$100.50",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowDecimal: Bool(false)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowDecimal: Bool(false)},
 			want:   false,
 		},
 		{
 			name:   "Invalid currency with space after digits",
 			param1: "$100.50 ",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowSpaceAfterDigits: false, RequireSymbol: true, AllowDecimal: Bool(true), AllowNegatives: Bool(true), NegativeSignAfterDigits: false, AllowNegativeSignPlaceholder: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowSpaceAfterDigits: Bool(false), RequireSymbol: Bool(true), AllowDecimal: Bool(true), AllowNegatives: Bool(true), NegativeSignAfterDigits: Bool(false), AllowNegativeSignPlaceholder: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 
@@ -504,216 +504,216 @@ func TestIsCurrency(t *testing.T) {
 		},
 
 		// ================================================================
-		// Block 3: Require decimal (RequireDecimal: true) - Valid
+		// Block 3: Require decimal (RequireDecimal: Bool(true)) - Valid
 		// ================================================================
 		{
 			name:   "Block3 valid: -$10,123.45",
 			param1: "-$10,123.45",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Block3 valid: $10,123.45",
 			param1: "$10,123.45",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Block3 valid: 10,123.45",
 			param1: "10,123.45",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Block3 valid: 1.39",
 			param1: "1.39",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		// TODO: should be valid per validator.js — regex requires at least one leading digit (\d{1,3}), so bare decimal like .03 not supported
 		{
 			name:   "Block3 valid: .03",
 			param1: ".03",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block3 valid: 0.10",
 			param1: "0.10",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Block3 valid: $0.10",
 			param1: "$0.10",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Block3 valid: -$0.01",
 			param1: "-$0.01",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		// TODO: should be valid per validator.js — regex requires at least one leading digit (\d{1,3}), so bare decimal like $.99 not supported
 		{
 			name:   "Block3 valid: -$.99",
 			param1: "-$.99",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block3 valid: $100,234,567.89",
 			param1: "$100,234,567.89",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 
 		// ================================================================
-		// Block 3: Require decimal (RequireDecimal: true) - Invalid
+		// Block 3: Require decimal (RequireDecimal: Bool(true)) - Invalid
 		// ================================================================
 		{
 			name:   "Block3 invalid: $10,123 (no decimal)",
 			param1: "$10,123",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block3 invalid: 10,123 (no decimal)",
 			param1: "10,123",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block3 invalid: -10123 (no decimal)",
 			param1: "-10123",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block3 invalid: 1,123,456 (no decimal)",
 			param1: "1,123,456",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: true, MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), AllowDecimal: Bool(true), RequireDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 
 		// ================================================================
-		// Block 4: Require symbol (RequireSymbol: true) - Valid
+		// Block 4: Require symbol (RequireSymbol: Bool(true)) - Valid
 		// ================================================================
 		{
 			name:   "Block4 valid: -$10,123.45",
 			param1: "-$10,123.45",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Block4 valid: $10,123.45",
 			param1: "$10,123.45",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		// TODO: should be valid per validator.js — regex requires digits in groups of 1-3 followed by (,\d{3})*, so >3 digits without separator not supported
 		{
 			name:   "Block4 valid: $10123.45",
 			param1: "$10123.45",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block4 valid: $1.39",
 			param1: "$1.39",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		// TODO: should be valid per validator.js — regex requires at least one leading digit (\d{1,3}), so bare decimal like $.03 not supported
 		{
 			name:   "Block4 valid: $.03",
 			param1: "$.03",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block4 valid: $0.10",
 			param1: "$0.10",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Block4 valid: -$0.01",
 			param1: "-$0.01",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		// TODO: should be valid per validator.js — regex requires at least one leading digit (\d{1,3}), so bare decimal like $.99 not supported
 		{
 			name:   "Block4 valid: -$.99",
 			param1: "-$.99",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block4 valid: $100,234,567.89",
 			param1: "$100,234,567.89",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Block4 valid: $10,123",
 			param1: "$10,123",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		// TODO: should be valid per validator.js — regex requires digits in groups of 1-3 followed by (,\d{3})*, so >3 digits without separator not supported
 		{
 			name:   "Block4 valid: -$10123",
 			param1: "-$10123",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 
 		// ================================================================
-		// Block 4: Require symbol (RequireSymbol: true) - Invalid
+		// Block 4: Require symbol (RequireSymbol: Bool(true)) - Invalid
 		// ================================================================
 		{
 			name:   "Block4 invalid: 10,123.45 (no symbol)",
 			param1: "10,123.45",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block4 invalid: 10123.45 (no symbol)",
 			param1: "10123.45",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block4 invalid: 10,123 (no symbol)",
 			param1: "10,123",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block4 invalid: 1,123,456 (no symbol)",
 			param1: "1,123,456",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block4 invalid: 1.39 (no symbol)",
 			param1: "1.39",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block4 invalid: .03 (no symbol)",
 			param1: ".03",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block4 invalid: 0.10 (no symbol)",
 			param1: "0.10",
-			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: true, AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), RequireSymbol: Bool(true), AllowNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 
@@ -823,110 +823,110 @@ func TestIsCurrency(t *testing.T) {
 		},
 
 		// ================================================================
-		// Block 6: Parentheses for negatives (ParensForNegatives: true) - Valid
+		// Block 6: Parentheses for negatives (ParensForNegatives: Bool(true)) - Valid
 		// ================================================================
 		// TODO: should be valid per validator.js — ParensForNegatives check rejects non-parenthesized positive values (implementation requires both parens present)
 		{
 			name:   "Block6 valid: 1,234",
 			param1: "1,234",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block6 valid: (1,234)",
 			param1: "(1,234)",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Block6 valid: ($6,954,231)",
 			param1: "($6,954,231)",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		// TODO: should be valid per validator.js — ParensForNegatives check rejects non-parenthesized positive values (implementation requires both parens present)
 		{
 			name:   "Block6 valid: $10.03",
 			param1: "$10.03",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block6 valid: (10.03)",
 			param1: "(10.03)",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Block6 valid: ($10.03)",
 			param1: "($10.03)",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		{
 			name:   "Block6 valid: ($0.01)",
 			param1: "($0.01)",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		// TODO: should be valid per validator.js — ParensForNegatives check rejects non-parenthesized positive values (implementation requires both parens present)
 		{
 			name:   "Block6 valid: $10,123",
 			param1: "$10,123",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block6 valid: (10,123)",
 			param1: "(10,123)",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   true,
 		},
 		// TODO: should be valid per validator.js — ParensForNegatives check + regex requires digits in groups of 1-3, so >3 digits without separator not supported
 		{
 			name:   "Block6 valid: 10123",
 			param1: "10123",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 
 		// ================================================================
-		// Block 6: Parentheses for negatives (ParensForNegatives: true) - Invalid
+		// Block 6: Parentheses for negatives (ParensForNegatives: Bool(true)) - Invalid
 		// ================================================================
 		{
 			name:   "Block6 invalid: -$1.10 (negative sign instead of parens)",
 			param1: "-$1.10",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block6 invalid: $ 32.50 (space after symbol)",
 			param1: "$ 32.50",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block6 invalid: 500$ (symbol after digits)",
 			param1: "500$",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block6 invalid: () (empty parens)",
 			param1: "()",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block6 invalid: (-) (negative in parens)",
 			param1: "(-)",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 		{
 			name:   "Block6 invalid: (-$) (negative symbol in parens)",
 			param1: "(-$)",
-			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: true, AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
+			param2: &IsCurrencyOpts{Symbol: String("$"), AllowNegatives: Bool(true), ParensForNegatives: Bool(true), AllowDecimal: Bool(true), MaxDigitsAfterDecimal: Uint(2)},
 			want:   false,
 		},
 	}

@@ -32,26 +32,12 @@ func IsMailtoURI(str string, opts *IsMailToURIOpts) (bool, error) {
 
 	email := capGrp[2]
 
-	if opts == nil {
-		ok, _ := IsEmail(email, setIsEmailOptsToDefault())
-		if ok {
-			return true, nil
-		}
-		return false, newValidationError("IsMailtoURI", ErrInvalidFormat, "invalid mailtouri")
+	var emailOpts *IsEmailOpts
+	if opts != nil {
+		emailOpts = &opts.IsEmailOpts
 	}
 
-	ok, _ := IsEmail(email, &IsEmailOpts{
-		AllowDisplayName:         opts.AllowDisplayName,
-		RequireDisplayName:       opts.RequireDisplayName,
-		AllowUTF8LocalPart:       opts.AllowUTF8LocalPart,
-		RequireTld:               opts.RequireTld,
-		IgnoreMaxLength:          opts.IgnoreMaxLength,
-		AllowIpDomain:            opts.AllowIpDomain,
-		DomainSpecificValidation: opts.DomainSpecificValidation,
-		BlacklistedChars:         opts.BlacklistedChars,
-		HostBlacklist:            opts.HostBlacklist,
-		HostWhitelist:            opts.HostWhitelist,
-	})
+	ok, _ := IsEmail(email, emailOpts)
 	if ok {
 		return true, nil
 	}

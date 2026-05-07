@@ -12,7 +12,7 @@ var (
 
 // IsAlphaOpts is used to configure IsAlpha
 type IsAlphaOpts struct {
-	Ignore string  // string to be ignored
+	Ignore *string // string to be ignored
 	Locale *string // a locale
 }
 
@@ -58,11 +58,11 @@ func IsAlpha(str string, opts *IsAlphaOpts) (bool, error) {
 		lenClsCharFromEnd = 3
 	)
 
-	if opts.Ignore == "" && *opts.Locale == "" {
+	if *opts.Ignore == "" && *opts.Locale == "" {
 		re = regexp.MustCompile(`^[a-zA-z]+$`)
 	}
 
-	if opts.Ignore == "" && *opts.Locale != "" {
+	if *opts.Ignore == "" && *opts.Locale != "" {
 		wrtSys, ok := localeWritingSystems[*opts.Locale]
 		if !ok {
 			return false, newValidationError("IsAlpha", ErrInvalidFormat, "invalid alpha")
@@ -70,14 +70,14 @@ func IsAlpha(str string, opts *IsAlphaOpts) (bool, error) {
 		re = regexp.MustCompile(writingSystemAlphaRegex[wrtSys])
 	}
 
-	if opts.Ignore != "" && *opts.Locale == "" {
-		charsToIgn := escapeRegexChars(opts.Ignore)
+	if *opts.Ignore != "" && *opts.Locale == "" {
+		charsToIgn := escapeRegexChars(*opts.Ignore)
 		rec := regexp.MustCompile(`^[a-zA-z` + charsToIgn + `]+$`)
 		re = rec
 	}
 
-	if opts.Ignore != "" && *opts.Locale != "" {
-		charsToIgn := escapeRegexChars(opts.Ignore)
+	if *opts.Ignore != "" && *opts.Locale != "" {
+		charsToIgn := escapeRegexChars(*opts.Ignore)
 		wrtSys := localeWritingSystems[*opts.Locale]
 		wrtSysRe := writingSystemAlphaRegex[wrtSys]
 		divLen := len(wrtSysRe) - lenClsCharFromEnd
@@ -93,6 +93,9 @@ func IsAlpha(str string, opts *IsAlphaOpts) (bool, error) {
 }
 
 func (o *IsAlphaOpts) mergeDefaults() {
+	if o.Ignore == nil {
+		o.Ignore = String("")
+	}
 	if o.Locale == nil {
 		o.Locale = String("en-US")
 	}

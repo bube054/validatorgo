@@ -5,15 +5,17 @@ import (
 	"strings"
 )
 
-var (
-	isBase32OptsDefaultCrockford bool = false
-)
-
 // IsBase32Opts is used to configure IsBase32
 type IsBase32Opts struct {
-	Crockford bool // whether to use crockfords base32 alternative encoding scheme
+	Crockford *bool // whether to use crockfords base32 alternative encoding scheme
 
-	// ZBase bool // whether to use crockfords base32 alternative encoding scheme
+	// ZBase *bool // whether to use crockfords base32 alternative encoding scheme
+}
+
+func (o *IsBase32Opts) mergeDefaults() {
+	if o.Crockford == nil {
+		o.Crockford = Bool(false)
+	}
 }
 
 // A validator that checks if the string is base32 encoded.
@@ -29,8 +31,9 @@ type IsBase32Opts struct {
 // [crockford's]: http://www.crockford.com/base32.html
 func IsBase32(str string, opts *IsBase32Opts) (bool, error) {
 	if opts == nil {
-		opts = setIsBase32OptsToDefault()
+		opts = &IsBase32Opts{}
 	}
+	opts.mergeDefaults()
 
 	strWithoutEq := strings.TrimRight(str, "=")
 	strWithoutHyp := stripHyphens(strWithoutEq)
@@ -39,7 +42,7 @@ func IsBase32(str string, opts *IsBase32Opts) (bool, error) {
 		return false, newValidationError("IsBase32", ErrTooShort, "string is too short to be valid base32")
 	}
 
-	if opts.Crockford {
+	if *opts.Crockford {
 		if !regexp.MustCompile(`^[A-HJ-KM-NP-TV-Z0-9]+$`).MatchString(strings.ToUpper(strWithoutHyp)) {
 			return false, newValidationError("IsBase32", ErrInvalidFormat, "string is not valid crockford base32")
 		}
@@ -52,8 +55,3 @@ func IsBase32(str string, opts *IsBase32Opts) (bool, error) {
 	}
 }
 
-func setIsBase32OptsToDefault() (opts *IsBase32Opts) {
-	return &IsBase32Opts{
-		Crockford: isBase32OptsDefaultCrockford,
-	}
-}

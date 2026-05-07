@@ -5,15 +5,16 @@ import (
 	"regexp"
 )
 
-var (
-	isMacAddressOptsDefault bool    = false
-	isMacAddressOptsType    *string = nil
-)
-
 // IsMacAddressOpts is used to configure IsMacAddress
 type IsMacAddressOpts struct {
-	NoSeparators bool    // will not allow separators
+	NoSeparators *bool   // will not allow separators
 	Type         *string // mac address type
+}
+
+func (o *IsMacAddressOpts) mergeDefaults() {
+	if o.NoSeparators == nil {
+		o.NoSeparators = Bool(false)
+	}
 }
 
 // A validator that checks if the string is a MAC address.
@@ -32,8 +33,9 @@ type IsMacAddressOpts struct {
 //	fmt.Println(ok) // false
 func IsMacAddress(str string, opts *IsMacAddressOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsMacAddressOptsToDefault()
+		opts = &IsMacAddressOpts{}
 	}
+	opts.mergeDefaults()
 
 	eu48, eu64 := "48", "64"
 
@@ -46,7 +48,7 @@ func IsMacAddress(str string, opts *IsMacAddressOpts) (bool, error) {
 	}
 
 	noSepReStr := `[\s:.-]?`
-	if opts.NoSeparators {
+	if *opts.NoSeparators {
 		noSepReStr = ""
 	}
 
@@ -63,9 +65,3 @@ func IsMacAddress(str string, opts *IsMacAddressOpts) (bool, error) {
 	return false, newValidationError("IsMacAddress", ErrInvalidFormat, "invalid macaddress")
 }
 
-func setIsMacAddressOptsToDefault() *IsMacAddressOpts {
-	return &IsMacAddressOpts{
-		NoSeparators: isMacAddressOptsDefault,
-		Type:         isMacAddressOptsType,
-	}
-}

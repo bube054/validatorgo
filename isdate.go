@@ -24,7 +24,7 @@ var (
 // IsDateOpts is used to configure IsDate
 type IsDateOpts struct {
 	Format     *string
-	StrictMode bool
+	StrictMode *bool
 }
 
 func dateMatchesAnyFormat(str string) (bool, error) {
@@ -64,7 +64,7 @@ func IsDate(str string, opts *IsDateOpts) (bool, error) {
 		return false, newValidationError("IsDate", ErrInvalidFormat, "invalid date")
 	}
 
-	if opts.StrictMode {
+	if *opts.StrictMode {
 		_, err := time.Parse(*opts.Format, str)
 		if err == nil {
 			return true, nil
@@ -83,11 +83,14 @@ func (opts *IsDateOpts) mergeDefaults() {
 	if opts.Format == nil {
 		opts.Format = &isDateOptsDefaultFormat
 	}
+	if opts.StrictMode == nil {
+		opts.StrictMode = Bool(false)
+	}
 }
 
 func setIsDateOptsToDefault() *IsDateOpts {
 	return &IsDateOpts{
 		Format:     &isDateOptsDefaultFormat,
-		StrictMode: isDateOptsDefaultStrictMode,
+		StrictMode: &isDateOptsDefaultStrictMode,
 	}
 }

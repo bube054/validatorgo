@@ -15,8 +15,8 @@ func TestContains(t *testing.T) {
 		{name: "Basic match digits", param1: "abc123", param2: "123", param3: &ContainsOpt{}, want: true},
 
 		// Valid with ignoreCase true
-		{name: "Case-insensitive match", param1: "Hello World", param2: "hello", param3: &ContainsOpt{IgnoreCase: true}, want: true},
-		{name: "Case-insensitive match mixed", param1: "FOOBAR", param2: "bar", param3: &ContainsOpt{IgnoreCase: true}, want: true},
+		{name: "Case-insensitive match", param1: "Hello World", param2: "hello", param3: &ContainsOpt{IgnoreCase: Bool(true)}, want: true},
+		{name: "Case-insensitive match mixed", param1: "FOOBAR", param2: "bar", param3: &ContainsOpt{IgnoreCase: Bool(true)}, want: true},
 
 		// Valid with minimum occurrences
 		{name: "Minimum occurrences met", param1: "hello hello world", param2: "hello", param3: &ContainsOpt{MinOccurrences: Int(2)}, want: true},
@@ -27,8 +27,8 @@ func TestContains(t *testing.T) {
 		{name: "No match digits", param1: "abc123", param2: "xyz", param3: &ContainsOpt{}, want: false},
 
 		// Invalid with ignoreCase false
-		{name: "Case-sensitive no match", param1: "Hello World", param2: "WORLD", param3: &ContainsOpt{IgnoreCase: false}, want: false},
-		{name: "Case-insensitive fail", param1: "FOOBAR", param2: "baz", param3: &ContainsOpt{IgnoreCase: true}, want: false},
+		{name: "Case-sensitive no match", param1: "Hello World", param2: "WORLD", param3: &ContainsOpt{IgnoreCase: Bool(false)}, want: false},
+		{name: "Case-insensitive fail", param1: "FOOBAR", param2: "baz", param3: &ContainsOpt{IgnoreCase: Bool(true)}, want: false},
 
 		// Invalid with minimum occurrences
 		{name: "Minimum occurrences not met", param1: "hello world", param2: "hello", param3: &ContainsOpt{MinOccurrences: Int(2)}, want: false},
@@ -45,11 +45,11 @@ func TestContains(t *testing.T) {
 		{name: "Partial seed", param1: "fobar", param2: "foo", param3: nil, want: false},
 
 		// Valid with ignoreCase true
-		{name: "Case-insensitive FOO match", param1: "FOObar", param2: "foo", param3: &ContainsOpt{IgnoreCase: true}, want: true},
-		{name: "Case-insensitive Foo match", param1: "Foo", param2: "foo", param3: &ContainsOpt{IgnoreCase: true}, want: true},
-		{name: "Case-insensitive BAZfoo", param1: "BAZfoo", param2: "foo", param3: &ContainsOpt{IgnoreCase: true}, want: true},
+		{name: "Case-insensitive FOO match", param1: "FOObar", param2: "foo", param3: &ContainsOpt{IgnoreCase: Bool(true)}, want: true},
+		{name: "Case-insensitive Foo match", param1: "Foo", param2: "foo", param3: &ContainsOpt{IgnoreCase: Bool(true)}, want: true},
+		{name: "Case-insensitive BAZfoo", param1: "BAZfoo", param2: "foo", param3: &ContainsOpt{IgnoreCase: Bool(true)}, want: true},
 		// Invalid with ignoreCase true
-		{name: "Case-insensitive baxoof", param1: "baxoof", param2: "foo", param3: &ContainsOpt{IgnoreCase: true}, want: false},
+		{name: "Case-insensitive baxoof", param1: "baxoof", param2: "foo", param3: &ContainsOpt{IgnoreCase: Bool(true)}, want: false},
 
 		// Valid with minOccurrences 2
 		{name: "Three occurrences", param1: "foofoofoo", param2: "foo", param3: &ContainsOpt{MinOccurrences: Int(2)}, want: true},

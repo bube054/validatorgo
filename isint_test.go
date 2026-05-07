@@ -18,8 +18,8 @@ func TestIsInt(t *testing.T) {
 		{name: "Invalid non-integer (alphanumeric)", param1: "12a3", param2: &IsIntOpts{}, want: false},
 
 		// Leading zeroes validation
-		{name: "Valid leading zeroes allowed", param1: "007", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: true},
-		{name: "Invalid leading zeroes not allowed", param1: "007", param2: &IsIntOpts{AllowLeadingZeroes: false}, want: false},
+		{name: "Valid leading zeroes allowed", param1: "007", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: true},
+		{name: "Invalid leading zeroes not allowed", param1: "007", param2: &IsIntOpts{AllowLeadingZeroes: Bool(false)}, want: false},
 
 		// Min and Max validation
 		{name: "Valid within Min and Max range", param1: "50", param2: &IsIntOpts{Min: intPtr(0), Max: intPtr(100)}, want: true},
@@ -32,10 +32,10 @@ func TestIsInt(t *testing.T) {
 		{name: "Invalid not less than Lt", param1: "5", param2: &IsIntOpts{Lt: intPtr(5)}, want: false},
 
 		// // Combined Min, Max, Gt, Lt, and leading zeroes validation
-		{name: "Valid leading zeroes, within Min, Max, Gt, and Lt", param1: "07", param2: &IsIntOpts{Min: intPtr(0), Max: intPtr(10), Gt: intPtr(0), Lt: intPtr(8), AllowLeadingZeroes: true}, want: true},
-		{name: "Invalid below Gt", param1: "0", param2: &IsIntOpts{Min: intPtr(0), Max: intPtr(10), Gt: intPtr(0), Lt: intPtr(8), AllowLeadingZeroes: true}, want: false},
-		{name: "Invalid above Lt", param1: "8", param2: &IsIntOpts{Min: intPtr(0), Max: intPtr(10), Gt: intPtr(0), Lt: intPtr(8), AllowLeadingZeroes: true}, want: false},
-		{name: "Invalid leading zeroes, not allowed", param1: "07", param2: &IsIntOpts{Min: intPtr(0), Max: intPtr(10), Gt: intPtr(0), Lt: intPtr(8), AllowLeadingZeroes: false}, want: false},
+		{name: "Valid leading zeroes, within Min, Max, Gt, and Lt", param1: "07", param2: &IsIntOpts{Min: intPtr(0), Max: intPtr(10), Gt: intPtr(0), Lt: intPtr(8), AllowLeadingZeroes: Bool(true)}, want: true},
+		{name: "Invalid below Gt", param1: "0", param2: &IsIntOpts{Min: intPtr(0), Max: intPtr(10), Gt: intPtr(0), Lt: intPtr(8), AllowLeadingZeroes: Bool(true)}, want: false},
+		{name: "Invalid above Lt", param1: "8", param2: &IsIntOpts{Min: intPtr(0), Max: intPtr(10), Gt: intPtr(0), Lt: intPtr(8), AllowLeadingZeroes: Bool(true)}, want: false},
+		{name: "Invalid leading zeroes, not allowed", param1: "07", param2: &IsIntOpts{Min: intPtr(0), Max: intPtr(10), Gt: intPtr(0), Lt: intPtr(8), AllowLeadingZeroes: Bool(false)}, want: false},
 
 		// // Edge cases
 		{name: "Valid zero with Min and Max", param1: "0", param2: &IsIntOpts{Min: intPtr(0), Max: intPtr(0)}, want: true},
@@ -63,34 +63,34 @@ func TestIsInt(t *testing.T) {
 		{name: "JS: invalid '' no opts", param1: "", param2: nil, want: false},
 
 		// ---- Ported from validator.js: allow_leading_zeroes: false ----
-		{name: "JS: valid '13' leading zeroes false", param1: "13", param2: &IsIntOpts{AllowLeadingZeroes: false}, want: true},
-		{name: "JS: valid '123' leading zeroes false", param1: "123", param2: &IsIntOpts{AllowLeadingZeroes: false}, want: true},
-		{name: "JS: valid '0' leading zeroes false", param1: "0", param2: &IsIntOpts{AllowLeadingZeroes: false}, want: true},
-		{name: "JS: valid '-0' leading zeroes false", param1: "-0", param2: &IsIntOpts{AllowLeadingZeroes: false}, want: true},
-		{name: "JS: valid '+1' leading zeroes false", param1: "+1", param2: &IsIntOpts{AllowLeadingZeroes: false}, want: true},
-		{name: "JS: invalid '01' leading zeroes false", param1: "01", param2: &IsIntOpts{AllowLeadingZeroes: false}, want: false},
-		{name: "JS: invalid '-01' leading zeroes false", param1: "-01", param2: &IsIntOpts{AllowLeadingZeroes: false}, want: false},
-		{name: "JS: invalid '000' leading zeroes false", param1: "000", param2: &IsIntOpts{AllowLeadingZeroes: false}, want: false},
-		{name: "JS: invalid '100e10' leading zeroes false", param1: "100e10", param2: &IsIntOpts{AllowLeadingZeroes: false}, want: false},
-		{name: "JS: invalid '123.123' leading zeroes false", param1: "123.123", param2: &IsIntOpts{AllowLeadingZeroes: false}, want: false},
-		{name: "JS: invalid '   ' leading zeroes false", param1: "   ", param2: &IsIntOpts{AllowLeadingZeroes: false}, want: false},
-		{name: "JS: invalid '' leading zeroes false", param1: "", param2: &IsIntOpts{AllowLeadingZeroes: false}, want: false},
+		{name: "JS: valid '13' leading zeroes false", param1: "13", param2: &IsIntOpts{AllowLeadingZeroes: Bool(false)}, want: true},
+		{name: "JS: valid '123' leading zeroes false", param1: "123", param2: &IsIntOpts{AllowLeadingZeroes: Bool(false)}, want: true},
+		{name: "JS: valid '0' leading zeroes false", param1: "0", param2: &IsIntOpts{AllowLeadingZeroes: Bool(false)}, want: true},
+		{name: "JS: valid '-0' leading zeroes false", param1: "-0", param2: &IsIntOpts{AllowLeadingZeroes: Bool(false)}, want: true},
+		{name: "JS: valid '+1' leading zeroes false", param1: "+1", param2: &IsIntOpts{AllowLeadingZeroes: Bool(false)}, want: true},
+		{name: "JS: invalid '01' leading zeroes false", param1: "01", param2: &IsIntOpts{AllowLeadingZeroes: Bool(false)}, want: false},
+		{name: "JS: invalid '-01' leading zeroes false", param1: "-01", param2: &IsIntOpts{AllowLeadingZeroes: Bool(false)}, want: false},
+		{name: "JS: invalid '000' leading zeroes false", param1: "000", param2: &IsIntOpts{AllowLeadingZeroes: Bool(false)}, want: false},
+		{name: "JS: invalid '100e10' leading zeroes false", param1: "100e10", param2: &IsIntOpts{AllowLeadingZeroes: Bool(false)}, want: false},
+		{name: "JS: invalid '123.123' leading zeroes false", param1: "123.123", param2: &IsIntOpts{AllowLeadingZeroes: Bool(false)}, want: false},
+		{name: "JS: invalid '   ' leading zeroes false", param1: "   ", param2: &IsIntOpts{AllowLeadingZeroes: Bool(false)}, want: false},
+		{name: "JS: invalid '' leading zeroes false", param1: "", param2: &IsIntOpts{AllowLeadingZeroes: Bool(false)}, want: false},
 
 		// ---- Ported from validator.js: allow_leading_zeroes: true ----
-		{name: "JS: valid '13' leading zeroes true", param1: "13", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: true},
-		{name: "JS: valid '123' leading zeroes true", param1: "123", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: true},
-		{name: "JS: valid '0' leading zeroes true", param1: "0", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: true},
-		{name: "JS: valid '-0' leading zeroes true", param1: "-0", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: true},
-		{name: "JS: valid '+1' leading zeroes true", param1: "+1", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: true},
-		{name: "JS: valid '01' leading zeroes true", param1: "01", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: true},
-		{name: "JS: valid '-01' leading zeroes true", param1: "-01", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: true},
-		{name: "JS: valid '000' leading zeroes true", param1: "000", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: true},
-		{name: "JS: valid '-000' leading zeroes true", param1: "-000", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: true},
-		{name: "JS: valid '+000' leading zeroes true", param1: "+000", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: true},
-		{name: "JS: invalid '100e10' leading zeroes true", param1: "100e10", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: false},
-		{name: "JS: invalid '123.123' leading zeroes true", param1: "123.123", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: false},
-		{name: "JS: invalid '   ' leading zeroes true", param1: "   ", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: false},
-		{name: "JS: invalid '' leading zeroes true", param1: "", param2: &IsIntOpts{AllowLeadingZeroes: true}, want: false},
+		{name: "JS: valid '13' leading zeroes true", param1: "13", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: true},
+		{name: "JS: valid '123' leading zeroes true", param1: "123", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: true},
+		{name: "JS: valid '0' leading zeroes true", param1: "0", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: true},
+		{name: "JS: valid '-0' leading zeroes true", param1: "-0", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: true},
+		{name: "JS: valid '+1' leading zeroes true", param1: "+1", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: true},
+		{name: "JS: valid '01' leading zeroes true", param1: "01", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: true},
+		{name: "JS: valid '-01' leading zeroes true", param1: "-01", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: true},
+		{name: "JS: valid '000' leading zeroes true", param1: "000", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: true},
+		{name: "JS: valid '-000' leading zeroes true", param1: "-000", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: true},
+		{name: "JS: valid '+000' leading zeroes true", param1: "+000", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: true},
+		{name: "JS: invalid '100e10' leading zeroes true", param1: "100e10", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: false},
+		{name: "JS: invalid '123.123' leading zeroes true", param1: "123.123", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: false},
+		{name: "JS: invalid '   ' leading zeroes true", param1: "   ", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: false},
+		{name: "JS: invalid '' leading zeroes true", param1: "", param2: &IsIntOpts{AllowLeadingZeroes: Bool(true)}, want: false},
 
 		// ---- Ported from validator.js: min only ----
 		{name: "JS: valid '15' min 10", param1: "15", param2: &IsIntOpts{Min: intPtr(10)}, want: true},

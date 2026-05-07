@@ -7,98 +7,98 @@ import (
 // numericFormatsRegex is the set of number validating regex for each cldr code
 var numericFormatsRegex = map[int]func(opts IsNumericOpts) *regexp.Regexp{
 	0: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^(\d{1,3})(,\d{3})*(\.\d+)?$`) // Without symbols
 		}
 		return regexp.MustCompile(`^[+-]?(\d{1,3})(,\d{3})*(\.\d+)?$`) // With symbols
 	}, // matches 1,234,567.89 (comma for thousands, dot for decimals)
 	1: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^(\d+)(\.\d+)?$`) // Without symbols
 		}
 		return regexp.MustCompile(`^[+-]?(\d+)(\.\d+)?$`) // With symbols
 	}, // matches 1234567.89 (no thousands separator, dot for decimals)
 	2: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^(\d{1,3})( \d{1,3})*(,\d+)?$`) // Without symbols
 		}
 		return regexp.MustCompile(`^[+-]?(\d{1,3})( \d{1,3})*(,\d+)?$`) // With symbols
 	}, // matches 1 234 567,89 (space for thousands, comma for decimals)
 	3: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^(\d{1,3})(\.\d{3})*(,\d+)?$`) // Without symbols
 		}
 		return regexp.MustCompile(`^[+-]?(\d{1,3})(\.\d{3})*(,\d+)?$`) // With symbols
 	}, // matches 1.234.567,89 (dot for thousands, comma for decimals)
 	4: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^(\d{1,3})(,\d{3})*(·\d+)?$`) // Without symbols
 		}
 		return regexp.MustCompile(`^[+-]?(\d{1,3})(,\d{3})*(·\d+)?$`) // With symbols
 	}, // matches 1,234,567·89 (comma for thousands, interpunct for decimals)
 	5: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^(\d{1,2},)*(\d{1,3})(\.\d+)?$`) // Without symbols
 		}
 		return regexp.MustCompile(`^[+-]?(\d{1,2},)*(\d{1,3})(\.\d+)?$`) // With symbols
 	}, // matches 12,34,567.89 (Indian system: commas for thousands, dot for decimals)
 	6: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^(\d{1,2} )*(\d{1,3})(\.\d+)?$`) // Without symbols
 		}
 		return regexp.MustCompile(`^[+-]?(\d{1,2} )*(\d{1,3})(\.\d+)?$`) // With symbols
 	}, // matches 12 34 567.89 (Indian system: space for thousands, dot for decimals)
 	7: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^(\d{1,3})('\d{3})*(\.\d+)?$`) // Without symbols
 		}
 		return regexp.MustCompile(`^[+-]?(\d{1,3})('\d{3})*(\.\d+)?$`) // With symbols
 	}, // matches 1'234'567.89 (apostrophe for thousands, dot for decimals)
 	// 8: func(opts IsNumericOpts) *regexp.Regexp {
-	// 	if opts.NoSymbols {
+	// 	if *opts.NoSymbols {
 	// 		return regexp.MustCompile(`^(\d{1,3})(٬\d{3})*(٫\d+)?$`) // Without symbols
 	// 	}
 	// 	return regexp.MustCompile(`^[+-]?(\d{1,3})(٬\d{3})*(٫\d+)?$`) // With symbols
 	// }, // matches ١٬٢٣٤٬٥٦٧٫٨٩ (Arabic: comma-like for thousands, period-like for decimals)
 	8: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^[\x{0660}-\x{0669}]{1,3}(٬[\x{0660}-\x{0669}]{3})*(٫[\x{0660}-\x{0669}]+)?$`) // Without symbols
 		}
 		return regexp.MustCompile(`^[+-]?[\x{0660}-\x{0669}]{1,3}(٬[\x{0660}-\x{0669}]{3})*(٫[\x{0660}-\x{0669}]+)?$`) // With symbols
 	},
 
 	9: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^(\d{1,3})( \d{3})*(\.\d+)?$`) // Without symbols
 		}
 		return regexp.MustCompile(`^[+-]?(\d{1,3})( \d{3})*(\.\d+)?$`) // With symbols
 	}, // matches 1 234 567.89 (space for thousands, dot for decimals)
 	10: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^(\d{1,3})(\.\d{3})*(·\d+)?$`) // Without symbols
 		}
 		return regexp.MustCompile(`^[+-]?(\d{1,3})(\.\d{3})*(·\d+)?$`) // With symbols
 	}, // matches 1234567,89 (no thousands separator, comma for decimals)
 	11: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^(\d+)('\d{3})*(٫\d+)?$`) // Without symbols
 		}
 		return regexp.MustCompile(`^[+-]?(\d+)('\d{3})*(٫\d+)?$`) // With symbols
 	}, // matches 12,34,567.89 (variant of Indian system with space and comma separators)
 	12: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^(\d{1,3})( \d{3})*(,\d+)?$`) // Without symbols
 		}
 		return regexp.MustCompile(`^[+-]?(\d{1,3})( \d{3})*(,\d+)?$`) // With symbols
 	}, // matches Arabic format without spaces for thousands separators
 	13: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^(\d+)(٬\d{3})*(\.\d+)?$`) // Without symbols
 		}
 		return regexp.MustCompile(`^[+-]?(\d+)(٬\d{3})*(\.\d+)?$`) // With symbols
 	}, // matches numbers without thousand separators, e.g., in East Asia (e.g., 1234.56)
 	14: func(opts IsNumericOpts) *regexp.Regexp {
-		if opts.NoSymbols {
+		if *opts.NoSymbols {
 			return regexp.MustCompile(`^(\d{1,3})(,\d{3})*(\.\d{2})?$`) // Without symbols, 2 decimals
 		}
 		return regexp.MustCompile(`^[+-]?(\d{1,3})(,\d{3})*(\.\d{2})?$`) // With symbols, 2 decimals

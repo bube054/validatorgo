@@ -22,7 +22,7 @@ func TestIsDate(t *testing.T) {
 		{name: "Invalid Date Format", param1: "01-02-2007", param2: nil, want: false},
 		{name: "Invalid Slash Date", param1: "2007/01-02", param2: &IsDateOpts{Format: String(SlashDateLayout)}, want: false},
 		{name: "Invalid ISO8601", param1: "2007-01-02T15:04", param2: &IsDateOpts{Format: String(ISO8601Layout)}, want: false},
-		{name: "Invalid Strict Mode", param1: "2007/01/02", param2: &IsDateOpts{Format: String(StandardDateLayout), StrictMode: true}, want: false},
+		{name: "Invalid Strict Mode", param1: "2007/01/02", param2: &IsDateOpts{Format: String(StandardDateLayout), StrictMode: Bool(true)}, want: false},
 		{name: "Invalid Format Option", param1: "2007-01-02", param2: &IsDateOpts{Format: String("invalid")}, want: false},
 		{name: "Empty String", param1: "", param2: nil, want: false},
 		{name: "Whitespace String", param1: "   ", param2: nil, want: false},

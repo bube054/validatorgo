@@ -11,7 +11,7 @@ var (
 
 // IsNumericOpts is used to configure IsNumeric
 type IsNumericOpts struct {
-	NoSymbols bool
+	NoSymbols *bool
 	Locale    *string
 }
 
@@ -37,7 +37,7 @@ func IsNumeric(str string, opts *IsNumericOpts) (bool, error) {
 	var re *regexp.Regexp
 
 	// has symbols and no Locale
-	if !opts.NoSymbols && *opts.Locale == "" {
+	if !*opts.NoSymbols && *opts.Locale == "" {
 		re = regexp.MustCompile(`^[+-]?\d+(\.\d+)?$`)
 		if re.MatchString(str) {
 			return true, nil
@@ -46,7 +46,7 @@ func IsNumeric(str string, opts *IsNumericOpts) (bool, error) {
 	}
 
 	// no symbols and no Locale
-	if opts.NoSymbols && *opts.Locale == "" {
+	if *opts.NoSymbols && *opts.Locale == "" {
 		re = regexp.MustCompile(`^\d+$`)
 		if re.MatchString(str) {
 			return true, nil
@@ -66,6 +66,9 @@ func IsNumeric(str string, opts *IsNumericOpts) (bool, error) {
 }
 
 func (o *IsNumericOpts) mergeDefaults() {
+	if o.NoSymbols == nil {
+		o.NoSymbols = Bool(false)
+	}
 	if o.Locale == nil {
 		o.Locale = String("")
 	}
