@@ -37,6 +37,34 @@ func TestContains(t *testing.T) {
 		// Test for nil param3
 		{name: "Nil default, basic match", param1: "hello world", param2: "world", param3: nil, want: true},
 		{name: "Nil default, no match", param1: "hello world", param2: "earth", param3: nil, want: false},
+
+		// Valid default opts with seed "foo"
+		{name: "Seed at start", param1: "foobar", param2: "foo", param3: nil, want: true},
+		{name: "Seed at end", param1: "bazfoo", param2: "foo", param3: nil, want: true},
+		// Invalid default opts with seed "foo"
+		{name: "Partial seed", param1: "fobar", param2: "foo", param3: nil, want: false},
+
+		// Valid with ignoreCase true
+		{name: "Case-insensitive FOO match", param1: "FOObar", param2: "foo", param3: &ContainsOpt{IgnoreCase: true}, want: true},
+		{name: "Case-insensitive Foo match", param1: "Foo", param2: "foo", param3: &ContainsOpt{IgnoreCase: true}, want: true},
+		{name: "Case-insensitive BAZfoo", param1: "BAZfoo", param2: "foo", param3: &ContainsOpt{IgnoreCase: true}, want: true},
+		// Invalid with ignoreCase true
+		{name: "Case-insensitive baxoof", param1: "baxoof", param2: "foo", param3: &ContainsOpt{IgnoreCase: true}, want: false},
+
+		// Valid with minOccurrences 2
+		{name: "Three occurrences", param1: "foofoofoo", param2: "foo", param3: &ContainsOpt{MinOccurrences: 2}, want: true},
+		{name: "Separated occurrences", param1: "12foo124foo", param2: "foo", param3: &ContainsOpt{MinOccurrences: 2}, want: true},
+		{name: "Overlapping-like occurrences", param1: "fofooofoooofoooo", param2: "foo", param3: &ContainsOpt{MinOccurrences: 2}, want: true},
+		{name: "Adjacent with separator", param1: "foo1foo", param2: "foo", param3: &ContainsOpt{MinOccurrences: 2}, want: true},
+		// Invalid with minOccurrences 2
+		{name: "Only one occurrence with min 2", param1: "foobar", param2: "foo", param3: &ContainsOpt{MinOccurrences: 2}, want: false},
+		{name: "Case-sensitive miss with min 2", param1: "Fooofoo", param2: "foo", param3: &ContainsOpt{MinOccurrences: 2}, want: false},
+		{name: "Partial match foofo", param1: "foofo", param2: "foo", param3: &ContainsOpt{MinOccurrences: 2}, want: false},
+
+		// Edge cases
+		{name: "Empty string empty seed", param1: "", param2: "", param3: nil, want: true},
+		{name: "Empty seed in string", param1: "hello", param2: "", param3: nil, want: true},
+		{name: "Seed longer than string", param1: "hi", param2: "hello", param3: nil, want: false},
 	}
 
 	for _, test := range tests {
