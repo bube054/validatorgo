@@ -40,9 +40,9 @@ func TestIsFloat(t *testing.T) {
 		{name: "Float outside Gt and Lt", param1: "250.0", param2: &IsFloatOpts{Gt: floatPtr(100.0), Lt: floatPtr(200.0)}, want: false},
 
 		// Locale-specific cases
-		{name: "Valid float with comma as decimal (German locale)", param1: "123,45", param2: &IsFloatOpts{Locale: "de-DE"}, want: true},
-		{name: "Invalid float with comma as decimal (US locale)", param1: "123,45", param2: &IsFloatOpts{Locale: "en-US"}, want: false},
-		{name: "Invalid Locale", param1: "123,45", param2: &IsFloatOpts{Locale: "nz-WE"}, want: false},
+		{name: "Valid float with comma as decimal (German locale)", param1: "123,45", param2: &IsFloatOpts{Locale: String("de-DE")}, want: true},
+		{name: "Invalid float with comma as decimal (US locale)", param1: "123,45", param2: &IsFloatOpts{Locale: String("en-US")}, want: false},
+		{name: "Invalid Locale", param1: "123,45", param2: &IsFloatOpts{Locale: String("nz-WE")}, want: false},
 
 		// Invalid float inputs
 		{name: "Invalid float with letters", param1: "123.45abc", param2: &IsFloatOpts{}, want: false},
@@ -58,10 +58,10 @@ func TestIsFloat(t *testing.T) {
 		{name: "Only sign without number with nil config", param1: "+", param2: nil, want: false},
 
 		// improving code cov
-		{name: "Invalid float with comma as decimal (ar-IQ locale)", param1: "١٢٣,٤٥", param2: &IsFloatOpts{Locale: "ar-IQ"}, want: false},
-		{name: "Invalid float with period as decimal (cs-CZ locale)", param1: "123.45", param2: &IsFloatOpts{Locale: "cs-CZ"}, want: false},
-		{name: "Invalid float with comma as decimal (fa-AF locale)", param1: "۱۲۳,۴۵", param2: &IsFloatOpts{Locale: "fa-AF"}, want: false},
-		{name: "Invalid float with comma as decimal (en-IN locale)", param1: "123,45", param2: &IsFloatOpts{Locale: "en-IN"}, want: false},
+		{name: "Invalid float with comma as decimal (ar-IQ locale)", param1: "١٢٣,٤٥", param2: &IsFloatOpts{Locale: String("ar-IQ")}, want: false},
+		{name: "Invalid float with period as decimal (cs-CZ locale)", param1: "123.45", param2: &IsFloatOpts{Locale: String("cs-CZ")}, want: false},
+		{name: "Invalid float with comma as decimal (fa-AF locale)", param1: "۱۲۳,۴۵", param2: &IsFloatOpts{Locale: String("fa-AF")}, want: false},
+		{name: "Invalid float with comma as decimal (en-IN locale)", param1: "123,45", param2: &IsFloatOpts{Locale: String("en-IN")}, want: false},
 
 		// validator.js ported: default opts (no locale)
 		// In validator.js, integers like "123" are valid floats; Go requires a decimal point.
@@ -95,55 +95,55 @@ func TestIsFloat(t *testing.T) {
 
 		// validator.js ported: locale en-AU
 		// TODO: should be valid per validator.js — Go regex requires decimal point
-		{name: "JS en-AU: integer 123", param1: "123", param2: &IsFloatOpts{Locale: "en-AU"}, want: false},
+		{name: "JS en-AU: integer 123", param1: "123", param2: &IsFloatOpts{Locale: String("en-AU")}, want: false},
 		// TODO: should be valid per validator.js — Go regex requires digits after decimal
-		{name: "JS en-AU: trailing dot 123.", param1: "123.", param2: &IsFloatOpts{Locale: "en-AU"}, want: false},
-		{name: "JS en-AU: 123.123", param1: "123.123", param2: &IsFloatOpts{Locale: "en-AU"}, want: true},
-		{name: "JS en-AU: -123.123", param1: "-123.123", param2: &IsFloatOpts{Locale: "en-AU"}, want: true},
-		{name: "JS en-AU: -0.123", param1: "-0.123", param2: &IsFloatOpts{Locale: "en-AU"}, want: true},
-		{name: "JS en-AU: +0.123", param1: "+0.123", param2: &IsFloatOpts{Locale: "en-AU"}, want: true},
-		{name: "JS en-AU: 0.123", param1: "0.123", param2: &IsFloatOpts{Locale: "en-AU"}, want: true},
+		{name: "JS en-AU: trailing dot 123.", param1: "123.", param2: &IsFloatOpts{Locale: String("en-AU")}, want: false},
+		{name: "JS en-AU: 123.123", param1: "123.123", param2: &IsFloatOpts{Locale: String("en-AU")}, want: true},
+		{name: "JS en-AU: -123.123", param1: "-123.123", param2: &IsFloatOpts{Locale: String("en-AU")}, want: true},
+		{name: "JS en-AU: -0.123", param1: "-0.123", param2: &IsFloatOpts{Locale: String("en-AU")}, want: true},
+		{name: "JS en-AU: +0.123", param1: "+0.123", param2: &IsFloatOpts{Locale: String("en-AU")}, want: true},
+		{name: "JS en-AU: 0.123", param1: "0.123", param2: &IsFloatOpts{Locale: String("en-AU")}, want: true},
 		// TODO: should be valid per validator.js — Go regex requires digit before dot for en-AU
-		{name: "JS en-AU: .0", param1: ".0", param2: &IsFloatOpts{Locale: "en-AU"}, want: false},
+		{name: "JS en-AU: .0", param1: ".0", param2: &IsFloatOpts{Locale: String("en-AU")}, want: false},
 		// TODO: should be valid per validator.js — Go regex requires digit before dot for en-AU
-		{name: "JS en-AU: -.123", param1: "-.123", param2: &IsFloatOpts{Locale: "en-AU"}, want: false},
+		{name: "JS en-AU: -.123", param1: "-.123", param2: &IsFloatOpts{Locale: String("en-AU")}, want: false},
 		// TODO: should be valid per validator.js — Go regex requires digit before dot for en-AU
-		{name: "JS en-AU: +.123", param1: "+.123", param2: &IsFloatOpts{Locale: "en-AU"}, want: false},
-		{name: "JS en-AU: 01.123", param1: "01.123", param2: &IsFloatOpts{Locale: "en-AU"}, want: true},
+		{name: "JS en-AU: +.123", param1: "+.123", param2: &IsFloatOpts{Locale: String("en-AU")}, want: false},
+		{name: "JS en-AU: 01.123", param1: "01.123", param2: &IsFloatOpts{Locale: String("en-AU")}, want: true},
 		// TODO: should be valid per validator.js — Go regex does not support scientific notation
-		{name: "JS en-AU: scientific notation", param1: "-0.22250738585072011e-307", param2: &IsFloatOpts{Locale: "en-AU"}, want: false},
-		{name: "JS en-AU invalid: arabic decimal", param1: "123٫123", param2: &IsFloatOpts{Locale: "en-AU"}, want: false},
-		{name: "JS en-AU invalid: comma decimal", param1: "123,123", param2: &IsFloatOpts{Locale: "en-AU"}, want: false},
-		{name: "JS en-AU invalid: spaces", param1: "  ", param2: &IsFloatOpts{Locale: "en-AU"}, want: false},
-		{name: "JS en-AU invalid: empty", param1: "", param2: &IsFloatOpts{Locale: "en-AU"}, want: false},
-		{name: "JS en-AU invalid: dot only", param1: ".", param2: &IsFloatOpts{Locale: "en-AU"}, want: false},
-		{name: "JS en-AU invalid: foo", param1: "foo", param2: &IsFloatOpts{Locale: "en-AU"}, want: false},
+		{name: "JS en-AU: scientific notation", param1: "-0.22250738585072011e-307", param2: &IsFloatOpts{Locale: String("en-AU")}, want: false},
+		{name: "JS en-AU invalid: arabic decimal", param1: "123٫123", param2: &IsFloatOpts{Locale: String("en-AU")}, want: false},
+		{name: "JS en-AU invalid: comma decimal", param1: "123,123", param2: &IsFloatOpts{Locale: String("en-AU")}, want: false},
+		{name: "JS en-AU invalid: spaces", param1: "  ", param2: &IsFloatOpts{Locale: String("en-AU")}, want: false},
+		{name: "JS en-AU invalid: empty", param1: "", param2: &IsFloatOpts{Locale: String("en-AU")}, want: false},
+		{name: "JS en-AU invalid: dot only", param1: ".", param2: &IsFloatOpts{Locale: String("en-AU")}, want: false},
+		{name: "JS en-AU invalid: foo", param1: "foo", param2: &IsFloatOpts{Locale: String("en-AU")}, want: false},
 
 		// validator.js ported: locale de-DE
 		// TODO: should be valid per validator.js — Go regex requires comma-decimal for de-DE
-		{name: "JS de-DE: integer 123", param1: "123", param2: &IsFloatOpts{Locale: "de-DE"}, want: false},
+		{name: "JS de-DE: integer 123", param1: "123", param2: &IsFloatOpts{Locale: String("de-DE")}, want: false},
 		// TODO: should be valid per validator.js — Go regex requires digits after comma
-		{name: "JS de-DE: trailing comma 123,", param1: "123,", param2: &IsFloatOpts{Locale: "de-DE"}, want: false},
-		{name: "JS de-DE: 123,123", param1: "123,123", param2: &IsFloatOpts{Locale: "de-DE"}, want: true},
-		{name: "JS de-DE: -123,123", param1: "-123,123", param2: &IsFloatOpts{Locale: "de-DE"}, want: true},
-		{name: "JS de-DE: -0,123", param1: "-0,123", param2: &IsFloatOpts{Locale: "de-DE"}, want: true},
-		{name: "JS de-DE: +0,123", param1: "+0,123", param2: &IsFloatOpts{Locale: "de-DE"}, want: true},
-		{name: "JS de-DE: 0,123", param1: "0,123", param2: &IsFloatOpts{Locale: "de-DE"}, want: true},
+		{name: "JS de-DE: trailing comma 123,", param1: "123,", param2: &IsFloatOpts{Locale: String("de-DE")}, want: false},
+		{name: "JS de-DE: 123,123", param1: "123,123", param2: &IsFloatOpts{Locale: String("de-DE")}, want: true},
+		{name: "JS de-DE: -123,123", param1: "-123,123", param2: &IsFloatOpts{Locale: String("de-DE")}, want: true},
+		{name: "JS de-DE: -0,123", param1: "-0,123", param2: &IsFloatOpts{Locale: String("de-DE")}, want: true},
+		{name: "JS de-DE: +0,123", param1: "+0,123", param2: &IsFloatOpts{Locale: String("de-DE")}, want: true},
+		{name: "JS de-DE: 0,123", param1: "0,123", param2: &IsFloatOpts{Locale: String("de-DE")}, want: true},
 		// TODO: should be valid per validator.js — Go regex requires digit before comma for de-DE
-		{name: "JS de-DE: ,0", param1: ",0", param2: &IsFloatOpts{Locale: "de-DE"}, want: false},
+		{name: "JS de-DE: ,0", param1: ",0", param2: &IsFloatOpts{Locale: String("de-DE")}, want: false},
 		// TODO: should be valid per validator.js — Go regex requires digit before comma for de-DE
-		{name: "JS de-DE: -,123", param1: "-,123", param2: &IsFloatOpts{Locale: "de-DE"}, want: false},
+		{name: "JS de-DE: -,123", param1: "-,123", param2: &IsFloatOpts{Locale: String("de-DE")}, want: false},
 		// TODO: should be valid per validator.js — Go regex requires digit before comma for de-DE
-		{name: "JS de-DE: +,123", param1: "+,123", param2: &IsFloatOpts{Locale: "de-DE"}, want: false},
-		{name: "JS de-DE: 01,123", param1: "01,123", param2: &IsFloatOpts{Locale: "de-DE"}, want: true},
+		{name: "JS de-DE: +,123", param1: "+,123", param2: &IsFloatOpts{Locale: String("de-DE")}, want: false},
+		{name: "JS de-DE: 01,123", param1: "01,123", param2: &IsFloatOpts{Locale: String("de-DE")}, want: true},
 		// TODO: should be valid per validator.js — Go regex does not support scientific notation
-		{name: "JS de-DE: scientific notation", param1: "-0,22250738585072011e-307", param2: &IsFloatOpts{Locale: "de-DE"}, want: false},
-		{name: "JS de-DE invalid: dot decimal", param1: "123.123", param2: &IsFloatOpts{Locale: "de-DE"}, want: false},
-		{name: "JS de-DE invalid: arabic decimal", param1: "123٫123", param2: &IsFloatOpts{Locale: "de-DE"}, want: false},
-		{name: "JS de-DE invalid: spaces", param1: "  ", param2: &IsFloatOpts{Locale: "de-DE"}, want: false},
-		{name: "JS de-DE invalid: empty", param1: "", param2: &IsFloatOpts{Locale: "de-DE"}, want: false},
-		{name: "JS de-DE invalid: dot only", param1: ".", param2: &IsFloatOpts{Locale: "de-DE"}, want: false},
-		{name: "JS de-DE invalid: foo", param1: "foo", param2: &IsFloatOpts{Locale: "de-DE"}, want: false},
+		{name: "JS de-DE: scientific notation", param1: "-0,22250738585072011e-307", param2: &IsFloatOpts{Locale: String("de-DE")}, want: false},
+		{name: "JS de-DE invalid: dot decimal", param1: "123.123", param2: &IsFloatOpts{Locale: String("de-DE")}, want: false},
+		{name: "JS de-DE invalid: arabic decimal", param1: "123٫123", param2: &IsFloatOpts{Locale: String("de-DE")}, want: false},
+		{name: "JS de-DE invalid: spaces", param1: "  ", param2: &IsFloatOpts{Locale: String("de-DE")}, want: false},
+		{name: "JS de-DE invalid: empty", param1: "", param2: &IsFloatOpts{Locale: String("de-DE")}, want: false},
+		{name: "JS de-DE invalid: dot only", param1: ".", param2: &IsFloatOpts{Locale: String("de-DE")}, want: false},
+		{name: "JS de-DE invalid: foo", param1: "foo", param2: &IsFloatOpts{Locale: String("de-DE")}, want: false},
 
 		// validator.js ported: min only
 		{name: "JS min 3.7: 3.888", param1: "3.888", param2: &IsFloatOpts{Min: floatPtr(3.7)}, want: true},
@@ -203,28 +203,28 @@ func TestIsFloat(t *testing.T) {
 		{name: "JS combined min/max/gt/lt invalid: -5.5", param1: "-5.5", param2: &IsFloatOpts{Min: floatPtr(-5.5), Max: floatPtr(10), Gt: floatPtr(-5.5), Lt: floatPtr(10)}, want: false},
 
 		// validator.js ported: de-DE locale with min
-		{name: "JS de-DE min 3.1: 123,123", param1: "123,123", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: true},
-		{name: "JS de-DE min 3.1: 3,1", param1: "3,1", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: true},
-		{name: "JS de-DE min 3.1: 3,100001", param1: "3,100001", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: true},
+		{name: "JS de-DE min 3.1: 123,123", param1: "123,123", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: true},
+		{name: "JS de-DE min 3.1: 3,1", param1: "3,1", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: true},
+		{name: "JS de-DE min 3.1: 3,100001", param1: "3,100001", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: true},
 		// TODO: should be valid per validator.js — Go regex requires comma-decimal, "123" is integer
-		{name: "JS de-DE min 3.1: 123", param1: "123", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1: 123", param1: "123", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
 		// TODO: should be valid per validator.js — Go regex requires digits after comma
-		{name: "JS de-DE min 3.1: 123,", param1: "123,", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: 3,09", param1: "3,09", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: -,123", param1: "-,123", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: +,123", param1: "+,123", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: 01,123", param1: "01,123", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: -123,123", param1: "-123,123", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: -0,123", param1: "-0,123", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: +0,123", param1: "+0,123", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: 0,123", param1: "0,123", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: ,0", param1: ",0", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: dot decimal", param1: "123.123", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: arabic decimal", param1: "123٫123", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: spaces", param1: "  ", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: empty", param1: "", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: dot only", param1: ".", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
-		{name: "JS de-DE min 3.1 invalid: foo", param1: "foo", param2: &IsFloatOpts{Locale: "de-DE", Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1: 123,", param1: "123,", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: 3,09", param1: "3,09", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: -,123", param1: "-,123", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: +,123", param1: "+,123", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: 01,123", param1: "01,123", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: -123,123", param1: "-123,123", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: -0,123", param1: "-0,123", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: +0,123", param1: "+0,123", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: 0,123", param1: "0,123", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: ,0", param1: ",0", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: dot decimal", param1: "123.123", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: arabic decimal", param1: "123٫123", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: spaces", param1: "  ", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: empty", param1: "", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: dot only", param1: ".", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
+		{name: "JS de-DE min 3.1 invalid: foo", param1: "foo", param2: &IsFloatOpts{Locale: String("de-DE"), Min: floatPtr(3.1)}, want: false},
 
 		// validator.js ported: undefined min/max (nil in Go)
 		{name: "JS nil min/max: 123.123", param1: "123.123", param2: &IsFloatOpts{Min: nil, Max: nil}, want: true},
@@ -253,17 +253,17 @@ func TestIsFloat(t *testing.T) {
 		{name: "JS nil gt/lt invalid: 7866.t", param1: "7866.t", param2: &IsFloatOpts{Gt: nil, Lt: nil}, want: false},
 
 		// validator.js ported: locale ru-RU
-		{name: "JS ru-RU: 11231554,34343", param1: "11231554,34343", param2: &IsFloatOpts{Locale: "ru-RU"}, want: true},
-		{name: "JS ru-RU: 11,1", param1: "11,1", param2: &IsFloatOpts{Locale: "ru-RU"}, want: true},
+		{name: "JS ru-RU: 11231554,34343", param1: "11231554,34343", param2: &IsFloatOpts{Locale: String("ru-RU")}, want: true},
+		{name: "JS ru-RU: 11,1", param1: "11,1", param2: &IsFloatOpts{Locale: String("ru-RU")}, want: true},
 		// TODO: should be valid per validator.js — Go regex requires comma-decimal, "456" is integer
-		{name: "JS ru-RU: 456", param1: "456", param2: &IsFloatOpts{Locale: "ru-RU"}, want: false},
+		{name: "JS ru-RU: 456", param1: "456", param2: &IsFloatOpts{Locale: String("ru-RU")}, want: false},
 		// TODO: should be valid per validator.js — Go regex requires digit before comma for ru-RU
-		{name: "JS ru-RU: ,311", param1: ",311", param2: &IsFloatOpts{Locale: "ru-RU"}, want: false},
-		{name: "JS ru-RU invalid: ab565", param1: "ab565", param2: &IsFloatOpts{Locale: "ru-RU"}, want: false},
-		{name: "JS ru-RU invalid: -.123", param1: "-.123", param2: &IsFloatOpts{Locale: "ru-RU"}, want: false},
-		{name: "JS ru-RU invalid: +.123", param1: "+.123", param2: &IsFloatOpts{Locale: "ru-RU"}, want: false},
-		{name: "JS ru-RU invalid: 7866.t", param1: "7866.t", param2: &IsFloatOpts{Locale: "ru-RU"}, want: false},
-		{name: "JS ru-RU invalid: 22.3", param1: "22.3", param2: &IsFloatOpts{Locale: "ru-RU"}, want: false},
+		{name: "JS ru-RU: ,311", param1: ",311", param2: &IsFloatOpts{Locale: String("ru-RU")}, want: false},
+		{name: "JS ru-RU invalid: ab565", param1: "ab565", param2: &IsFloatOpts{Locale: String("ru-RU")}, want: false},
+		{name: "JS ru-RU invalid: -.123", param1: "-.123", param2: &IsFloatOpts{Locale: String("ru-RU")}, want: false},
+		{name: "JS ru-RU invalid: +.123", param1: "+.123", param2: &IsFloatOpts{Locale: String("ru-RU")}, want: false},
+		{name: "JS ru-RU invalid: 7866.t", param1: "7866.t", param2: &IsFloatOpts{Locale: String("ru-RU")}, want: false},
+		{name: "JS ru-RU invalid: 22.3", param1: "22.3", param2: &IsFloatOpts{Locale: String("ru-RU")}, want: false},
 	}
 
 	for _, test := range tests {

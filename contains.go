@@ -11,7 +11,7 @@ var (
 // ContainsOpt is used to configure Contains
 type ContainsOpt struct {
 	IgnoreCase     bool // ignore case when doing comparison, default false.
-	MinOccurrences int  // minimum number of occurrences for the seed in the string. Defaults to 1.
+	MinOccurrences *int // minimum number of occurrences for the seed in the string. Defaults to 1.
 }
 
 // A validator that checks if the string contains the seed.
@@ -33,23 +33,31 @@ func Contains(str, seed string, opts *ContainsOpt) (bool, error) {
 		opts = setContainOptsToDefault()
 	}
 
+	opts.mergeDefaults()
+
 	if opts.IgnoreCase {
 		strLowerCase, seedLowerCase := strings.ToLower(str), strings.ToLower(seed)
-		if strings.Contains(strLowerCase, seedLowerCase) && strings.Count(strLowerCase, seedLowerCase) >= opts.MinOccurrences {
+		if strings.Contains(strLowerCase, seedLowerCase) && strings.Count(strLowerCase, seedLowerCase) >= *opts.MinOccurrences {
 			return true, nil
 		}
 		return false, newValidationError("Contains", ErrNotFound, "seed not found in string")
 	} else {
-		if strings.Contains(str, seed) && strings.Count(str, seed) >= opts.MinOccurrences {
+		if strings.Contains(str, seed) && strings.Count(str, seed) >= *opts.MinOccurrences {
 			return true, nil
 		}
 		return false, newValidationError("Contains", ErrNotFound, "seed not found in string")
 	}
 }
 
+func (opts *ContainsOpt) mergeDefaults() {
+	if opts.MinOccurrences == nil {
+		opts.MinOccurrences = &containsOptsDefaultMinOccurrences
+	}
+}
+
 func setContainOptsToDefault() *ContainsOpt {
 	return &ContainsOpt{
 		IgnoreCase:     containsOptsDefaultIgnoreCase,
-		MinOccurrences: containsOptsDefaultMinOccurrences,
+		MinOccurrences: &containsOptsDefaultMinOccurrences,
 	}
 }

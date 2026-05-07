@@ -175,13 +175,13 @@ func TestUnicodeEdgeCases(t *testing.T) {
 
 	t.Run("IsAlpha with CJK characters", func(t *testing.T) {
 		// Japanese locale should accept kanji
-		result, _ := IsAlpha("漢字", &IsAlphaOpts{Locale: "ja-JP"})
+		result, _ := IsAlpha("漢字", &IsAlphaOpts{Locale: String("ja-JP")})
 		_ = result // verify no panic
 	})
 
 	t.Run("IsAlpha with combining characters", func(t *testing.T) {
 		// e + combining acute accent (é as two code points)
-		result, _ := IsAlpha("é", &IsAlphaOpts{Locale: "fr-FR"})
+		result, _ := IsAlpha("é", &IsAlphaOpts{Locale: String("fr-FR")})
 		_ = result // verify no panic
 	})
 

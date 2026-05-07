@@ -19,18 +19,21 @@ var (
 	normalizeEmailOptsDefaultIcloudRemoveSubaddress        bool = true
 )
 
+// boolPtr returns a pointer to the given bool value.
+func boolPtr(v bool) *bool { return &v }
+
 type NormalizeEmailOpts struct {
-	AllLowercase                  bool
-	GmailLowercase                bool
-	GmailRemoveDots               bool
-	GmailRemoveSubaddress         bool
-	GmailConvertGooglemaildotcom  bool
-	OutlookdotcomLowercase        bool
-	OutlookdotcomRemoveSubaddress bool
-	YahooLowercase                bool
-	YahooRemoveSubaddress         bool
-	IcloudLowercase               bool
-	IcloudRemoveSubaddress        bool
+	AllLowercase                  *bool
+	GmailLowercase                *bool
+	GmailRemoveDots               *bool
+	GmailRemoveSubaddress         *bool
+	GmailConvertGooglemaildotcom  *bool
+	OutlookdotcomLowercase        *bool
+	OutlookdotcomRemoveSubaddress *bool
+	YahooLowercase                *bool
+	YahooRemoveSubaddress         *bool
+	IcloudLowercase               *bool
+	IcloudRemoveSubaddress        *bool
 }
 
 // A sanitizer that canonicalizes an email address. (This doesn't validate that the input is an email, if you want to validate the email use IsEmail beforehand).
@@ -59,7 +62,7 @@ type NormalizeEmailOpts struct {
 //
 // IcloudRemoveSubaddress: true: Normalizes addresses by removing "sub-addresses", which is the part following a "+" sign (e.g. "foo+bar@icloud.com" becomes "foo@icloud.com").
 //
-//	str := sanitizer.NormalizeEmail("Example@Example.com", &NormalizeEmailOpts{AllLowercase: true})
+//	str := sanitizer.NormalizeEmail("Example@Example.com", &NormalizeEmailOpts{AllLowercase: boolPtr(true)})
 //	fmt.Println(str) // "example@example.com"
 func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 	normEmail := email
@@ -68,7 +71,9 @@ func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 		opts = setNormalizedEmailOptsToDefault()
 	}
 
-	if opts.AllLowercase {
+	opts.mergeDefaults()
+
+	if *opts.AllLowercase {
 		normEmail = strings.ToLower(normEmail)
 	}
 	// dealing with googlemail starts here
@@ -76,7 +81,7 @@ func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 	geCapGrp := geMailRe.FindStringSubmatch(normEmail)
 	isGeMail := len(geCapGrp) != 0
 
-	if opts.GmailConvertGooglemaildotcom && isGeMail {
+	if *opts.GmailConvertGooglemaildotcom && isGeMail {
 		geLocal := geCapGrp[1]
 		normEmail = geLocal + "@" + "gmail.com"
 	}
@@ -96,18 +101,18 @@ func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 		gLocal, gDomain = gmailCapGr[1], gmailCapGr[2]
 	}
 
-	if opts.GmailLowercase && isGmail {
+	if *opts.GmailLowercase && isGmail {
 		gDomain = "gmail.com"
 		gLocal = strings.ToLower(gLocal)
 		normEmail = gLocal + "@" + gDomain
 	}
 
-	if opts.GmailRemoveDots && isGmail {
+	if *opts.GmailRemoveDots && isGmail {
 		gLocal = strings.ReplaceAll(gLocal, ".", "")
 		normEmail = gLocal + "@" + gDomain
 	}
 
-	if opts.GmailRemoveSubaddress && isGmail {
+	if *opts.GmailRemoveSubaddress && isGmail {
 		gLocal = strings.Split(gLocal, "+")[0]
 		normEmail = gLocal + "@" + gDomain
 	}
@@ -128,13 +133,13 @@ func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 		outLocal, outDomain = outMailCapGr[1], outMailCapGr[2]
 	}
 
-	if opts.OutlookdotcomLowercase && isOutMail {
+	if *opts.OutlookdotcomLowercase && isOutMail {
 		outDomain = "outlook.com"
 		outLocal = strings.ToLower(outLocal)
 		normEmail = outLocal + "@" + outDomain
 	}
 
-	if opts.OutlookdotcomRemoveSubaddress && isOutMail {
+	if *opts.OutlookdotcomRemoveSubaddress && isOutMail {
 		outLocal = strings.Split(outLocal, "+")[0]
 		normEmail = outLocal + "@" + outDomain
 	}
@@ -154,13 +159,13 @@ func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 		yhLocal, yhDomain = yhMailCapGr[1], yhMailCapGr[2]
 	}
 
-	if opts.YahooLowercase && isYhMail {
+	if *opts.YahooLowercase && isYhMail {
 		yhDomain = "yahoo.com"
 		yhLocal = strings.ToLower(yhLocal)
 		normEmail = yhLocal + "@" + yhDomain
 	}
 
-	if opts.YahooRemoveSubaddress && isYhMail {
+	if *opts.YahooRemoveSubaddress && isYhMail {
 		yhLocal = strings.Split(yhLocal, "+")[0]
 		normEmail = yhLocal + "@" + yhDomain
 	}
@@ -180,13 +185,13 @@ func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 		icLocal, icDomain = icMailCapGr[1], icMailCapGr[2]
 	}
 
-	if opts.IcloudLowercase && isIcMail {
+	if *opts.IcloudLowercase && isIcMail {
 		icDomain = "icloud.com"
 		icLocal = strings.ToLower(icLocal)
 		normEmail = icLocal + "@" + icDomain
 	}
 
-	if opts.IcloudRemoveSubaddress && isIcMail {
+	if *opts.IcloudRemoveSubaddress && isIcMail {
 		icLocal = strings.Split(icLocal, "+")[0]
 		normEmail = icLocal + "@" + icDomain
 	}
@@ -196,19 +201,54 @@ func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 	return normEmail
 }
 
-func setNormalizedEmailOptsToDefault() (opts *NormalizeEmailOpts) {
-	opts = &NormalizeEmailOpts{}
-	opts.AllLowercase = normalizeEmailOptsDefaultAllLowercase
-	opts.GmailLowercase = normalizeEmailOptsDefaultGmailLowercase
-	opts.GmailRemoveDots = normalizeEmailOptsDefaultGmailRemoveDots
-	opts.GmailRemoveSubaddress = normalizeEmailOptsDefaultGmailRemoveSubaddress
-	opts.GmailConvertGooglemaildotcom = normalizeEmailOptsDefaultGmailConvertGooglemaildotcom
-	opts.OutlookdotcomLowercase = normalizeEmailOptsDefaultOutlookdotcomLowercase
-	opts.OutlookdotcomRemoveSubaddress = normalizeEmailOptsDefaultOutlookdotcomRemoveSubaddress
-	opts.YahooLowercase = normalizeEmailOptsDefaultYahooLowercase
-	opts.YahooRemoveSubaddress = normalizeEmailOptsDefaultYahooRemoveSubaddress
-	opts.IcloudLowercase = normalizeEmailOptsDefaultIcloudLowercase
-	opts.IcloudRemoveSubaddress = normalizeEmailOptsDefaultIcloudRemoveSubaddress
+func setNormalizedEmailOptsToDefault() *NormalizeEmailOpts {
+	return &NormalizeEmailOpts{
+		AllLowercase:                  &normalizeEmailOptsDefaultAllLowercase,
+		GmailLowercase:                &normalizeEmailOptsDefaultGmailLowercase,
+		GmailRemoveDots:               &normalizeEmailOptsDefaultGmailRemoveDots,
+		GmailRemoveSubaddress:         &normalizeEmailOptsDefaultGmailRemoveSubaddress,
+		GmailConvertGooglemaildotcom:  &normalizeEmailOptsDefaultGmailConvertGooglemaildotcom,
+		OutlookdotcomLowercase:        &normalizeEmailOptsDefaultOutlookdotcomLowercase,
+		OutlookdotcomRemoveSubaddress: &normalizeEmailOptsDefaultOutlookdotcomRemoveSubaddress,
+		YahooLowercase:                &normalizeEmailOptsDefaultYahooLowercase,
+		YahooRemoveSubaddress:         &normalizeEmailOptsDefaultYahooRemoveSubaddress,
+		IcloudLowercase:               &normalizeEmailOptsDefaultIcloudLowercase,
+		IcloudRemoveSubaddress:        &normalizeEmailOptsDefaultIcloudRemoveSubaddress,
+	}
+}
 
-	return
+func (opts *NormalizeEmailOpts) mergeDefaults() {
+	if opts.AllLowercase == nil {
+		opts.AllLowercase = &normalizeEmailOptsDefaultAllLowercase
+	}
+	if opts.GmailLowercase == nil {
+		opts.GmailLowercase = &normalizeEmailOptsDefaultGmailLowercase
+	}
+	if opts.GmailRemoveDots == nil {
+		opts.GmailRemoveDots = &normalizeEmailOptsDefaultGmailRemoveDots
+	}
+	if opts.GmailRemoveSubaddress == nil {
+		opts.GmailRemoveSubaddress = &normalizeEmailOptsDefaultGmailRemoveSubaddress
+	}
+	if opts.GmailConvertGooglemaildotcom == nil {
+		opts.GmailConvertGooglemaildotcom = &normalizeEmailOptsDefaultGmailConvertGooglemaildotcom
+	}
+	if opts.OutlookdotcomLowercase == nil {
+		opts.OutlookdotcomLowercase = &normalizeEmailOptsDefaultOutlookdotcomLowercase
+	}
+	if opts.OutlookdotcomRemoveSubaddress == nil {
+		opts.OutlookdotcomRemoveSubaddress = &normalizeEmailOptsDefaultOutlookdotcomRemoveSubaddress
+	}
+	if opts.YahooLowercase == nil {
+		opts.YahooLowercase = &normalizeEmailOptsDefaultYahooLowercase
+	}
+	if opts.YahooRemoveSubaddress == nil {
+		opts.YahooRemoveSubaddress = &normalizeEmailOptsDefaultYahooRemoveSubaddress
+	}
+	if opts.IcloudLowercase == nil {
+		opts.IcloudLowercase = &normalizeEmailOptsDefaultIcloudLowercase
+	}
+	if opts.IcloudRemoveSubaddress == nil {
+		opts.IcloudRemoveSubaddress = &normalizeEmailOptsDefaultIcloudRemoveSubaddress
+	}
 }

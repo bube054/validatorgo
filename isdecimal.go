@@ -18,8 +18,8 @@ type DecimalDigits struct {
 type IsDecimalOpts struct {
 	DecimalDigits
 
-	ForceDecimal bool   // decimal/radix point must be present
-	Locale       string // locale used
+	ForceDecimal bool    // decimal/radix point must be present
+	Locale       *string // locale used
 }
 
 
@@ -39,14 +39,12 @@ type IsDecimalOpts struct {
 //	fmt.Println(ok) // false
 func IsDecimal(str string, opts *IsDecimalOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsDecimalOptsToDefaults()
+		opts = &IsDecimalOpts{}
 	}
 
-	if opts.Locale == "" {
-		opts.Locale = isDecimalOptsDefaultLocale
-	}
+	opts.mergeDefaults()
 
-	format, ok := localeDecimalFormats[opts.Locale]
+	format, ok := localeDecimalFormats[*opts.Locale]
 
 	if !ok {
 		return false, newValidationError("IsDecimal", ErrInvalidFormat, "invalid decimal")
@@ -65,13 +63,8 @@ func IsDecimal(str string, opts *IsDecimalOpts) (bool, error) {
 	return false, newValidationError("IsDecimal", ErrInvalidFormat, "invalid decimal")
 }
 
-func setIsDecimalOptsToDefaults() *IsDecimalOpts {
-	return &IsDecimalOpts{
-		ForceDecimal: isDecimalOptsDefaultForceDecimal,
-		Locale:       isDecimalOptsDefaultLocale,
-		DecimalDigits: DecimalDigits{
-			Min: isDecimalOptsDefaultMin,
-			Max: isDecimalOptsDefaultMax,
-		},
+func (o *IsDecimalOpts) mergeDefaults() {
+	if o.Locale == nil {
+		o.Locale = String("en-US")
 	}
 }

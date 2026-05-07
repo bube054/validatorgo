@@ -19,8 +19,8 @@ func TestContains(t *testing.T) {
 		{name: "Case-insensitive match mixed", param1: "FOOBAR", param2: "bar", param3: &ContainsOpt{IgnoreCase: true}, want: true},
 
 		// Valid with minimum occurrences
-		{name: "Minimum occurrences met", param1: "hello hello world", param2: "hello", param3: &ContainsOpt{MinOccurrences: 2}, want: true},
-		{name: "Minimum occurrences default", param1: "abc123", param2: "123", param3: &ContainsOpt{MinOccurrences: 1}, want: true},
+		{name: "Minimum occurrences met", param1: "hello hello world", param2: "hello", param3: &ContainsOpt{MinOccurrences: Int(2)}, want: true},
+		{name: "Minimum occurrences default", param1: "abc123", param2: "123", param3: &ContainsOpt{MinOccurrences: Int(1)}, want: true},
 
 		// Invalid default config
 		{name: "No match", param1: "hello world", param2: "earth", param3: &ContainsOpt{}, want: false},
@@ -31,8 +31,8 @@ func TestContains(t *testing.T) {
 		{name: "Case-insensitive fail", param1: "FOOBAR", param2: "baz", param3: &ContainsOpt{IgnoreCase: true}, want: false},
 
 		// Invalid with minimum occurrences
-		{name: "Minimum occurrences not met", param1: "hello world", param2: "hello", param3: &ContainsOpt{MinOccurrences: 2}, want: false},
-		{name: "Zero occurrences required", param1: "abc123", param2: "123", param3: &ContainsOpt{MinOccurrences: 0}, want: true},
+		{name: "Minimum occurrences not met", param1: "hello world", param2: "hello", param3: &ContainsOpt{MinOccurrences: Int(2)}, want: false},
+		{name: "Zero occurrences required", param1: "abc123", param2: "123", param3: &ContainsOpt{MinOccurrences: Int(0)}, want: true},
 
 		// Test for nil param3
 		{name: "Nil default, basic match", param1: "hello world", param2: "world", param3: nil, want: true},
@@ -52,14 +52,14 @@ func TestContains(t *testing.T) {
 		{name: "Case-insensitive baxoof", param1: "baxoof", param2: "foo", param3: &ContainsOpt{IgnoreCase: true}, want: false},
 
 		// Valid with minOccurrences 2
-		{name: "Three occurrences", param1: "foofoofoo", param2: "foo", param3: &ContainsOpt{MinOccurrences: 2}, want: true},
-		{name: "Separated occurrences", param1: "12foo124foo", param2: "foo", param3: &ContainsOpt{MinOccurrences: 2}, want: true},
-		{name: "Overlapping-like occurrences", param1: "fofooofoooofoooo", param2: "foo", param3: &ContainsOpt{MinOccurrences: 2}, want: true},
-		{name: "Adjacent with separator", param1: "foo1foo", param2: "foo", param3: &ContainsOpt{MinOccurrences: 2}, want: true},
+		{name: "Three occurrences", param1: "foofoofoo", param2: "foo", param3: &ContainsOpt{MinOccurrences: Int(2)}, want: true},
+		{name: "Separated occurrences", param1: "12foo124foo", param2: "foo", param3: &ContainsOpt{MinOccurrences: Int(2)}, want: true},
+		{name: "Overlapping-like occurrences", param1: "fofooofoooofoooo", param2: "foo", param3: &ContainsOpt{MinOccurrences: Int(2)}, want: true},
+		{name: "Adjacent with separator", param1: "foo1foo", param2: "foo", param3: &ContainsOpt{MinOccurrences: Int(2)}, want: true},
 		// Invalid with minOccurrences 2
-		{name: "Only one occurrence with min 2", param1: "foobar", param2: "foo", param3: &ContainsOpt{MinOccurrences: 2}, want: false},
-		{name: "Case-sensitive miss with min 2", param1: "Fooofoo", param2: "foo", param3: &ContainsOpt{MinOccurrences: 2}, want: false},
-		{name: "Partial match foofo", param1: "foofo", param2: "foo", param3: &ContainsOpt{MinOccurrences: 2}, want: false},
+		{name: "Only one occurrence with min 2", param1: "foobar", param2: "foo", param3: &ContainsOpt{MinOccurrences: Int(2)}, want: false},
+		{name: "Case-sensitive miss with min 2", param1: "Fooofoo", param2: "foo", param3: &ContainsOpt{MinOccurrences: Int(2)}, want: false},
+		{name: "Partial match foofo", param1: "foofo", param2: "foo", param3: &ContainsOpt{MinOccurrences: Int(2)}, want: false},
 
 		// Edge cases
 		{name: "Empty string empty seed", param1: "", param2: "", param3: nil, want: true},

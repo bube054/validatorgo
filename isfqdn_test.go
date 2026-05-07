@@ -13,13 +13,13 @@ func TestIsFQDn(t *testing.T) {
 		want   bool
 	}{
 		// No TLD Required
-		{name: "TLD not required 1", param1: "example", param2: &IsFQDNOpts{RequireTld: false}, want: true},
-		{name: "TLD not required 2", param1: "localhost", param2: &IsFQDNOpts{RequireTld: false}, want: true},
-		{name: "TLD not required 3", param1: "sub.localhost", param2: &IsFQDNOpts{RequireTld: false}, want: true},
-		{name: "Empty label", param1: "example..com", param2: &IsFQDNOpts{RequireTld: false}, want: false},
-		{name: "Trailing dot not allowed", param1: "example.com.", param2: &IsFQDNOpts{RequireTld: false}, want: false},
-		{name: "Underscore not allowed", param1: "foo_bar.localhost.", param2: &IsFQDNOpts{RequireTld: false}, want: false},
-		{name: "Trailing dot not allowed", param1: "localhost.", param2: &IsFQDNOpts{RequireTld: false}, want: false},
+		{name: "TLD not required 1", param1: "example", param2: &IsFQDNOpts{RequireTld: Bool(false)}, want: true},
+		{name: "TLD not required 2", param1: "localhost", param2: &IsFQDNOpts{RequireTld: Bool(false)}, want: true},
+		{name: "TLD not required 3", param1: "sub.localhost", param2: &IsFQDNOpts{RequireTld: Bool(false)}, want: true},
+		{name: "Empty label", param1: "example..com", param2: &IsFQDNOpts{RequireTld: Bool(false)}, want: false},
+		{name: "Trailing dot not allowed", param1: "example.com.", param2: &IsFQDNOpts{RequireTld: Bool(false)}, want: false},
+		{name: "Underscore not allowed", param1: "foo_bar.localhost.", param2: &IsFQDNOpts{RequireTld: Bool(false)}, want: false},
+		{name: "Trailing dot not allowed", param1: "localhost.", param2: &IsFQDNOpts{RequireTld: Bool(false)}, want: false},
 
 		// No TLD Required with nil config (default behavior for TLD requirement)
 		{name: "TLD required with nil config", param1: "example.com", param2: nil, want: true},
@@ -93,19 +93,19 @@ func TestIsFQDn(t *testing.T) {
 		{name: "Invalid: domain with whitespace \\u3000", param1: "domain.co　m", param2: nil, want: false},
 
 		// ported from validator.js — require_tld: false, still invalid (numeric TLDs rejected)
-		{name: "Invalid without TLD required: example.0", param1: "example.0", param2: &IsFQDNOpts{RequireTld: false}, want: false},
-		{name: "Invalid without TLD required: 192.168.0", param1: "192.168.0", param2: &IsFQDNOpts{RequireTld: false}, want: false},
-		{name: "Invalid without TLD required: 192.168.0.9999", param1: "192.168.0.9999", param2: &IsFQDNOpts{RequireTld: false}, want: false},
+		{name: "Invalid without TLD required: example.0", param1: "example.0", param2: &IsFQDNOpts{RequireTld: Bool(false)}, want: false},
+		{name: "Invalid without TLD required: 192.168.0", param1: "192.168.0", param2: &IsFQDNOpts{RequireTld: Bool(false)}, want: false},
+		{name: "Invalid without TLD required: 192.168.0.9999", param1: "192.168.0.9999", param2: &IsFQDNOpts{RequireTld: Bool(false)}, want: false},
 
 		// ported from validator.js — allow_numeric_tld + require_tld: false
-		{name: "Valid numeric TLD no require: example.0", param1: "example.0", param2: &IsFQDNOpts{AllowNumericTld: true, RequireTld: false}, want: true},
-		{name: "Valid numeric TLD no require: 192.168.0", param1: "192.168.0", param2: &IsFQDNOpts{AllowNumericTld: true, RequireTld: false}, want: true},
+		{name: "Valid numeric TLD no require: example.0", param1: "example.0", param2: &IsFQDNOpts{AllowNumericTld: true, RequireTld: Bool(false)}, want: true},
+		{name: "Valid numeric TLD no require: 192.168.0", param1: "192.168.0", param2: &IsFQDNOpts{AllowNumericTld: true, RequireTld: Bool(false)}, want: true},
 		// TODO: should be valid per validator.js — Go regex rejects label "9999" (>3 digits or label length issue)
-		{name: "Valid numeric TLD no require: 192.168.0.9999", param1: "192.168.0.9999", param2: &IsFQDNOpts{AllowNumericTld: true, RequireTld: false}, want: false},
+		{name: "Valid numeric TLD no require: 192.168.0.9999", param1: "192.168.0.9999", param2: &IsFQDNOpts{AllowNumericTld: true, RequireTld: Bool(false)}, want: false},
 
 		// ported from validator.js — allow_numeric_tld: true (require_tld defaults true)
-		{name: "Valid allow_numeric_tld: google.com", param1: "google.com", param2: &IsFQDNOpts{AllowNumericTld: true, RequireTld: true}, want: true},
-		{name: "Valid allow_numeric_tld: google.l33t", param1: "google.l33t", param2: &IsFQDNOpts{AllowNumericTld: true, RequireTld: true}, want: true},
+		{name: "Valid allow_numeric_tld: google.com", param1: "google.com", param2: &IsFQDNOpts{AllowNumericTld: true, RequireTld: Bool(true)}, want: true},
+		{name: "Valid allow_numeric_tld: google.l33t", param1: "google.l33t", param2: &IsFQDNOpts{AllowNumericTld: true, RequireTld: Bool(true)}, want: true},
 
 		// ported from validator.js — allow_trailing_dot + allow_underscores + allow_numeric_tld
 		{name: "Valid combined opts: abc.efg.g1h.", param1: "abc.efg.g1h.", param2: &IsFQDNOpts{AllowTrailingDot: true, AllowUnderscores: true, AllowNumericTld: true}, want: true},

@@ -18,7 +18,7 @@ var (
 
 // IsFQDNOptsOpts is used to configure IsFQDNOpts
 type IsFQDNOpts struct {
-	RequireTld       bool
+	RequireTld       *bool
 	AllowUnderscores bool
 	AllowTrailingDot bool
 	AllowNumericTld  bool
@@ -38,6 +38,8 @@ func IsFQDN(str string, opts *IsFQDNOpts) (bool, error) {
 		opts = setIsFQDNOptsToDefault()
 	}
 
+	opts.mergeDefaults()
+
 	ignMaxLength := true
 	ln := utf8.RuneCountInString(str)
 
@@ -50,7 +52,7 @@ func IsFQDN(str string, opts *IsFQDNOpts) (bool, error) {
 		allowUnderScoreRe = `\w`
 	}
 	requireTldRe := "?"
-	if opts.RequireTld {
+	if *opts.RequireTld {
 		requireTldRe = ""
 	}
 	allowTrailingDotRe := ``
@@ -71,9 +73,15 @@ func IsFQDN(str string, opts *IsFQDNOpts) (bool, error) {
 	return false, newValidationError("IsFQDN", ErrInvalidFormat, "invalid fqdn")
 }
 
+func (opts *IsFQDNOpts) mergeDefaults() {
+	if opts.RequireTld == nil {
+		opts.RequireTld = &isFQDNOptsDefaultRequireTld
+	}
+}
+
 func setIsFQDNOptsToDefault() *IsFQDNOpts {
 	return &IsFQDNOpts{
-		RequireTld:       isFQDNOptsDefaultRequireTld,
+		RequireTld:       &isFQDNOptsDefaultRequireTld,
 		AllowUnderscores: isFQDNOptsDefaultAllowUnderscores,
 		AllowTrailingDot: isFQDNOptsDefaultAllowTrailingDot,
 		AllowNumericTld:  isFQDNOptsDefaultAllowNumericTld,

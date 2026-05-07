@@ -14,8 +14,8 @@ var (
 )
 
 type IsTimeOpts struct {
-	HourFormat string // hour12 e.g 14:30 or hour24 e.g 02:30 PM
-	Mode       string // default e.g 13:30 or withSeconds e.g 13:30:20
+	HourFormat *string // hour12 e.g 14:30 or hour24 e.g 02:30 PM
+	Mode       *string // default e.g 13:30 or withSeconds e.g 13:30:20
 }
 
 // A validator that checks if the string is a valid time e.g. 23:01:59
@@ -39,24 +39,18 @@ func IsTime(str string, opts *IsTimeOpts) (bool, error) {
 		opts = setIsTimeOptsToDefault()
 	}
 
-	if opts.HourFormat == "" {
-		opts.HourFormat = IsTimeOptsHourFormat24
-	}
+	opts.mergeDefaults()
 
-	if opts.HourFormat != IsTimeOptsHourFormat12 && opts.HourFormat != IsTimeOptsHourFormat24 {
+	if *opts.HourFormat != IsTimeOptsHourFormat12 && *opts.HourFormat != IsTimeOptsHourFormat24 {
 		return false, newValidationError("IsTime", ErrInvalidFormat, "invalid time")
 	}
 
-	if opts.Mode == "" {
-		opts.Mode = IsTimeOptsModeDefault
-	}
-
-	if opts.Mode != IsTimeOptsModeDefault && opts.Mode != IsTimeOptsModeWithSeconds {
+	if *opts.Mode != IsTimeOptsModeDefault && *opts.Mode != IsTimeOptsModeWithSeconds {
 		return false, newValidationError("IsTime", ErrInvalidFormat, "invalid time")
 	}
 
 	hourFmtStr1, hourFmtStr2 := "", ""
-	if opts.HourFormat == IsTimeOptsHourFormat24 {
+	if *opts.HourFormat == IsTimeOptsHourFormat24 {
 		hourFmtStr1 = "(0[0-9]|1[0-9]|2[0-4])"
 		hourFmtStr2 = ""
 	} else {
@@ -65,7 +59,7 @@ func IsTime(str string, opts *IsTimeOpts) (bool, error) {
 	}
 
 	minFmtStr := ""
-	if opts.Mode == IsTimeOptsModeDefault {
+	if *opts.Mode == IsTimeOptsModeDefault {
 		minFmtStr = "(:[0-5][0-9])?"
 	} else {
 		minFmtStr = ":[0-5][0-9]"
@@ -80,9 +74,18 @@ func IsTime(str string, opts *IsTimeOpts) (bool, error) {
 	return false, newValidationError("IsTime", ErrInvalidFormat, "invalid time")
 }
 
+func (opts *IsTimeOpts) mergeDefaults() {
+	if opts.HourFormat == nil {
+		opts.HourFormat = &IsTimeOptsHourFormat24
+	}
+	if opts.Mode == nil {
+		opts.Mode = &IsTimeOptsModeDefault
+	}
+}
+
 func setIsTimeOptsToDefault() *IsTimeOpts {
 	return &IsTimeOpts{
-		HourFormat: IsTimeOptsHourFormat24,
-		Mode:       IsTimeOptsModeDefault,
+		HourFormat: &IsTimeOptsHourFormat24,
+		Mode:       &IsTimeOptsModeDefault,
 	}
 }

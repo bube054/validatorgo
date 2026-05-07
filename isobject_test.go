@@ -20,13 +20,13 @@ func TestIsObject(t *testing.T) {
 		{name: "Invalid JSON object", param1: `{"name": "John", "age": 30`, param2: nil, want: false},
 
 		// Valid json without strictness
-		{name: "Valid JSON object", param1: `{"name": "John", "age": 30}`, param2: &IsObjectOpts{Strict: false}, want: true},
-		{name: "Valid JSON array", param1: `["item1", "item2"]`, param2: &IsObjectOpts{Strict: false}, want: true},
-		{name: "Valid JSON null", param1: `null`, param2: &IsObjectOpts{Strict: false}, want: true},
+		{name: "Valid JSON object", param1: `{"name": "John", "age": 30}`, param2: &IsObjectOpts{Strict: Bool(false)}, want: true},
+		{name: "Valid JSON array", param1: `["item1", "item2"]`, param2: &IsObjectOpts{Strict: Bool(false)}, want: true},
+		{name: "Valid JSON null", param1: `null`, param2: &IsObjectOpts{Strict: Bool(false)}, want: true},
 		// Invalid json without strictness
-		{name: "Valid JSON, is string", param1: `"Just a string"`, param2: &IsObjectOpts{Strict: false}, want: false},
-		{name: "Valid JSON format", param1: `{invalid json}`, param2: &IsObjectOpts{Strict: false}, want: false},
-		{name: "Valid JSON format misspell null", param1: `nil`, param2: &IsObjectOpts{Strict: false}, want: false},
+		{name: "Valid JSON, is string", param1: `"Just a string"`, param2: &IsObjectOpts{Strict: Bool(false)}, want: false},
+		{name: "Valid JSON format", param1: `{invalid json}`, param2: &IsObjectOpts{Strict: Bool(false)}, want: false},
+		{name: "Valid JSON format misspell null", param1: `nil`, param2: &IsObjectOpts{Strict: Bool(false)}, want: false},
 	}
 
 	for _, test := range tests {

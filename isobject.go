@@ -10,7 +10,7 @@ var (
 
 // IsObjectOpts is used to configure IsObject
 type IsObjectOpts struct {
-	Strict bool // looseness or strictness
+	Strict *bool // looseness or strictness
 }
 
 // A validator to check that a value is a json object.
@@ -29,6 +29,8 @@ func IsObject(str string, opts *IsObjectOpts) (bool, error) {
 		opts = setIsObjectOptsToDefault()
 	}
 
+	opts.mergeDefaults()
+
 	var obj interface{}
 
 	err := json.Unmarshal([]byte(str), &obj)
@@ -40,20 +42,26 @@ func IsObject(str string, opts *IsObjectOpts) (bool, error) {
 	case map[string]interface{}:
 		return true, nil
 	case []interface{}:
-		if !opts.Strict {
+		if !*opts.Strict {
 			return true, nil
 		}
 		return false, newValidationError("IsObject", ErrInvalidFormat, "invalid object")
 	default:
-		if str == "null" && !opts.Strict {
+		if str == "null" && !*opts.Strict {
 			return true, nil
 		}
 		return false, newValidationError("IsObject", ErrInvalidFormat, "invalid object")
 	}
 }
 
+func (opts *IsObjectOpts) mergeDefaults() {
+	if opts.Strict == nil {
+		opts.Strict = &IsObjectOptsDefaultStrict
+	}
+}
+
 func setIsObjectOptsToDefault() *IsObjectOpts {
 	return &IsObjectOpts{
-		Strict: IsObjectOptsDefaultStrict,
+		Strict: &IsObjectOptsDefaultStrict,
 	}
 }

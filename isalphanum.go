@@ -1,7 +1,6 @@
 package validatorgo
 
 import (
-	"fmt"
 	"regexp"
 )
 
@@ -12,8 +11,8 @@ var (
 
 // IsAlphanumericOpts is used to configure IsAlphanumeric
 type IsAlphanumericOpts struct {
-	Ignore string // string to be ignored
-	Locale string // a locale
+	Ignore string  // string to be ignored
+	Locale *string // a locale
 }
 
 // writingSystemAlphaNumRegex is the set of common writing systems and their validating alphanumeric regex
@@ -55,40 +54,41 @@ var writingSystemAlphaNumRegex = map[string]string{
 //	fmt.Println(ok) // false
 func IsAlphanumeric(str string, opts *IsAlphanumericOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsAlphanumericOptsToDefault()
+		opts = &IsAlphanumericOpts{}
 	}
+
+	opts.mergeDefaults()
 
 	var (
 		re                *regexp.Regexp
 		lenClsCharFromEnd = 3
 	)
 
-	if opts.Ignore == "" && opts.Locale == "" {
+	if opts.Ignore == "" && *opts.Locale == "" {
 		re = regexp.MustCompile(`^[a-zA-z0-9]+$`)
 	}
 
-	if opts.Ignore == "" && opts.Locale != "" {
-		wrtSys, ok := localeWritingSystems[opts.Locale]
+	if opts.Ignore == "" && *opts.Locale != "" {
+		wrtSys, ok := localeWritingSystems[*opts.Locale]
 		if !ok {
 			return false, newValidationError("IsAlphanumeric", ErrInvalidFormat, "invalid alphanumeric")
 		}
 		re = regexp.MustCompile(writingSystemAlphaNumRegex[wrtSys])
 	}
 
-	if opts.Ignore != "" && opts.Locale == "" {
+	if opts.Ignore != "" && *opts.Locale == "" {
 		charsToIgn := escapeRegexChars(opts.Ignore)
 		rec := regexp.MustCompile(`^[a-zA-z0-9` + charsToIgn + `]+$`)
 		re = rec
 	}
 
-	if opts.Ignore != "" && opts.Locale != "" {
+	if opts.Ignore != "" && *opts.Locale != "" {
 		charsToIgn := escapeRegexChars(opts.Ignore)
-		wrtSys := localeWritingSystems[opts.Locale]
+		wrtSys := localeWritingSystems[*opts.Locale]
 		wrtSysRe := writingSystemAlphaNumRegex[wrtSys]
 		divLen := len(wrtSysRe) - lenClsCharFromEnd
 		fstPrtRe, secPrtRe := wrtSysRe[:divLen], wrtSysRe[divLen:]
 		rec := regexp.MustCompile(fstPrtRe + charsToIgn + secPrtRe)
-		fmt.Println(rec.String())
 		re = rec
 	}
 
@@ -98,9 +98,8 @@ func IsAlphanumeric(str string, opts *IsAlphanumericOpts) (bool, error) {
 	return false, newValidationError("IsAlphanumeric", ErrInvalidFormat, "invalid alphanumeric")
 }
 
-func setIsAlphanumericOptsToDefault() *IsAlphanumericOpts {
-	return &IsAlphanumericOpts{
-		Ignore: isAlphanumericOptsDefaultIgnore,
-		Locale: isAlphanumericOptsDefaultLocale,
+func (o *IsAlphanumericOpts) mergeDefaults() {
+	if o.Locale == nil {
+		o.Locale = String("en-US")
 	}
 }
