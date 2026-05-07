@@ -6,31 +6,45 @@ import (
 	"strings"
 )
 
-var (
-	isEmailDefaultAllowDisplayName         bool   = false
-	isEmailDefaultRequireDisplayName       bool   = false
-	isEmailDefaultAllowUTF8LocalPart       bool   = true
-	isEmailDefaultRequireTld               bool   = true
-	isEmailDefaultIgnoreMaxLength          bool   = false
-	isEmailDefaultAllowIpDomain            bool   = false
-	isEmailDefaultDomainSpecificValidation bool   = false
-	isEmailDefaultBlacklistedChars         string = ""
-	isEmailDefaultHostWhitelist                   = []string{}
-	isEmailDefaultHostBlacklist                   = []string{}
-)
-
 // IsEmailOpts is used to configure IsEmail
 type IsEmailOpts struct {
-	AllowDisplayName         bool
-	RequireDisplayName       bool
-	AllowUTF8LocalPart       bool
-	RequireTld               bool
-	IgnoreMaxLength          bool
-	AllowIpDomain            bool
-	DomainSpecificValidation bool
-	BlacklistedChars         string
+	AllowDisplayName         *bool
+	RequireDisplayName       *bool
+	AllowUTF8LocalPart       *bool
+	RequireTld               *bool
+	IgnoreMaxLength          *bool
+	AllowIpDomain            *bool
+	DomainSpecificValidation *bool
+	BlacklistedChars         *string
 	HostBlacklist            []string
 	HostWhitelist            []string
+}
+
+func (o *IsEmailOpts) mergeDefaults() {
+	if o.AllowDisplayName == nil {
+		o.AllowDisplayName = Bool(false)
+	}
+	if o.RequireDisplayName == nil {
+		o.RequireDisplayName = Bool(false)
+	}
+	if o.AllowUTF8LocalPart == nil {
+		o.AllowUTF8LocalPart = Bool(true)
+	}
+	if o.RequireTld == nil {
+		o.RequireTld = Bool(true)
+	}
+	if o.IgnoreMaxLength == nil {
+		o.IgnoreMaxLength = Bool(false)
+	}
+	if o.AllowIpDomain == nil {
+		o.AllowIpDomain = Bool(false)
+	}
+	if o.DomainSpecificValidation == nil {
+		o.DomainSpecificValidation = Bool(false)
+	}
+	if o.BlacklistedChars == nil {
+		o.BlacklistedChars = String("")
+	}
 }
 
 // A validator that checks if the string is an email.
@@ -54,24 +68,25 @@ type IsEmailOpts struct {
 //	fmt.Println(ok) // false
 func IsEmail(str string, opts *IsEmailOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsEmailOptsToDefault()
+		opts = &IsEmailOpts{}
 	}
+	opts.mergeDefaults()
 
 	// Basic email regex, allowing for UTF-8 if specified
 	var emailRegex *regexp.Regexp
-	if opts.AllowUTF8LocalPart {
+	if *opts.AllowUTF8LocalPart {
 		emailRegex = regexp.MustCompile(`^[\p{L}0-9.!#$%&'*+/=?^_` + "`" + `{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}|(\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])$`)
 	} else {
 		emailRegex = regexp.MustCompile(`^[a-zA-Z0-9.!#$%&'*+/=?^_` + "`" + `{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}|(\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])$`)
 	}
 
 	// Handle display name if required
-	if opts.RequireDisplayName || opts.AllowDisplayName {
+	if *opts.RequireDisplayName || *opts.AllowDisplayName {
 		displayNameRegex := regexp.MustCompile(`^.+\s<(.+)>$`)
 		matches := displayNameRegex.FindStringSubmatch(str)
 		if len(matches) == 2 {
 			str = matches[1]
-		} else if opts.RequireDisplayName {
+		} else if *opts.RequireDisplayName {
 			return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
 		}
 	}
@@ -88,7 +103,7 @@ func IsEmail(str string, opts *IsEmailOpts) (bool, error) {
 	domain := parts[1]
 
 	// Handle IP domain if allowed
-	if opts.AllowIpDomain && strings.HasPrefix(domain, "[") && strings.HasSuffix(domain, "]") {
+	if *opts.AllowIpDomain && strings.HasPrefix(domain, "[") && strings.HasSuffix(domain, "]") {
 		ip := domain[1 : len(domain)-1]
 		if net.ParseIP(ip) != nil {
 			return true, nil
@@ -97,12 +112,12 @@ func IsEmail(str string, opts *IsEmailOpts) (bool, error) {
 	}
 
 	// Handle TLD requirement
-	if opts.RequireTld && !strings.Contains(domain, ".") {
+	if *opts.RequireTld && !strings.Contains(domain, ".") {
 		return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
 	}
 
 	// Domain-specific validation
-	if opts.DomainSpecificValidation && domain == "gmail.com" {
+	if *opts.DomainSpecificValidation && domain == "gmail.com" {
 		local := parts[0]
 		if strings.Contains(local, "+") {
 			return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
@@ -110,8 +125,8 @@ func IsEmail(str string, opts *IsEmailOpts) (bool, error) {
 	}
 
 	// Blacklisted characters
-	if opts.BlacklistedChars != "" {
-		for _, char := range opts.BlacklistedChars {
+	if *opts.BlacklistedChars != "" {
+		for _, char := range *opts.BlacklistedChars {
 			if strings.ContainsRune(str, char) {
 				return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
 			}
@@ -142,17 +157,3 @@ func IsEmail(str string, opts *IsEmailOpts) (bool, error) {
 	return true, nil
 }
 
-func setIsEmailOptsToDefault() *IsEmailOpts {
-	return &IsEmailOpts{
-		AllowDisplayName:         isEmailDefaultAllowDisplayName,
-		RequireDisplayName:       isEmailDefaultRequireDisplayName,
-		AllowUTF8LocalPart:       isEmailDefaultAllowUTF8LocalPart,
-		RequireTld:               isEmailDefaultRequireTld,
-		IgnoreMaxLength:          isEmailDefaultIgnoreMaxLength,
-		AllowIpDomain:            isEmailDefaultAllowIpDomain,
-		DomainSpecificValidation: isEmailDefaultDomainSpecificValidation,
-		BlacklistedChars:         isEmailDefaultBlacklistedChars,
-		HostWhitelist:            isEmailDefaultHostWhitelist,
-		HostBlacklist:            isEmailDefaultHostBlacklist,
-	}
-}

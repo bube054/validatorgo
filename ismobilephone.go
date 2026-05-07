@@ -1,12 +1,14 @@
 package validatorgo
 
-var (
-	isMobilePhoneOptsDefaultStrictMode bool = false
-)
-
 // IsMobilePhoneOpts is used to configure IsMobilePhone
 type IsMobilePhoneOpts struct {
-	StrictMode bool // matches format exactly
+	StrictMode *bool // matches format exactly
+}
+
+func (o *IsMobilePhoneOpts) mergeDefaults() {
+	if o.StrictMode == nil {
+		o.StrictMode = Bool(false)
+	}
 }
 
 // A validator that checks if the string is a mobile phone number.
@@ -23,8 +25,9 @@ type IsMobilePhoneOpts struct {
 //	fmt.Println(ok) // false
 func IsMobilePhone(str string, locales []string, opts *IsMobilePhoneOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsMobilePhoneOptsToDefault()
+		opts = &IsMobilePhoneOpts{}
 	}
+	opts.mergeDefaults()
 
 	strWithoutSpaces := stripDashesAndSpaces(str)
 
@@ -57,8 +60,3 @@ func IsMobilePhone(str string, locales []string, opts *IsMobilePhoneOpts) (bool,
 	return false, newValidationError("IsMobilePhone", ErrInvalidFormat, "invalid mobilephone")
 }
 
-func setIsMobilePhoneOptsToDefault() *IsMobilePhoneOpts {
-	return &IsMobilePhoneOpts{
-		StrictMode: isMobilePhoneOptsDefaultStrictMode,
-	}
-}

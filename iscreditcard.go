@@ -2,13 +2,15 @@ package validatorgo
 
 import "regexp"
 
-var (
-	isCreditCardOptsDefaultProvider string = ""
-)
-
 // IsCreditCardOpts is used to configure IsCreditCard
 type IsCreditCardOpts struct {
-	Provider string // credit card issuer
+	Provider *string // credit card issuer
+}
+
+func (o *IsCreditCardOpts) mergeDefaults() {
+	if o.Provider == nil {
+		o.Provider = String("")
+	}
 }
 
 var creditCardProviderRegex = map[string]string{
@@ -43,13 +45,14 @@ var creditCardProviderRegex = map[string]string{
 //	fmt.Println(ok) // false
 func IsCreditCard(str string, opts *IsCreditCardOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsCreditCardOptsToDefault()
+		opts = &IsCreditCardOpts{}
 	}
+	opts.mergeDefaults()
 
-	reStr, ok := creditCardProviderRegex[opts.Provider]
+	reStr, ok := creditCardProviderRegex[*opts.Provider]
 
 	if !ok {
-		if opts.Provider != "" {
+		if *opts.Provider != "" {
 			return false, newValidationError("IsCreditCard", ErrInvalidFormat, "invalid creditcard")
 		}
 
@@ -68,9 +71,3 @@ func IsCreditCard(str string, opts *IsCreditCardOpts) (bool, error) {
 	return false, newValidationError("IsCreditCard", ErrInvalidFormat, "invalid creditcard")
 }
 
-func setIsCreditCardOptsToDefault() (opts *IsCreditCardOpts) {
-	opts = &IsCreditCardOpts{}
-	opts.Provider = isCreditCardOptsDefaultProvider
-
-	return
-}

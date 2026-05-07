@@ -18,11 +18,11 @@ var (
 
 // IsFQDNOptsOpts is used to configure IsFQDNOpts
 type IsFQDNOpts struct {
-	RequireTld       bool
-	AllowUnderscores bool
-	AllowTrailingDot bool
-	AllowNumericTld  bool
-	IgnoreMaxLength  bool
+	RequireTld       *bool
+	AllowUnderscores *bool
+	AllowTrailingDot *bool
+	AllowNumericTld  *bool
+	IgnoreMaxLength  *bool
 }
 
 // A validator that checks if the string is a fully qualified domain name (e.g. domain.com).
@@ -38,27 +38,29 @@ func IsFQDN(str string, opts *IsFQDNOpts) (bool, error) {
 		opts = setIsFQDNOptsToDefault()
 	}
 
+	opts.mergeDefaults()
+
 	ignMaxLength := true
 	ln := utf8.RuneCountInString(str)
 
-	if !opts.IgnoreMaxLength && ln > isFQDNMaxLength {
+	if !*opts.IgnoreMaxLength && ln > isFQDNMaxLength {
 		ignMaxLength = false
 	}
 
 	allowUnderScoreRe := `a-zA-Z0-9`
-	if opts.AllowUnderscores {
+	if *opts.AllowUnderscores {
 		allowUnderScoreRe = `\w`
 	}
 	requireTldRe := "?"
-	if opts.RequireTld {
+	if *opts.RequireTld {
 		requireTldRe = ""
 	}
 	allowTrailingDotRe := ``
-	if opts.AllowTrailingDot {
+	if *opts.AllowTrailingDot {
 		allowTrailingDotRe = `\.?`
 	}
 	allowNumTldRe := `[a-zA-Z_]`
-	if opts.AllowNumericTld {
+	if *opts.AllowNumericTld {
 		allowNumTldRe = `\w`
 	}
 
@@ -71,12 +73,30 @@ func IsFQDN(str string, opts *IsFQDNOpts) (bool, error) {
 	return false, newValidationError("IsFQDN", ErrInvalidFormat, "invalid fqdn")
 }
 
+func (opts *IsFQDNOpts) mergeDefaults() {
+	if opts.RequireTld == nil {
+		opts.RequireTld = &isFQDNOptsDefaultRequireTld
+	}
+	if opts.AllowUnderscores == nil {
+		opts.AllowUnderscores = Bool(false)
+	}
+	if opts.AllowTrailingDot == nil {
+		opts.AllowTrailingDot = Bool(false)
+	}
+	if opts.AllowNumericTld == nil {
+		opts.AllowNumericTld = Bool(false)
+	}
+	if opts.IgnoreMaxLength == nil {
+		opts.IgnoreMaxLength = Bool(false)
+	}
+}
+
 func setIsFQDNOptsToDefault() *IsFQDNOpts {
 	return &IsFQDNOpts{
-		RequireTld:       isFQDNOptsDefaultRequireTld,
-		AllowUnderscores: isFQDNOptsDefaultAllowUnderscores,
-		AllowTrailingDot: isFQDNOptsDefaultAllowTrailingDot,
-		AllowNumericTld:  isFQDNOptsDefaultAllowNumericTld,
-		IgnoreMaxLength:  isFQDNOptsDefaultIgnoreMaxLength,
+		RequireTld:       &isFQDNOptsDefaultRequireTld,
+		AllowUnderscores: &isFQDNOptsDefaultAllowUnderscores,
+		AllowTrailingDot: &isFQDNOptsDefaultAllowTrailingDot,
+		AllowNumericTld:  &isFQDNOptsDefaultAllowNumericTld,
+		IgnoreMaxLength:  &isFQDNOptsDefaultIgnoreMaxLength,
 	}
 }

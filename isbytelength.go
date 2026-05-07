@@ -1,14 +1,15 @@
 package validatorgo
 
-var (
-	isIsByteLengthOptsDefaultMin uint  = 0
-	isIsByteLengthOptsDefaultMax *uint = nil
-)
-
 // IsByteLengthOpts is used to configure IsByteLength
 type IsByteLengthOpts struct {
-	Min uint  // minimum byte length
+	Min *uint // minimum byte length
 	Max *uint // maximum byte length
+}
+
+func (o *IsByteLengthOpts) mergeDefaults() {
+	if o.Min == nil {
+		o.Min = Uint(0)
+	}
 }
 
 // A validator that checks if the string's length (in UTF-8 bytes) falls in a range.
@@ -21,27 +22,21 @@ type IsByteLengthOpts struct {
 //	fmt.Println(ok) // false
 func IsByteLength(str string, opts *IsByteLengthOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsByteLengthOptsToDefault()
+		opts = &IsByteLengthOpts{}
 	}
+	opts.mergeDefaults()
 
 	lenInBytes := len(str)
 	if opts.Max == nil {
-		if lenInBytes >= int(opts.Min) {
+		if lenInBytes >= int(*opts.Min) {
 			return true, nil
 		}
 		return false, newValidationError("IsByteLength", ErrInvalidFormat, "invalid bytelength")
 	} else {
-		if lenInBytes >= int(opts.Min) && lenInBytes <= int(*opts.Max) {
+		if lenInBytes >= int(*opts.Min) && lenInBytes <= int(*opts.Max) {
 			return true, nil
 		}
 		return false, newValidationError("IsByteLength", ErrInvalidFormat, "invalid bytelength")
 	}
 }
 
-func setIsByteLengthOptsToDefault() (opts *IsByteLengthOpts) {
-	opts = &IsByteLengthOpts{}
-	opts.Min = isIsByteLengthOptsDefaultMin
-	opts.Max = isIsByteLengthOptsDefaultMax
-
-	return
-}

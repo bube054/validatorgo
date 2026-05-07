@@ -11,8 +11,8 @@ var (
 
 // IsNumericOpts is used to configure IsNumeric
 type IsNumericOpts struct {
-	NoSymbols bool
-	Locale    string
+	NoSymbols *bool
+	Locale    *string
 }
 
 // A validator that check if a string is a number.
@@ -29,13 +29,15 @@ type IsNumericOpts struct {
 //	fmt.Println(ok) // false
 func IsNumeric(str string, opts *IsNumericOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsNumericOptsToDefault()
+		opts = &IsNumericOpts{}
 	}
+
+	opts.mergeDefaults()
 
 	var re *regexp.Regexp
 
 	// has symbols and no Locale
-	if !opts.NoSymbols && opts.Locale == "" {
+	if !*opts.NoSymbols && *opts.Locale == "" {
 		re = regexp.MustCompile(`^[+-]?\d+(\.\d+)?$`)
 		if re.MatchString(str) {
 			return true, nil
@@ -44,7 +46,7 @@ func IsNumeric(str string, opts *IsNumericOpts) (bool, error) {
 	}
 
 	// no symbols and no Locale
-	if opts.NoSymbols && opts.Locale == "" {
+	if *opts.NoSymbols && *opts.Locale == "" {
 		re = regexp.MustCompile(`^\d+$`)
 		if re.MatchString(str) {
 			return true, nil
@@ -52,12 +54,8 @@ func IsNumeric(str string, opts *IsNumericOpts) (bool, error) {
 		return false, newValidationError("IsNumeric", ErrInvalidFormat, "invalid numeric")
 	}
 
-	if opts.Locale == "" {
-		opts.Locale = isNumericOptsDefaultLocale
-	}
-
 	// Locale is present and plus or minus symbols are optional(NoSymbol does not matter)
-	codeNumForm := codeNumericFormats[opts.Locale]
+	codeNumForm := codeNumericFormats[*opts.Locale]
 	valFunc := numericFormatsRegex[codeNumForm]
 	re = valFunc(*opts)
 
@@ -67,9 +65,11 @@ func IsNumeric(str string, opts *IsNumericOpts) (bool, error) {
 	return false, newValidationError("IsNumeric", ErrInvalidFormat, "invalid numeric")
 }
 
-func setIsNumericOptsToDefault() *IsNumericOpts {
-	return &IsNumericOpts{
-		NoSymbols: isNumericOptsDefaultNoSymbols,
-		Locale:    isNumericOptsDefaultLocale,
+func (o *IsNumericOpts) mergeDefaults() {
+	if o.NoSymbols == nil {
+		o.NoSymbols = Bool(false)
+	}
+	if o.Locale == nil {
+		o.Locale = String("")
 	}
 }

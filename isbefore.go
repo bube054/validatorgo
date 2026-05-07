@@ -6,13 +6,15 @@ import (
 	"github.com/bube054/validatorgo/sanitizer"
 )
 
-var (
-	isBeforeOptsDefaultComparisonDate string = ""
-)
-
 // IsBeforeOpts is used to configure IsBefore
 type IsBeforeOpts struct {
-	ComparisonDate string // date to be compared to. Valid layouts are from the time package e.g LLayout, ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, Kitchen, Stamp, StampMilli, StampMicro, StampNano, DateTime, DateOnly, TimeOnly, StandardDateLayout, SlashDateLayout, DateTimeLayout, ISO8601Layout, ISO8601ZuluLayout, ISO8601WithMillisecondsLayout.
+	ComparisonDate *string // date to be compared to. Valid layouts are from the time package e.g LLayout, ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, Kitchen, Stamp, StampMilli, StampMicro, StampNano, DateTime, DateOnly, TimeOnly, StandardDateLayout, SlashDateLayout, DateTimeLayout, ISO8601Layout, ISO8601ZuluLayout, ISO8601WithMillisecondsLayout.
+}
+
+func (o *IsBeforeOpts) mergeDefaults() {
+	if o.ComparisonDate == nil {
+		o.ComparisonDate = String("")
+	}
 }
 
 // A validator that checks if the string is a date that is before the specified date.
@@ -31,17 +33,18 @@ type IsBeforeOpts struct {
 //	fmt.Println(ok) // false
 func IsBefore(str string, opts *IsBeforeOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsBeforeOptsToDefault()
+		opts = &IsBeforeOpts{}
 	}
+	opts.mergeDefaults()
 
 	date1 := sanitizer.ToDate(str)
 
 	var date2 *time.Time
-	if opts.ComparisonDate == "" {
+	if *opts.ComparisonDate == "" {
 		now := time.Now()
 		date2 = &now
 	} else {
-		date2 = sanitizer.ToDate(opts.ComparisonDate)
+		date2 = sanitizer.ToDate(*opts.ComparisonDate)
 	}
 
 	if date1 == nil || date2 == nil {
@@ -54,8 +57,3 @@ func IsBefore(str string, opts *IsBeforeOpts) (bool, error) {
 	return false, newValidationError("IsBefore", ErrInvalidFormat, "invalid before")
 }
 
-func setIsBeforeOptsToDefault() (opts *IsBeforeOpts) {
-	return &IsBeforeOpts{
-		ComparisonDate: isBeforeOptsDefaultComparisonDate,
-	}
-}

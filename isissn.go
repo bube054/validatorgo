@@ -6,22 +6,19 @@ import (
 	"strconv"
 )
 
-var (
-	isISSNOptsDefaultRequireHyphen        bool = false
-	isISSNOptsDefaultRequireCaseSensitive bool = false
-)
-
-func setIsISSNOptsToDefault() *IsISSNOpts {
-	return &IsISSNOpts{
-		RequireHyphen: isISSNOptsDefaultRequireHyphen,
-		CaseSensitive: isISSNOptsDefaultRequireCaseSensitive,
-	}
-}
-
 // IsISSNOpts is used to configure IsISSN
 type IsISSNOpts struct {
-	RequireHyphen bool // requires a hyphen
-	CaseSensitive bool // must be exact case
+	RequireHyphen *bool // requires a hyphen
+	CaseSensitive *bool // must be exact case
+}
+
+func (o *IsISSNOpts) mergeDefaults() {
+	if o.RequireHyphen == nil {
+		o.RequireHyphen = Bool(false)
+	}
+	if o.CaseSensitive == nil {
+		o.CaseSensitive = Bool(false)
+	}
 }
 
 // A validator that checks if the string is an [ISSN].
@@ -38,16 +35,17 @@ type IsISSNOpts struct {
 // [ISSN]: https://en.wikipedia.org/wiki/International_Standard_Serial_Number
 func IsISSN(str string, opts *IsISSNOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsISSNOptsToDefault()
+		opts = &IsISSNOpts{}
 	}
+	opts.mergeDefaults()
 
 	var reqHypStr string
-	if !opts.RequireHyphen {
+	if !*opts.RequireHyphen {
 		reqHypStr = "?"
 	}
 
 	var reqCasSenStr string
-	if !opts.CaseSensitive {
+	if !*opts.CaseSensitive {
 		reqCasSenStr = "x"
 	}
 

@@ -4,15 +4,19 @@ import (
 	"regexp"
 )
 
-var (
-	isISO8601OptsDefaultStrict          bool = false
-	isISO8601OptsDefaultStrictSeparator bool = false
-)
-
 // IsISO8601Opts is used to configure IsISO8601
 type IsISO8601Opts struct {
-	Strict          bool // must be a date that has actually happened, is happening or will happen.
-	StrictSeparator bool // must be delimited by T
+	Strict          *bool // must be a date that has actually happened, is happening or will happen.
+	StrictSeparator *bool // must be delimited by T
+}
+
+func (o *IsISO8601Opts) mergeDefaults() {
+	if o.Strict == nil {
+		o.Strict = Bool(false)
+	}
+	if o.StrictSeparator == nil {
+		o.StrictSeparator = Bool(false)
+	}
 }
 
 // A validator that checks if the string is a valid [ISO 8601] date.
@@ -31,12 +35,13 @@ type IsISO8601Opts struct {
 // [ISO 8601]: https://en.wikipedia.org/wiki/ISO_8601
 func IsISO8601(str string, opts *IsISO8601Opts) (bool, error) {
 	if opts == nil {
-		opts = setIsISO8601OptsToDefault()
+		opts = &IsISO8601Opts{}
 	}
+	opts.mergeDefaults()
 
 	var re *regexp.Regexp
 
-	if opts.StrictSeparator {
+	if *opts.StrictSeparator {
 		re = regexp.MustCompile(`^(\d{4})(-(0[1-9]|1[0-2])(-([12]\d|0[1-9]|3[01]))([T\s]((([01]\d|2[0-3])((:)[0-5]\d))([\:]\d+)?)?(:[0-5]\d([\.]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3]):?([0-5]\d)?)?)?)$`)
 	} else {
 		re = regexp.MustCompile(`^(\d{4})([-\/\. ](0[1-9]|1[0-2])([-\/\. ]([12]\d|0[1-9]|3[01]))([T\s]((([01]\d|2[0-3])([: \.])[0-5]\d)(([: \.])\d+)?([: \.][0-5]\d([\.]\d+)?)?([zZ]|([\+-])([01]\d|2[0-3])[: \.]?([0-5]\d)?)?)?)?)$`)
@@ -48,7 +53,7 @@ func IsISO8601(str string, opts *IsISO8601Opts) (bool, error) {
 		return false, newValidationError("IsISO8601", ErrInvalidFormat, "invalid iso8601")
 	}
 
-	if opts.Strict {
+	if *opts.Strict {
 		year, month, day := capGrps[1], capGrps[3], capGrps[5]
 
 		if validYearMonthDay(year, month, day) {
@@ -60,9 +65,3 @@ func IsISO8601(str string, opts *IsISO8601Opts) (bool, error) {
 	return true, nil
 }
 
-func setIsISO8601OptsToDefault() *IsISO8601Opts {
-	return &IsISO8601Opts{
-		Strict:          isISO8601OptsDefaultStrict,
-		StrictSeparator: isISO8601OptsDefaultStrictSeparator,
-	}
-}

@@ -6,13 +6,15 @@ import (
 	"github.com/bube054/validatorgo/sanitizer"
 )
 
-var (
-	isAfterOptsDefaultComparisonDate string = ""
-)
-
 // IsAfterOpts is used to configure IsAfter
 type IsAfterOpts struct {
-	ComparisonDate string // date to be compared to. Valid layouts are from the time package e.g Layout, ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, Kitchen, Stamp, StampMilli, StampMicro, StampNano, DateTime, DateOnly, TimeOnly, StandardDateLayout, SlashDateLayout, DateTimeLayout, ISO8601Layout, ISO8601ZuluLayout, ISO8601WithMillisecondsLayout.
+	ComparisonDate *string // date to be compared to. Valid layouts are from the time package e.g Layout, ANSIC, UnixDate, RubyDate, RFC822, RFC822Z, RFC850, RFC1123, RFC1123Z, Kitchen, Stamp, StampMilli, StampMicro, StampNano, DateTime, DateOnly, TimeOnly, StandardDateLayout, SlashDateLayout, DateTimeLayout, ISO8601Layout, ISO8601ZuluLayout, ISO8601WithMillisecondsLayout.
+}
+
+func (o *IsAfterOpts) mergeDefaults() {
+	if o.ComparisonDate == nil {
+		o.ComparisonDate = String("")
+	}
 }
 
 // A validator that checks if the string is a date that is after the specified date.
@@ -34,17 +36,18 @@ type IsAfterOpts struct {
 //	fmt.Println(ok) // false
 func IsAfter(str string, opts *IsAfterOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsAfterOptsToDefault()
+		opts = &IsAfterOpts{}
 	}
+	opts.mergeDefaults()
 
 	date1 := sanitizer.ToDate(str)
 
 	var date2 *time.Time
-	if opts.ComparisonDate == "" {
+	if *opts.ComparisonDate == "" {
 		now := time.Now()
 		date2 = &now
 	} else {
-		date2 = sanitizer.ToDate(opts.ComparisonDate)
+		date2 = sanitizer.ToDate(*opts.ComparisonDate)
 	}
 
 	if date1 == nil || date2 == nil {
@@ -56,9 +59,3 @@ func IsAfter(str string, opts *IsAfterOpts) (bool, error) {
 	return false, newValidationError("IsAfter", ErrInvalidFormat, "invalid after")
 }
 
-func setIsAfterOptsToDefault() *IsAfterOpts {
-
-	return &IsAfterOpts{
-		ComparisonDate: isAfterOptsDefaultComparisonDate,
-	}
-}

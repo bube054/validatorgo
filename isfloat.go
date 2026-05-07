@@ -19,7 +19,7 @@ type IsFloatOpts struct {
 	Max    *float64
 	Gt     *float64
 	Lt     *float64
-	Locale string
+	Locale *string
 }
 
 // Define the map with the format as the key and a function as the value
@@ -158,14 +158,12 @@ var floatDecimalFormats = map[string]string{
 //	fmt.Println(ok) // false
 func IsFloat(str string, opts *IsFloatOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsFloatOptsToDefault()
+		opts = &IsFloatOpts{}
 	}
 
-	if opts.Locale == "" {
-		opts.Locale = isFloatOptsDefaultLocale
-	}
+	opts.mergeDefaults()
 
-	format, ok := floatDecimalFormats[opts.Locale]
+	format, ok := floatDecimalFormats[*opts.Locale]
 	if !ok {
 		return false, newValidationError("IsFloat", ErrInvalidFormat, "invalid float")
 	}
@@ -205,11 +203,8 @@ func IsFloat(str string, opts *IsFloatOpts) (bool, error) {
 	return false, newValidationError("IsFloat", ErrInvalidFormat, "invalid float")
 }
 
-func setIsFloatOptsToDefault() *IsFloatOpts {
-	return &IsFloatOpts{
-		Min: isFloatOptsDefaultMin,
-		Max: isFloatOptsDefaultMax,
-		Gt:  isFloatOptsDefaultGt,
-		Lt:  isFloatOptsDefaultLt,
+func (o *IsFloatOpts) mergeDefaults() {
+	if o.Locale == nil {
+		o.Locale = String("en-US")
 	}
 }

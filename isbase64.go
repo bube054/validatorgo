@@ -5,13 +5,15 @@ import (
 	"unicode/utf8"
 )
 
-var (
-	isBase64OptsDefaultUrlSafe bool = false
-)
-
 // IsBase64Opts is used to configure IsBase64
 type IsBase64Opts struct {
-	UrlSafe bool // checks whether string is url safe.
+	UrlSafe *bool // checks whether string is url safe.
+}
+
+func (o *IsBase64Opts) mergeDefaults() {
+	if o.UrlSafe == nil {
+		o.UrlSafe = Bool(false)
+	}
 }
 
 // A validator that checks if the string is base64 encoded.
@@ -27,14 +29,15 @@ type IsBase64Opts struct {
 // [url safe]: https://base64.guru/standards/base64url
 func IsBase64(str string, opts *IsBase64Opts) (bool, error) {
 	if opts == nil {
-		opts = setIsBase64OptsToDefault()
+		opts = &IsBase64Opts{}
 	}
+	opts.mergeDefaults()
 
 	if utf8.RuneCountInString(str) < 2 {
 		return false, newValidationError("IsBase64", ErrTooShort, "string is too short to be valid base64")
 	}
 
-	if opts.UrlSafe {
+	if *opts.UrlSafe {
 		if !regexp.MustCompile(`^(?:[A-Za-z0-9_-]{4})*(?:[A-Za-z0-9_-]{2}(?:==)?|[A-Za-z0-9_-]{3}=?)?$`).MatchString(str) {
 			return false, newValidationError("IsBase64", ErrInvalidFormat, "string is not valid url-safe base64")
 		}
@@ -47,9 +50,3 @@ func IsBase64(str string, opts *IsBase64Opts) (bool, error) {
 	}
 }
 
-func setIsBase64OptsToDefault() (opts *IsBase64Opts) {
-	opts = &IsBase64Opts{}
-	opts.UrlSafe = isBase64OptsDefaultUrlSafe
-
-	return
-}

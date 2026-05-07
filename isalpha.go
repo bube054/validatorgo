@@ -12,8 +12,8 @@ var (
 
 // IsAlphaOpts is used to configure IsAlpha
 type IsAlphaOpts struct {
-	Ignore string // string to be ignored
-	Locale string // a locale
+	Ignore *string // string to be ignored
+	Locale *string // a locale
 }
 
 // escapeRegexChars returns escaped regex special characters
@@ -48,35 +48,37 @@ func escapeRegexChars(str string) string {
 //	fmt.Println(ok) // false
 func IsAlpha(str string, opts *IsAlphaOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsAlphaOptsToDefault()
+		opts = &IsAlphaOpts{}
 	}
+
+	opts.mergeDefaults()
 
 	var (
 		re                *regexp.Regexp
 		lenClsCharFromEnd = 3
 	)
 
-	if opts.Ignore == "" && opts.Locale == "" {
+	if *opts.Ignore == "" && *opts.Locale == "" {
 		re = regexp.MustCompile(`^[a-zA-z]+$`)
 	}
 
-	if opts.Ignore == "" && opts.Locale != "" {
-		wrtSys, ok := localeWritingSystems[opts.Locale]
+	if *opts.Ignore == "" && *opts.Locale != "" {
+		wrtSys, ok := localeWritingSystems[*opts.Locale]
 		if !ok {
 			return false, newValidationError("IsAlpha", ErrInvalidFormat, "invalid alpha")
 		}
 		re = regexp.MustCompile(writingSystemAlphaRegex[wrtSys])
 	}
 
-	if opts.Ignore != "" && opts.Locale == "" {
-		charsToIgn := escapeRegexChars(opts.Ignore)
+	if *opts.Ignore != "" && *opts.Locale == "" {
+		charsToIgn := escapeRegexChars(*opts.Ignore)
 		rec := regexp.MustCompile(`^[a-zA-z` + charsToIgn + `]+$`)
 		re = rec
 	}
 
-	if opts.Ignore != "" && opts.Locale != "" {
-		charsToIgn := escapeRegexChars(opts.Ignore)
-		wrtSys := localeWritingSystems[opts.Locale]
+	if *opts.Ignore != "" && *opts.Locale != "" {
+		charsToIgn := escapeRegexChars(*opts.Ignore)
+		wrtSys := localeWritingSystems[*opts.Locale]
 		wrtSysRe := writingSystemAlphaRegex[wrtSys]
 		divLen := len(wrtSysRe) - lenClsCharFromEnd
 		fstPrtRe, secPrtRe := wrtSysRe[:divLen], wrtSysRe[divLen:]
@@ -90,9 +92,11 @@ func IsAlpha(str string, opts *IsAlphaOpts) (bool, error) {
 	return false, newValidationError("IsAlpha", ErrInvalidFormat, "invalid alpha")
 }
 
-func setIsAlphaOptsToDefault() *IsAlphaOpts {
-	return &IsAlphaOpts{
-		Ignore: isAlphaOptsDefaultIgnore,
-		Locale: isAlphaOptsDefaultLocale,
+func (o *IsAlphaOpts) mergeDefaults() {
+	if o.Ignore == nil {
+		o.Ignore = String("")
+	}
+	if o.Locale == nil {
+		o.Locale = String("en-US")
 	}
 }

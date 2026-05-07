@@ -4,15 +4,16 @@ import (
 	"unicode/utf8"
 )
 
-var (
-	isLengthOptsDefaultMin uint  = 0
-	isLengthOptsDefaultMax *uint = nil
-)
-
 // IsLengthOpts is used to configure IsLength
 type IsLengthOpts struct {
-	Min uint  // Minimum character length
+	Min *uint // Minimum character length
 	Max *uint // Maximum character length
+}
+
+func (o *IsLengthOpts) mergeDefaults() {
+	if o.Min == nil {
+		o.Min = Uint(0)
+	}
 }
 
 // A validator that checks if the string's length falls in a range.
@@ -27,8 +28,9 @@ type IsLengthOpts struct {
 //	fmt.Println(ok) // false
 func IsLength(str string, opts *IsLengthOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsLengthOptsToDefault()
+		opts = &IsLengthOpts{}
 	}
+	opts.mergeDefaults()
 
 	length := uint(utf8.RuneCountInString(str))
 
@@ -39,7 +41,7 @@ func IsLength(str string, opts *IsLengthOpts) (bool, error) {
 		withinLimits = withinLimits && isMax
 	}
 
-	isMin := opts.Min <= length
+	isMin := *opts.Min <= length
 	withinLimits = withinLimits && isMin
 
 	if withinLimits {
@@ -48,9 +50,3 @@ func IsLength(str string, opts *IsLengthOpts) (bool, error) {
 	return false, newValidationError("IsLength", ErrInvalidFormat, "invalid length")
 }
 
-func setIsLengthOptsToDefault() *IsLengthOpts {
-	return &IsLengthOpts{
-		Min: isLengthOptsDefaultMin,
-		Max: isLengthOptsDefaultMax,
-	}
-}

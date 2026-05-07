@@ -5,13 +5,15 @@ import (
 	"strconv"
 )
 
-var (
-	isIMEIOptsDefaultAllowHyphens bool = false
-)
-
 // IsIMEIOpts is used to configure IsIMEI
 type IsIMEIOpts struct {
-	AllowHyphens bool
+	AllowHyphens *bool
+}
+
+func (o *IsIMEIOpts) mergeDefaults() {
+	if o.AllowHyphens == nil {
+		o.AllowHyphens = Bool(false)
+	}
 }
 
 // A validator that checks if the string is a valid [IMEI number]. IMEI should be of format ############### or ##-######-######-#.
@@ -28,12 +30,13 @@ type IsIMEIOpts struct {
 // [IMEI number]: https://en.wikipedia.org/wiki/International_Mobile_Equipment_Identity
 func IsIMEI(str string, opts *IsIMEIOpts) (bool, error) {
 	if opts == nil {
-		opts = setIsIMEIOptsToDefault()
+		opts = &IsIMEIOpts{}
 	}
+	opts.mergeDefaults()
 
 	var re *regexp.Regexp
 
-	if opts.AllowHyphens {
+	if *opts.AllowHyphens {
 		re = regexp.MustCompile(`^\d{2}-?\d{6}-?\d{6}-?\d$`)
 	} else {
 		re = regexp.MustCompile(`^\d{15}$`)
@@ -73,8 +76,3 @@ func IsIMEI(str string, opts *IsIMEIOpts) (bool, error) {
 	return true, nil
 }
 
-func setIsIMEIOptsToDefault() *IsIMEIOpts {
-	return &IsIMEIOpts{
-		AllowHyphens: isIMEIOptsDefaultAllowHyphens,
-	}
-}
