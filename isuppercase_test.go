@@ -18,11 +18,9 @@ func TestIsUpperCase(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			result, _ := IsUpperCase(test.param1)
+			result, err := IsUpperCase(test.param1)
 
-			if result != test.want {
-				t.Errorf("got `%t`, wanted `%t`", result, test.want)
-			}
+			assertValidation(t, result, test.want, err)
 		})
 	}
 }

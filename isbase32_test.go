@@ -37,11 +37,9 @@ func TestIsBase32(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			result, _ := IsBase32(test.param1, test.param2)
+			result, err := IsBase32(test.param1, test.param2)
 
-			if result != test.want {
-				t.Errorf("got `%t`, wanted `%t`", result, test.want)
-			}
+			assertValidation(t, result, test.want, err)
 		})
 	}
 }

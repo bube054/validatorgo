@@ -30,10 +30,8 @@ func TestIsDate(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			result, _ := IsDate(test.param1, test.param2)
-			if result != test.want {
-				t.Errorf("Test %s failed: got `%t`, wanted `%t`", test.name, result, test.want)
-			}
+			result, err := IsDate(test.param1, test.param2)
+			assertValidation(t, result, test.want, err)
 		})
 	}
 }

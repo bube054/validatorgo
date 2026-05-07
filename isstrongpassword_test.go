@@ -18,7 +18,6 @@ func TestIsStrongPassword(t *testing.T) {
 		{name: "No numbers", param1: "Password!@", param2: &IsStrongPasswordOpts{}, want: false, score: 108.5},
 		{name: "Only numbers", param1: "123456789", param2: &IsStrongPasswordOpts{}, want: false, score: 99.0},
 		{name: "Custom MinLength, no symbols", param1: "StrongP4ssw0rd", param2: &IsStrongPasswordOpts{MinLength: intPtr(12), MinSymbols: intPtr(0)}, want: true, score: 151.0},
-		// {name: "Custom PointsPerUnique and PointsForContainingLower", param1: "LowerCaseOnly123", param2: &IsStrongPasswordOpts{PointsPerUnique: floatPtr(2), PointsForContainingLower: floatPtr(20)}, want: true, score: 288.50},
 		{name: "Weak password, only lowercase", param1: "weakpassword", param2: &IsStrongPasswordOpts{}, want: false, score: 127.50},
 		{name: "Valid password, high score custom points", param1: "CompL3x$P@ss", param2: &IsStrongPasswordOpts{PointsPerUnique: floatPtr(2), PointsForContainingUpper: floatPtr(15)}, want: true, score: 155.5},
 
@@ -37,10 +36,10 @@ func TestIsStrongPassword(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			result, score, _ := IsStrongPassword(test.param1, test.param2)
-
-			if result != test.want || score != test.score {
-				t.Errorf("got `%t` & `%.2f` but, wanted `%t` & `%.2f`", result, score, test.want, test.score)
+			result, score, err := IsStrongPassword(test.param1, test.param2)
+			assertValidation(t, result, test.want, err)
+			if score != test.score {
+				t.Errorf("score: got %.2f, want %.2f", score, test.score)
 			}
 		})
 	}

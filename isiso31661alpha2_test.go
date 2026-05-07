@@ -24,11 +24,9 @@ func TestIsISO31661Alpha2(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			result, _ := IsISO31661Alpha2(test.param1)
+			result, err := IsISO31661Alpha2(test.param1)
 
-			if result != test.want {
-				t.Errorf("got `%t`, wanted `%t`", result, test.want)
-			}
+			assertValidation(t, result, test.want, err)
 		})
 	}
 }
