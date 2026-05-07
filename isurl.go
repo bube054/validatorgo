@@ -27,21 +27,21 @@ var (
 
 type IsURLOpts struct {
 	Protocols                 []string
-	RequireTld                bool
+	RequireTld                *bool
 	RequireProtocol           bool
-	RequireHost               bool
+	RequireHost               *bool
 	RequirePort               bool
-	RequireValidProtocol      bool
+	RequireValidProtocol      *bool
 	AllowUnderscores          bool
 	HostWhitelist             []string
 	HostBlacklist             []string
 	AllowTrailingDot          bool
-	AllowProtocolRelativeUrls bool
-	AllowFragments            bool
-	AllowQueryComponents      bool
+	AllowProtocolRelativeUrls *bool
+	AllowFragments            *bool
+	AllowQueryComponents      *bool
 	DisallowAuth              bool
-	ValidateLength            bool
-	MaxAllowedLength          int
+	ValidateLength            *bool
+	MaxAllowedLength          *int
 }
 
 // A validator that checks if the string is a URL.
@@ -68,21 +68,19 @@ type IsURLOpts struct {
 //
 // MaxAllowedLength - if set IsURL will not allow URLs longer than the specified value (default is 2084 that IE maximum URL length).
 //
-//	ok, _ := validatorgo.IsURL("http://localhost", &validatorgo.IsURLOpts{RequireTld: false, AllowProtocolRelativeUrls: true})
+//	ok, _ := validatorgo.IsURL("http://localhost", &validatorgo.IsURLOpts{RequireTld: Bool(false), AllowProtocolRelativeUrls: Bool(true)})
 //	fmt.Println(ok) // true
-//	ok, _ = validatorgo.IsURL("example.com", &validatorgo.IsURLOpts{RequireProtocol: true, AllowProtocolRelativeUrls: true})
+//	ok, _ = validatorgo.IsURL("example.com", &validatorgo.IsURLOpts{RequireProtocol: true, AllowProtocolRelativeUrls: Bool(true)})
 //	fmt.Println(ok) // false
 func IsURL(str string, opts *IsURLOpts) (bool, error) {
 	if opts == nil {
 		opts = setIsURLOptsToDefault()
 	}
 
+	opts.mergeDefaults()
+
 	if len(opts.Protocols) == 0 {
 		opts.Protocols = isURLOptsDefaultProtocols
-	}
-
-	if opts.MaxAllowedLength == 0 {
-		opts.MaxAllowedLength = isURLOptsDefaultMaxLength
 	}
 
 	// make protocols with larger lengths come first
@@ -109,7 +107,7 @@ func IsURL(str string, opts *IsURLOpts) (bool, error) {
 	hash := capGrp[8]   // /#section1
 	param := capGrp[9]  // key1=value1&key2=value2&key3=value3
 
-	if opts.RequireTld {
+	if *opts.RequireTld {
 		if dom == "" {
 			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
@@ -121,7 +119,7 @@ func IsURL(str string, opts *IsURLOpts) (bool, error) {
 		}
 	}
 
-	if opts.RequireHost {
+	if *opts.RequireHost {
 		if dom == "" {
 			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
@@ -133,7 +131,7 @@ func IsURL(str string, opts *IsURLOpts) (bool, error) {
 		}
 	}
 
-	if opts.RequireValidProtocol {
+	if *opts.RequireValidProtocol {
 		ok, _ := IsIn(proto, opts.Protocols)
 		if !ok {
 			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
@@ -170,19 +168,19 @@ func IsURL(str string, opts *IsURLOpts) (bool, error) {
 		}
 	}
 
-	if !opts.AllowProtocolRelativeUrls {
+	if !*opts.AllowProtocolRelativeUrls {
 		if proto != "" || slash != "//" {
 			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
-	if !opts.AllowFragments {
+	if !*opts.AllowFragments {
 		if hash != "" {
 			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
 
-	if !opts.AllowQueryComponents {
+	if !*opts.AllowQueryComponents {
 		if param != "" {
 			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
@@ -194,8 +192,8 @@ func IsURL(str string, opts *IsURLOpts) (bool, error) {
 		}
 	}
 
-	if opts.ValidateLength {
-		if len(str) > opts.MaxAllowedLength {
+	if *opts.ValidateLength {
+		if len(str) > *opts.MaxAllowedLength {
 			return false, newValidationError("IsURL", ErrInvalidFormat, "invalid url")
 		}
 	}
@@ -203,24 +201,51 @@ func IsURL(str string, opts *IsURLOpts) (bool, error) {
 	return true, nil
 }
 
+func (opts *IsURLOpts) mergeDefaults() {
+	if opts.RequireTld == nil {
+		opts.RequireTld = &isURLOptsDefaultRequireTld
+	}
+	if opts.RequireHost == nil {
+		opts.RequireHost = &isURLOptsDefaultRequireHost
+	}
+	if opts.RequireValidProtocol == nil {
+		opts.RequireValidProtocol = &isURLOptsDefaultRequireValidProtocol
+	}
+	if opts.AllowProtocolRelativeUrls == nil {
+		opts.AllowProtocolRelativeUrls = &isURLOptsDefaultAllowProtocolRelativeUrls
+	}
+	if opts.AllowFragments == nil {
+		opts.AllowFragments = &isURLOptsDefaultAllowFragments
+	}
+	if opts.AllowQueryComponents == nil {
+		opts.AllowQueryComponents = &isURLOptsDefaultAllowQueryComponents
+	}
+	if opts.ValidateLength == nil {
+		opts.ValidateLength = &isURLOptsDefaultValidateLength
+	}
+	if opts.MaxAllowedLength == nil {
+		opts.MaxAllowedLength = &isURLOptsDefaultMaxLength
+	}
+}
+
 func setIsURLOptsToDefault() *IsURLOpts {
 	return &IsURLOpts{
 		Protocols:                 isURLOptsDefaultProtocols,
-		RequireTld:                isURLOptsDefaultRequireTld,
+		RequireTld:                &isURLOptsDefaultRequireTld,
 		RequireProtocol:           isURLOptsDefaultRequireProtocol,
-		RequireHost:               isURLOptsDefaultRequireHost,
+		RequireHost:               &isURLOptsDefaultRequireHost,
 		RequirePort:               isURLOptsDefaultRequirePort,
-		RequireValidProtocol:      isURLOptsDefaultRequireValidProtocol,
+		RequireValidProtocol:      &isURLOptsDefaultRequireValidProtocol,
 		AllowUnderscores:          isURLOptsDefaultAllowUnderscores,
 		HostWhitelist:             isURLOptsDefaultHostWhitelist,
 		HostBlacklist:             isURLOptsDefaultHostBlacklist,
 		AllowTrailingDot:          isURLOptsDefaultAllowTrailingDot,
-		AllowProtocolRelativeUrls: isURLOptsDefaultAllowProtocolRelativeUrls,
-		AllowFragments:            isURLOptsDefaultAllowFragments,
-		AllowQueryComponents:      isURLOptsDefaultAllowQueryComponents,
+		AllowProtocolRelativeUrls: &isURLOptsDefaultAllowProtocolRelativeUrls,
+		AllowFragments:            &isURLOptsDefaultAllowFragments,
+		AllowQueryComponents:      &isURLOptsDefaultAllowQueryComponents,
 		DisallowAuth:              isURLOptsDefaultDisallowAuth,
-		ValidateLength:            isURLOptsDefaultValidateLength, // isURLOptsDefaultMaxAllowedLength
-		MaxAllowedLength:          isURLOptsDefaultMaxLength,
+		ValidateLength:            &isURLOptsDefaultValidateLength,
+		MaxAllowedLength:          &isURLOptsDefaultMaxLength,
 	}
 }
 

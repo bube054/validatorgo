@@ -84,22 +84,18 @@ func TestNilVsEmptyOpts(t *testing.T) {
 			func(s string) (bool, error) { return IsEmail(s, nil) },
 			func(s string) (bool, error) { return IsEmail(s, &IsEmailOpts{}) },
 		},
-		// TODO: IsURL opts use plain bool — nil defaults RequireTld/RequireHost/etc. to true,
-		// but &IsURLOpts{} zeroes them to false. Convert to *bool to fix.
-		// {
-		// 	"IsURL valid",
-		// 	"https://example.com",
-		// 	func(s string) (bool, error) { return IsURL(s, nil) },
-		// 	func(s string) (bool, error) { return IsURL(s, &IsURLOpts{}) },
-		// },
-		// TODO: IsCurrency opts use plain bool — nil defaults AllowNegatives/AllowDecimal to true,
-		// but &IsCurrencyOpts{} zeroes them to false. Convert to *bool to fix.
-		// {
-		// 	"IsCurrency valid",
-		// 	"$100.00",
-		// 	func(s string) (bool, error) { return IsCurrency(s, nil) },
-		// 	func(s string) (bool, error) { return IsCurrency(s, &IsCurrencyOpts{}) },
-		// },
+		{
+			"IsURL valid",
+			"https://example.com",
+			func(s string) (bool, error) { return IsURL(s, nil) },
+			func(s string) (bool, error) { return IsURL(s, &IsURLOpts{}) },
+		},
+		{
+			"IsCurrency valid",
+			"$100.00",
+			func(s string) (bool, error) { return IsCurrency(s, nil) },
+			func(s string) (bool, error) { return IsCurrency(s, &IsCurrencyOpts{}) },
+		},
 		{
 			"IsInt valid",
 			"42",
