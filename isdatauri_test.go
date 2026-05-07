@@ -8,17 +8,16 @@ func TestIsDataURI(t *testing.T) {
 		param1 string
 		want   bool
 	}{
-		// TODO: IsDataURI implementation is too restrictive — these valid data URIs
-		// should return true after fixing the implementation to match RFC 2397
-		{name: "Base64 encoded PNG image 1", param1: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC", want: false},
-		{name: "Base64 encoded PNG image 2", param1: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIBAMAAAA2IaO4AAAAFVBMVEXk5OTn5+ft7e319fX29vb5+fn///++GUmVAAAALUlEQVQIHWNICnYLZnALTgpmMGYIFWYIZTA2ZFAzTTFlSDFVMwVyQhmAwsYMAKDaBy0axX/iAAAAAElFTkSuQmCC", want: false},
-		{name: "SVG with charset utf-8", param1: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Crect%20fill%3D%22%2300B1FF%22%20width%3D%22100%22%20height%3D%22100%22%2F%3E%3C%2Fsvg%3E", want: false},
-		{name: "Minimal data URI with URL encoding", param1: "data:,Hello%2C%20World!", want: false},
-		{name: "Minimal data URI with plain text", param1: "data:,Hello World!", want: false},
-		{name: "Base64 encoded text/plain", param1: "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ%3D%3D", want: false},
-		{name: "HTML data with URL encoding", param1: "data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E", want: false},
-		{name: "Minimal data URI with brief note", param1: "data:,A%20brief%20note", want: false},
-		{name: "HTML with charset US-ASCII", param1: "data:text/html;charset=US-ASCII,%3Ch1%3EHello!%3C%2Fh1%3E", want: false},
+		// Valid data URIs per RFC 2397
+		{name: "Base64 encoded PNG image 1", param1: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD///+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4Ug9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC", want: true},
+		{name: "Base64 encoded PNG image 2", param1: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIBAMAAAA2IaO4AAAAFVBMVEXk5OTn5+ft7e319fX29vb5+fn///++GUmVAAAALUlEQVQIHWNICnYLZnALTgpmMGYIFWYIZTA2ZFAzTTFlSDFVMwVyQhmAwsYMAKDaBy0axX/iAAAAAElFTkSuQmCC", want: true},
+		{name: "SVG with charset utf-8", param1: "data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%22%20height%3D%22100%22%3E%3Crect%20fill%3D%22%2300B1FF%22%20width%3D%22100%22%20height%3D%22100%22%2F%3E%3C%2Fsvg%3E", want: true},
+		{name: "Minimal data URI with URL encoding", param1: "data:,Hello%2C%20World!", want: true},
+		{name: "Minimal data URI with plain text", param1: "data:,Hello World!", want: true},
+		{name: "Base64 encoded text/plain", param1: "data:text/plain;base64,SGVsbG8sIFdvcmxkIQ%3D%3D", want: true},
+		{name: "HTML data with URL encoding", param1: "data:text/html,%3Ch1%3EHello%2C%20World!%3C%2Fh1%3E", want: true},
+		{name: "Minimal data URI with brief note", param1: "data:,A%20brief%20note", want: true},
+		{name: "HTML with charset US-ASCII", param1: "data:text/html;charset=US-ASCII,%3Ch1%3EHello!%3C%2Fh1%3E", want: true},
 		{name: "Application MIME type base64", param1: "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,dGVzdC5kb2N4", want: true},
 		// Invalid data uri's
 		{name: "Missing data prefix", param1: "text/plain;base64,SGVsbG8sIFdvcmxkIQ==", want: false},
