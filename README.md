@@ -174,7 +174,7 @@ For full API docs and parameter details, see the [Go Reference](https://pkg.go.d
 | **[IsDate](https://pkg.go.dev/github.com/bube054/validatorgo#IsDate)**`(str string, opts *IsDateOpts)` | Checks if the string is a valid date (e.g. `2002-07-15`). Supports `Format` and `StrictMode`. |
 | **[IsAfter](https://pkg.go.dev/github.com/bube054/validatorgo#IsAfter)**`(str string, opts *IsAfterOpts)` | Checks if the string is a date after the given `ComparisonDate` (defaults to now). |
 | **[IsBefore](https://pkg.go.dev/github.com/bube054/validatorgo#IsBefore)**`(str string, opts *IsBeforeOpts)` | Checks if the string is a date before the given `ComparisonDate` (defaults to now). |
-| **[IsTime](https://pkg.go.dev/github.com/bube054/validatorgo#IsTime)**`(str string, opts IsTimeOpts)` | Checks if the string is a valid time (e.g. `23:01:59`). Supports `HourFormat` (`hour12`/`hour24`) and `Mode` (`default`/`withSeconds`). |
+| **[IsTime](https://pkg.go.dev/github.com/bube054/validatorgo#IsTime)**`(str string, opts *IsTimeOpts)` | Checks if the string is a valid time (e.g. `23:01:59`). Supports `HourFormat` (`hour12`/`hour24`) and `Mode` (`default`/`withSeconds`). |
 | **[IsRFC3339](https://pkg.go.dev/github.com/bube054/validatorgo#IsRFC3339)**`(str string)` | Checks if the string is a valid [RFC 3339](https://tools.ietf.org/html/rfc3339) date. |
 | **[IsISO8601](https://pkg.go.dev/github.com/bube054/validatorgo#IsISO8601)**`(str string, opts *IsISO8601Opts)` | Checks if the string is a valid [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date. Supports `Strict` and `StrictSeparator`. |
 
