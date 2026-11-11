@@ -20,7 +20,10 @@ func TestIsIP(t *testing.T) {
 
 		{name: "Valid IPv4 Google's public DNS", param1: "8.8.8.8", param2: "4", want: true},
 		{name: "Invalid IPv4 Octets must be between 0 and 255", param1: "256.256.256.256", param2: "4", want: false},
-		{name: "Valid IPv4 Leading zeros are allowed", param1: "192.168.001.001", param2: "4", want: true},
+		{name: "Invalid IPv4 Leading zeros are not allowed", param1: "192.168.001.001", param2: "4", want: false},
+		{name: "Invalid IPv4 Leading zero in the first number", param1: "01.2.3.4", param2: "", want: false},
+		{name: "Valid IPv4 Single zero numbers", param1: "10.0.0.1", param2: "4", want: true},
+		{name: "Valid IPv4 Three-digit numbers", param1: "100.199.200.255", param2: "4", want: true},
 		{name: "Invalid IPv4 CIDR notation is not a valid pure IP address", param1: "192.168.0.1/24", param2: "4", want: false},
 
 		{name: "Valid IPv6", param1: "2001:0db8:85a3:0000:0000:8a2e:0370:7334", param2: "6", want: true},

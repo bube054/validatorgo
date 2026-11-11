@@ -161,6 +161,8 @@ func IsFloat(str string, opts *IsFloatOpts) (bool, error) {
 		opts = &IsFloatOpts{}
 	}
 
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	format, ok := floatDecimalFormats[*opts.Locale]

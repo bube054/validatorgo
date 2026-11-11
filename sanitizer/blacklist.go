@@ -19,6 +19,6 @@ func Blacklist(str, blacklistedChars string) string {
 		return ""
 	}
 
-	re := regexp.MustCompile("[" + regexp.QuoteMeta(blacklistedChars) + "]+")
+	re := compileOnce("[" + regexp.QuoteMeta(blacklistedChars) + "]+")
 	return re.ReplaceAllString(str, "")
 }

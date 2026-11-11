@@ -63,6 +63,8 @@ func IsCurrency(str string, opts *IsCurrencyOpts) (bool, error) {
 		opts = setIsCurrencyOptsToDefault()
 	}
 
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	escSymbol := regexp.QuoteMeta(*opts.Symbol)
@@ -74,7 +76,7 @@ func IsCurrency(str string, opts *IsCurrencyOpts) (bool, error) {
 	decAftDigs := `(` + escDecSep + `\d{0,` + strconv.Itoa(int(*opts.MaxDigitsAfterDecimal)) + `})?`
 
 	reStr := `^(\(?)(-?)(` + escSymbol + `?)(-?)(\s*)(\d{1,3})(` + escThSep + `\d{3})*` + decAftDigs + `(` + escSymbol + `?)([-\s]?)(\)?)$`
-	re, err := regexp.Compile(reStr)
+	re, err := tryCompileOnce(reStr)
 
 	if err != nil {
 		return false, newValidationError("IsCurrency", ErrInvalidFormat, "invalid currency")

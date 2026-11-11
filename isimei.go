@@ -32,14 +32,16 @@ func IsIMEI(str string, opts *IsIMEIOpts) (bool, error) {
 	if opts == nil {
 		opts = &IsIMEIOpts{}
 	}
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	var re *regexp.Regexp
 
 	if *opts.AllowHyphens {
-		re = regexp.MustCompile(`^\d{2}-?\d{6}-?\d{6}-?\d$`)
+		re = compileOnce(`^\d{2}-?\d{6}-?\d{6}-?\d$`)
 	} else {
-		re = regexp.MustCompile(`^\d{15}$`)
+		re = compileOnce(`^\d{15}$`)
 	}
 
 	if !re.MatchString(str) {
@@ -75,4 +77,3 @@ func IsIMEI(str string, opts *IsIMEIOpts) (bool, error) {
 	}
 	return true, nil
 }
-

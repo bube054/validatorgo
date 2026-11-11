@@ -178,18 +178,13 @@ func TestIsEmail(t *testing.T) {
 		{name: "validator.js basic invalid - invalidemail@", param1: "invalidemail@", param2: nil, want: false},
 		{name: "validator.js basic invalid - invalid.com", param1: "invalid.com", param2: nil, want: false},
 		{name: "validator.js basic invalid - @invalid.com", param1: "@invalid.com", param2: nil, want: false},
-		// TODO: validator.js rejects trailing dots in domain, but Go impl regex allows it
-		{name: "validator.js basic invalid - foo@bar.com. (trailing dot)", param1: "foo@bar.com.", param2: nil, want: true},
+		{name: "validator.js basic invalid - foo@bar.com. (trailing dot)", param1: "foo@bar.com.", param2: nil, want: false},
 		{name: "validator.js basic invalid - foo@_bar.com (underscore in domain)", param1: "foo@_bar.com", param2: nil, want: false},
 		{name: "validator.js basic invalid - z@co.c (single-char TLD)", param1: "z@co.c", param2: nil, want: false},
-		// TODO: validator.js rejects consecutive dots in local part, but Go impl regex allows them
-		{name: "validator.js basic invalid - multiple..dots@stillinvalid.com", param1: "multiple..dots@stillinvalid.com", param2: nil, want: true},
-		// TODO: validator.js rejects trailing dot in local part, but Go impl regex allows it
-		{name: "validator.js basic invalid - ends.with.dot.@gmail.com", param1: "ends.with.dot.@gmail.com", param2: nil, want: true},
-		// TODO: validator.js rejects trailing dot in domain, but Go impl regex allows it
-		{name: "validator.js basic invalid - foo@bar.co.uk. (trailing dot domain)", param1: "foo@bar.co.uk.", param2: nil, want: true},
-		// TODO: validator.js rejects consecutive dots in local part, but Go impl regex allows them
-		{name: "validator.js basic invalid - gmail...ignstraling@gmail.com", param1: "gmail...ignstraling@gmail.com", param2: nil, want: true},
+		{name: "validator.js basic invalid - multiple..dots@stillinvalid.com", param1: "multiple..dots@stillinvalid.com", param2: nil, want: false},
+		{name: "validator.js basic invalid - ends.with.dot.@gmail.com", param1: "ends.with.dot.@gmail.com", param2: nil, want: false},
+		{name: "validator.js basic invalid - foo@bar.co.uk. (trailing dot domain)", param1: "foo@bar.co.uk.", param2: nil, want: false},
+		{name: "validator.js basic invalid - gmail...ignstraling@gmail.com", param1: "gmail...ignstraling@gmail.com", param2: nil, want: false},
 		{name: "validator.js basic invalid - empty string", param1: "", param2: nil, want: false},
 		{name: "validator.js basic invalid - doesnotexist@bar (no TLD)", param1: "doesnotexist@bar", param2: nil, want: false},
 		{name: "validator.js basic invalid - test@gmail (no TLD)", param1: "test@gmail", param2: nil, want: false},
@@ -198,8 +193,7 @@ func TestIsEmail(t *testing.T) {
 		{name: "validator.js DomainSpecific valid - foobar@gmail.com", param1: "foobar@gmail.com", param2: &IsEmailOpts{DomainSpecificValidation: Bool(true)}, want: true},
 		{name: "validator.js DomainSpecific valid - foo.bar@gmail.com", param1: "foo.bar@gmail.com", param2: &IsEmailOpts{DomainSpecificValidation: Bool(true)}, want: true},
 		{name: "validator.js DomainSpecific valid - test@other-domain.com (not gmail)", param1: "test@other-domain.com", param2: &IsEmailOpts{DomainSpecificValidation: Bool(true)}, want: true},
-		// TODO: validator.js rejects leading dots for Gmail, but Go impl does not check this yet
-		{name: "validator.js DomainSpecific invalid - .foobar@gmail.com (leading dot)", param1: ".foobar@gmail.com", param2: &IsEmailOpts{DomainSpecificValidation: Bool(true)}, want: true},
+		{name: "validator.js DomainSpecific invalid - .foobar@gmail.com (leading dot)", param1: ".foobar@gmail.com", param2: &IsEmailOpts{DomainSpecificValidation: Bool(true)}, want: false},
 
 		// --- AllowIpDomain ---
 		{name: "validator.js AllowIpDomain valid - email@[123.123.123.123]", param1: "email@[123.123.123.123]", param2: &IsEmailOpts{AllowIpDomain: Bool(true)}, want: true},
@@ -209,6 +203,10 @@ func TestIsEmail(t *testing.T) {
 		{name: "validator.js AllowIpDomain invalid - email@[266.266.266.266]", param1: "email@[266.266.266.266]", param2: &IsEmailOpts{AllowIpDomain: Bool(true)}, want: false},
 		{name: "validator.js AllowIpDomain invalid - email@[900.800.700.600]", param1: "email@[900.800.700.600]", param2: &IsEmailOpts{AllowIpDomain: Bool(true)}, want: false},
 		{name: "validator.js AllowIpDomain valid - email@[192.168.1.1]", param1: "email@[192.168.1.1]", param2: &IsEmailOpts{AllowIpDomain: Bool(true)}, want: true},
+		{name: "trailing text after the domain is rejected", param1: "john@example.com<script>alert(1)</script>", param2: nil, want: false},
+		{name: "trailing words after the domain are rejected", param1: "john@example.com garbage", param2: nil, want: false},
+		{name: "bracketed IP without an @ does not panic", param1: "junk [1.2.3.4]", param2: nil, want: false},
+		{name: "IP domain is rejected without AllowIpDomain", param1: "user@[127.0.0.1]", param2: nil, want: false},
 
 		// --- BlacklistedChars ---
 		// TODO: validator.js checks blacklisted chars only in local part, but Go impl checks full string (gmail.com contains 'a')
@@ -220,8 +218,7 @@ func TestIsEmail(t *testing.T) {
 
 		// --- IgnoreMaxLength ---
 		{name: "validator.js IgnoreMaxLength valid - very long email", param1: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA@AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.com", param2: &IsEmailOpts{IgnoreMaxLength: Bool(true)}, want: true},
-		// TODO: validator.js rejects emails exceeding 254 chars by default, but Go impl does not enforce max length
-		{name: "validator.js IgnoreMaxLength invalid - very long email without option", param1: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA@AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.com", param2: nil, want: true},
+		{name: "validator.js IgnoreMaxLength invalid - very long email without option", param1: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA@AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.com", param2: nil, want: false},
 
 		// --- HostBlacklist ---
 		// TODO: validator.js uses exact match for HostBlacklist, but Go impl uses HasSuffix so subdomains are also blacklisted
@@ -242,8 +239,7 @@ func TestIsEmail(t *testing.T) {
 		{name: "validator.js AllowDisplayName valid - Display Name <test+ext@gmail.com>", param1: "Display Name <test+ext@gmail.com>", param2: &IsEmailOpts{AllowDisplayName: Bool(true)}, want: true},
 		{name: "validator.js AllowDisplayName valid - plain email still valid", param1: "foo@bar.com", param2: &IsEmailOpts{AllowDisplayName: Bool(true)}, want: true},
 		{name: "validator.js AllowDisplayName invalid - Some Name <invalidemail@>", param1: "Some Name <invalidemail@>", param2: &IsEmailOpts{AllowDisplayName: Bool(true)}, want: false},
-		// TODO: validator.js rejects trailing dot in domain inside display name, but Go impl regex allows it
-		{name: "validator.js AllowDisplayName invalid - Some Name <foo@bar.co.uk.>", param1: "Some Name <foo@bar.co.uk.>", param2: &IsEmailOpts{AllowDisplayName: Bool(true)}, want: true},
+		{name: "validator.js AllowDisplayName invalid - Some Name <foo@bar.co.uk.>", param1: "Some Name <foo@bar.co.uk.>", param2: &IsEmailOpts{AllowDisplayName: Bool(true)}, want: false},
 		{name: "validator.js AllowDisplayName invalid - Name foo@bar.co.uk (no angle brackets)", param1: "Name foo@bar.co.uk", param2: &IsEmailOpts{AllowDisplayName: Bool(true)}, want: false},
 		{name: "validator.js AllowDisplayName invalid - Some Name <foo@bar.com (unclosed bracket)", param1: "Some Name <foo@bar.com", param2: &IsEmailOpts{AllowDisplayName: Bool(true)}, want: false},
 

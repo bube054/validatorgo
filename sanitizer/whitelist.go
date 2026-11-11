@@ -15,6 +15,6 @@ func Whitelist(str, whitelistedChars string) string {
 		return str
 	}
 
-	re := regexp.MustCompile("[^" + regexp.QuoteMeta(whitelistedChars) + "]+")
+	re := compileOnce("[^" + regexp.QuoteMeta(whitelistedChars) + "]+")
 	return re.ReplaceAllString(str, "")
 }

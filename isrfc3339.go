@@ -1,8 +1,6 @@
 package validatorgo
 
-import (
-	"regexp"
-)
+import ()
 
 // A validator that checks if the string is a valid [RFC 3339] date.
 //
@@ -13,7 +11,7 @@ import (
 //
 // [RFC 3339]: https://tools.ietf.org/html/rfc3339
 func IsRFC3339(str string) (bool, error) {
-	re := regexp.MustCompile(`^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])T([01]\d|2[0-3]):[0-5]\d:[0-5]\d(Z|([+-](0[0-9]|1[0-3]):[0-5]\d))$`)
+	re := compileOnce(`^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])T([01]\d|2[0-3]):[0-5]\d:[0-5]\d(Z|([+-](0[0-9]|1[0-3]):[0-5]\d))$`)
 
 	capGrp := re.FindStringSubmatch(str)
 

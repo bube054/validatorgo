@@ -2,7 +2,6 @@ package validatorgo
 
 import (
 	"fmt"
-	"regexp"
 	"unicode/utf8"
 )
 
@@ -38,6 +37,8 @@ func IsFQDN(str string, opts *IsFQDNOpts) (bool, error) {
 		opts = setIsFQDNOptsToDefault()
 	}
 
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	ignMaxLength := true
@@ -65,7 +66,7 @@ func IsFQDN(str string, opts *IsFQDNOpts) (bool, error) {
 	}
 
 	reStr := fmt.Sprintf(`^([%s])+(\.[%s]+)?\.%s%s+%s$`, allowUnderScoreRe, allowUnderScoreRe, requireTldRe, allowNumTldRe, allowTrailingDotRe)
-	re := regexp.MustCompile(reStr)
+	re := compileOnce(reStr)
 	isValid := re.MatchString(str)
 	if isValid && ignMaxLength {
 		return true, nil

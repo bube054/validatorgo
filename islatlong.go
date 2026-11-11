@@ -29,17 +29,19 @@ func IsLatLong(str string, opts *IsLatLongOpts) (bool, error) {
 	if opts == nil {
 		opts = &IsLatLongOpts{}
 	}
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	var re *regexp.Regexp
 	if *opts.CheckDMS {
-		re = regexp.MustCompile(`^([+\-]?[0-8]?\d|90)[°˚º\s-]+([0-5]?\d)['′\s-]+([0-5]?\d(\.\d*)?)["¨˝\s-]*([NnSs])[\s,]+([+\-]?(0?\d?\d|1[0-7]\d|180))[°˚º\s-]+([0-5]?\d)['′\s-]+([0-5]?\d(\.\d*)?)["¨˝\s-]*([EeWw])$`)
+		re = compileOnce(`^([+\-]?[0-8]?\d|90)[°˚º\s-]+([0-5]?\d)['′\s-]+([0-5]?\d(\.\d*)?)["¨˝\s-]*([NnSs])[\s,]+([+\-]?(0?\d?\d|1[0-7]\d|180))[°˚º\s-]+([0-5]?\d)['′\s-]+([0-5]?\d(\.\d*)?)["¨˝\s-]*([EeWw])$`)
 		if re.MatchString(str) {
 			return true, nil
 		}
 		return false, newValidationError("IsLatLong", ErrInvalidFormat, "invalid latlong")
 	} else {
-		re = regexp.MustCompile(`^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$`)
+		re = compileOnce(`^[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?),\s*[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?)$`)
 		if re.MatchString(str) {
 			return true, nil
 		}

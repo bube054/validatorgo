@@ -1,7 +1,6 @@
 package validatorgo
 
 import (
-	"regexp"
 	"strconv"
 )
 
@@ -12,7 +11,7 @@ import (
 //	ok, _ = validatorgo.IsHSL("hsl(360, 100%)")
 //	fmt.Println(ok) // false
 func IsHSL(str string) (bool, error) {
-	re := regexp.MustCompile(`^hsl(a)?\(\s?([^-+].*),\s?([^-+].*)%,\s?([^-+].*)%(,\s?([^-+].*))?\)$`)
+	re := compileOnce(`^hsl(a)?\(\s?([^-+].*),\s?([^-+].*)%,\s?([^-+].*)%(,\s?([^-+].*))?\)$`)
 	capGrp := re.FindStringSubmatch(str)
 
 	if len(capGrp) == 0 {

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1010 256" width="1010" height="256" role="img" aria-labelledby="validatorgo-wordmark-title">
+  <title id="validatorgo-wordmark-title">validatorgo</title>
+  <style>
+    .validatorgo-word { fill: #111827; }
+    @media (prefers-color-scheme: dark) {
+      .validatorgo-word { fill: #F9FAFB; }
+    }
+  </style>
+  <defs>
+    <linearGradient id="validatorgo-wm-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10B981"/>
+      <stop offset="1" stop-color="#0E7490"/>
+    </linearGradient>
+    <linearGradient id="validatorgo-wm-text" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#10B981"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+    <radialGradient id="validatorgo-wm-glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Icon (same artwork as logo.svg) -->
+  <g>
+    <rect width="256" height="256" rx="56" fill="url(#validatorgo-wm-bg)"/>
+    <circle cx="128" cy="128" r="104" fill="url(#validatorgo-wm-glow)"/>
+    <g fill="#FFFFFF" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round" opacity="0.85">
+      <path d="M52 54 L66 54 L62 86 L56 86 Z M76 54 L90 54 L86 86 L80 86 Z"/>
+      <path d="M166 170 L180 170 L176 202 L170 202 Z M190 170 L204 170 L200 202 L194 202 Z"/>
+    </g>
+    <path d="M78 132 L112 166 L180 92" fill="none" stroke="#FFFFFF" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M196 46 Q198.5 57.5 210 60 Q198.5 62.5 196 74 Q193.5 62.5 182 60 Q193.5 57.5 196 46 Z" fill="#FBBF24"/>
+  </g>
+
+  <!-- Name -->
+  <text x="296" y="164" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="104" font-weight="700" letter-spacing="-2"><tspan class="validatorgo-word">validator</tspan><tspan fill="url(#validatorgo-wm-text)">go</tspan></text>
+</svg>

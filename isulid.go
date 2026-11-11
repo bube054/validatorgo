@@ -1,7 +1,5 @@
 package validatorgo
 
-import "regexp"
-
 // A validator that checks if the string is a [ULID].
 //
 //	ok, _ := validatorgo.IsULID("01ARZ3NDEKTSV4RRFFQ69G5FAV")
@@ -11,7 +9,7 @@ import "regexp"
 //
 // [ULID]: https://github.com/ulid/spec
 func IsULID(str string) (bool, error) {
-	if regexp.MustCompile(`[0-7][0-9A-HJKMNP-TV-Z]{25}`).MatchString(str) {
+	if compileOnce(`^[0-7][0-9A-HJKMNP-TV-Z]{25}$`).MatchString(str) {
 		return true, nil
 	}
 	return false, newValidationError("IsULID", ErrInvalidFormat, "invalid ulid")

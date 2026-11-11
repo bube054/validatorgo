@@ -2,7 +2,6 @@ package validatorgo
 
 import (
 	"fmt"
-	"regexp"
 	"strconv"
 )
 
@@ -37,6 +36,8 @@ func IsISSN(str string, opts *IsISSNOpts) (bool, error) {
 	if opts == nil {
 		opts = &IsISSNOpts{}
 	}
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	var reqHypStr string
@@ -49,7 +50,7 @@ func IsISSN(str string, opts *IsISSNOpts) (bool, error) {
 		reqCasSenStr = "x"
 	}
 
-	re := regexp.MustCompile(fmt.Sprintf(`^[0-9]{4}-%s[0-9]{3}[0-9X%s]$`, reqHypStr, reqCasSenStr))
+	re := compileOnce(fmt.Sprintf(`^[0-9]{4}-%s[0-9]{3}[0-9X%s]$`, reqHypStr, reqCasSenStr))
 	capGrp := re.FindStringSubmatch(str)
 
 	if len(capGrp) == 0 {

@@ -2,7 +2,6 @@ package validatorgo
 
 import (
 	"fmt"
-	"regexp"
 )
 
 // A validator that checks if the string is an [ISRC].
@@ -22,7 +21,7 @@ func IsISRC(str string, allowHyphens bool) (bool, error) {
 		char = "-?"
 	}
 
-	re := regexp.MustCompile(fmt.Sprintf(`^([A-Z]{2})%s([A-Z0-9]{3})%s(\d{2})%s(\d{5})$`, char, char, char))
+	re := compileOnce(fmt.Sprintf(`^([A-Z]{2})%s([A-Z0-9]{3})%s(\d{2})%s(\d{5})$`, char, char, char))
 	capGrp := re.FindStringSubmatch(str)
 
 	if capGrp == nil {

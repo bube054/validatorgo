@@ -1,8 +1,6 @@
 package validatorgo
 
-import (
-	"regexp"
-)
+import ()
 
 // IsMailToURIOpts is used to configure IsMailtoURI
 type IsMailToURIOpts struct {
@@ -22,7 +20,7 @@ type IsMailToURIOpts struct {
 //
 // [Mailto URI]: https://en.wikipedia.org/wiki/Mailto
 func IsMailtoURI(str string, opts *IsMailToURIOpts) (bool, error) {
-	re := regexp.MustCompile(`^(mailto:)([^\?]+)(\?.*)?$`)
+	re := compileOnce(`^(mailto:)([^\?]+)(\?.*)?$`)
 
 	capGrp := re.FindStringSubmatch(str)
 

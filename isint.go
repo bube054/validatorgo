@@ -1,7 +1,6 @@
 package validatorgo
 
 import (
-	"regexp"
 	"strconv"
 )
 
@@ -37,14 +36,16 @@ func IsInt(str string, opts *IsIntOpts) (bool, error) {
 	if opts == nil {
 		opts = &IsIntOpts{}
 	}
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	var matches bool
 
 	if *opts.AllowLeadingZeroes {
-		matches = regexp.MustCompile(`^([+-]?0*\d+)(\.0+)?$`).MatchString(str)
+		matches = compileOnce(`^([+-]?0*\d+)(\.0+)?$`).MatchString(str)
 	} else {
-		matches = regexp.MustCompile(`^([+-]?)((0|[1-9]\d*)(\.0*)?|0)$`).MatchString(str)
+		matches = compileOnce(`^([+-]?)((0|[1-9]\d*)(\.0*)?|0)$`).MatchString(str)
 	}
 
 	if !matches {
@@ -91,4 +92,3 @@ func IsInt(str string, opts *IsIntOpts) (bool, error) {
 	}
 	return false, newValidationError("IsInt", ErrInvalidFormat, "invalid int")
 }
-

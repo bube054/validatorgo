@@ -2,7 +2,6 @@ package validatorgo
 
 import (
 	"math"
-	"regexp"
 	"strconv"
 )
 
@@ -22,7 +21,7 @@ var iso6346numValues = map[string]int{
 //
 // [ISO 6346]: https://en.wikipedia.org/wiki/ISO_6346
 func IsISO6346(str string) (bool, error) {
-	re := regexp.MustCompile(`^([A-Z]{3})([UJZR])(\d{6})(\d)$`)
+	re := compileOnce(`^([A-Z]{3})([UJZR])(\d{6})(\d)$`)
 	capGrps := re.FindStringSubmatch(str)
 	if capGrps == nil {
 		return false, newValidationError("IsISO6346", ErrInvalidFormat, "invalid iso6346")

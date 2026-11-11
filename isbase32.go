@@ -1,7 +1,6 @@
 package validatorgo
 
 import (
-	"regexp"
 	"strings"
 )
 
@@ -33,6 +32,8 @@ func IsBase32(str string, opts *IsBase32Opts) (bool, error) {
 	if opts == nil {
 		opts = &IsBase32Opts{}
 	}
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	strWithoutEq := strings.TrimRight(str, "=")
@@ -43,15 +44,14 @@ func IsBase32(str string, opts *IsBase32Opts) (bool, error) {
 	}
 
 	if *opts.Crockford {
-		if !regexp.MustCompile(`^[A-HJ-KM-NP-TV-Z0-9]+$`).MatchString(strings.ToUpper(strWithoutHyp)) {
+		if !compileOnce(`^[A-HJ-KM-NP-TV-Z0-9]+$`).MatchString(strings.ToUpper(strWithoutHyp)) {
 			return false, newValidationError("IsBase32", ErrInvalidFormat, "string is not valid crockford base32")
 		}
 		return true, nil
 	} else {
-		if !regexp.MustCompile(`^[A-Z2-7]+$`).MatchString(strWithoutHyp) {
+		if !compileOnce(`^[A-Z2-7]+$`).MatchString(strWithoutHyp) {
 			return false, newValidationError("IsBase32", ErrInvalidFormat, "string is not valid standard base32")
 		}
 		return true, nil
 	}
 }
-

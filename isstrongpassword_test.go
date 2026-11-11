@@ -104,7 +104,7 @@ func TestIsStrongPassword_ScoreOrdering(t *testing.T) {
 		// Note: Go uses count-based scoring (points per char), not presence-based.
 		// Same-length passwords with different class distributions score identically.
 		// Adding MORE characters always increases the score.
-		base := score("abcdefgh", nil)         // 8 lower
+		base := score("abcdefgh", nil)          // 8 lower
 		withUpper := score("abcdefghAB", nil)   // 8 lower + 2 upper
 		withNum := score("abcdefghAB12", nil)   // 8 lower + 2 upper + 2 num
 		withSym := score("abcdefghAB12!@", nil) // 8 lower + 2 upper + 2 num + 2 sym

@@ -30,6 +30,8 @@ func IsLength(str string, opts *IsLengthOpts) (bool, error) {
 	if opts == nil {
 		opts = &IsLengthOpts{}
 	}
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	length := uint(utf8.RuneCountInString(str))
@@ -49,4 +51,3 @@ func IsLength(str string, opts *IsLengthOpts) (bool, error) {
 	}
 	return false, newValidationError("IsLength", ErrInvalidFormat, "invalid length")
 }
-

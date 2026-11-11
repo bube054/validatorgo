@@ -1,7 +1,6 @@
 package validatorgo
 
 import (
-	"regexp"
 	"unicode/utf8"
 )
 
@@ -31,6 +30,8 @@ func IsBase64(str string, opts *IsBase64Opts) (bool, error) {
 	if opts == nil {
 		opts = &IsBase64Opts{}
 	}
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	if utf8.RuneCountInString(str) < 2 {
@@ -38,15 +39,14 @@ func IsBase64(str string, opts *IsBase64Opts) (bool, error) {
 	}
 
 	if *opts.UrlSafe {
-		if !regexp.MustCompile(`^(?:[A-Za-z0-9_-]{4})*(?:[A-Za-z0-9_-]{2}(?:==)?|[A-Za-z0-9_-]{3}=?)?$`).MatchString(str) {
+		if !compileOnce(`^(?:[A-Za-z0-9_-]{4})*(?:[A-Za-z0-9_-]{2}(?:==)?|[A-Za-z0-9_-]{3}=?)?$`).MatchString(str) {
 			return false, newValidationError("IsBase64", ErrInvalidFormat, "string is not valid url-safe base64")
 		}
 		return true, nil
 	} else {
-		if !regexp.MustCompile(`^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$`).MatchString(str) {
+		if !compileOnce(`^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$`).MatchString(str) {
 			return false, newValidationError("IsBase64", ErrInvalidFormat, "string is not valid standard base64")
 		}
 		return true, nil
 	}
 }
-

@@ -2,7 +2,6 @@ package validatorgo
 
 import (
 	"math"
-	"regexp"
 	"strconv"
 	"unicode/utf8"
 )
@@ -60,7 +59,7 @@ func IsFreightContainerID(str string) (bool, error) {
 		return false, newValidationError("IsFreightContainerID", ErrInvalidFormat, "invalid freightcontainerid")
 	}
 
-	re := regexp.MustCompile(`^([A-Z]{3})([UJZ])([0-9]{6})([0-9])$`)
+	re := compileOnce(`^([A-Z]{3})([UJZ])([0-9]{6})([0-9])$`)
 	match := re.MatchString(str)
 	if !match {
 		return false, newValidationError("IsFreightContainerID", ErrInvalidFormat, "invalid freightcontainerid")

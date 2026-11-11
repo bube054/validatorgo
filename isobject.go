@@ -29,6 +29,8 @@ func IsObject(str string, opts *IsObjectOpts) (bool, error) {
 		opts = setIsObjectOptsToDefault()
 	}
 
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	var obj interface{}

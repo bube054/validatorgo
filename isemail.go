@@ -70,19 +70,24 @@ func IsEmail(str string, opts *IsEmailOpts) (bool, error) {
 	if opts == nil {
 		opts = &IsEmailOpts{}
 	}
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
-	// Basic email regex, allowing for UTF-8 if specified
+	// Basic email regex, allowing for UTF-8 if specified. The two domain forms, a
+	// hostname or a bracketed IP, are grouped so ^ and $ apply to the whole address:
+	// without the group, "a@example.com<script>" matched and "junk [1.2.3.4]" passed
+	// with no @ at all.
 	var emailRegex *regexp.Regexp
 	if *opts.AllowUTF8LocalPart {
-		emailRegex = regexp.MustCompile(`^[\p{L}0-9.!#$%&'*+/=?^_` + "`" + `{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}|(\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])$`)
+		emailRegex = compileOnce(`^[\p{L}0-9.!#$%&'*+/=?^_` + "`" + `{|}~-]+@(([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}|\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])$`)
 	} else {
-		emailRegex = regexp.MustCompile(`^[a-zA-Z0-9.!#$%&'*+/=?^_` + "`" + `{|}~-]+@([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}|(\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])$`)
+		emailRegex = compileOnce(`^[a-zA-Z0-9.!#$%&'*+/=?^_` + "`" + `{|}~-]+@(([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}|\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])$`)
 	}
 
 	// Handle display name if required
 	if *opts.RequireDisplayName || *opts.AllowDisplayName {
-		displayNameRegex := regexp.MustCompile(`^.+\s<(.+)>$`)
+		displayNameRegex := compileOnce(`^.+\s<(.+)>$`)
 		matches := displayNameRegex.FindStringSubmatch(str)
 		if len(matches) == 2 {
 			str = matches[1]
@@ -98,12 +103,26 @@ func IsEmail(str string, opts *IsEmailOpts) (bool, error) {
 		return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
 	}
 
-	// Extract the domain part
-	parts := strings.Split(str, "@")
-	domain := parts[1]
+	// Split into the part before and after the @. The regex above guarantees there is
+	// exactly one.
+	at := strings.LastIndexByte(str, '@')
+	local, domain := str[:at], str[at+1:]
 
-	// Handle IP domain if allowed
-	if *opts.AllowIpDomain && strings.HasPrefix(domain, "[") && strings.HasSuffix(domain, "]") {
+	// Same limits as validator.js: at most 64 bytes before the @ and 254 after it
+	if !*opts.IgnoreMaxLength && (len(local) > 64 || len(domain) > 254) {
+		return false, newValidationError("IsEmail", ErrTooLong, "email is too long")
+	}
+
+	// Dots before the @ may not come first, last or twice in a row
+	if strings.HasPrefix(local, ".") || strings.HasSuffix(local, ".") || strings.Contains(local, "..") {
+		return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
+	}
+
+	// An IP domain such as [192.168.0.1] is only accepted with AllowIpDomain
+	if strings.HasPrefix(domain, "[") && strings.HasSuffix(domain, "]") {
+		if !*opts.AllowIpDomain {
+			return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
+		}
 		ip := domain[1 : len(domain)-1]
 		if net.ParseIP(ip) != nil {
 			return true, nil
@@ -118,7 +137,6 @@ func IsEmail(str string, opts *IsEmailOpts) (bool, error) {
 
 	// Domain-specific validation
 	if *opts.DomainSpecificValidation && domain == "gmail.com" {
-		local := parts[0]
 		if strings.Contains(local, "+") {
 			return false, newValidationError("IsEmail", ErrInvalidFormat, "invalid email")
 		}
@@ -156,4 +174,3 @@ func IsEmail(str string, opts *IsEmailOpts) (bool, error) {
 
 	return true, nil
 }
-

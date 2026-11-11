@@ -1,7 +1,7 @@
 package validatorgo
 
 import (
-	"regexp"
+	"slices"
 	"sort"
 	"strings"
 )
@@ -77,19 +77,23 @@ func IsURL(str string, opts *IsURLOpts) (bool, error) {
 		opts = setIsURLOptsToDefault()
 	}
 
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	if len(opts.Protocols) == 0 {
 		opts.Protocols = isURLOptsDefaultProtocols
 	}
 
-	// make protocols with larger lengths come first
+	// make protocols with larger lengths come first. Sort a copy: the slice belongs
+	// to the caller or is the shared default, and other goroutines may be reading it.
+	opts.Protocols = slices.Clone(opts.Protocols)
 	sort.Slice(opts.Protocols, func(i, j int) bool {
 		return len(opts.Protocols[i]) > len(opts.Protocols[j])
 	})
 
 	reStr := `^(\w+)?(:?\/\/)?(\w*:\w*@)?([\w\/]+)(\.[a-zA-Z]*(\.)?)?(:\d+)?(\/#[a-zA-Z0-9_]+)?(\/\?[a-zA-Z0-9_]+=[a-zA-Z0-9_]+(&[a-zA-Z0-9_]+=[a-zA-Z0-9_]+)*)?`
-	re := regexp.MustCompile(reStr)
+	re := compileOnce(reStr)
 
 	capGrp := re.FindStringSubmatch(str)
 

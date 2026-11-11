@@ -27,6 +27,8 @@ func IsMobilePhone(str string, locales []string, opts *IsMobilePhoneOpts) (bool,
 	if opts == nil {
 		opts = &IsMobilePhoneOpts{}
 	}
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	strWithoutSpaces := stripDashesAndSpaces(str)
@@ -59,4 +61,3 @@ func IsMobilePhone(str string, locales []string, opts *IsMobilePhoneOpts) (bool,
 
 	return false, newValidationError("IsMobilePhone", ErrInvalidFormat, "invalid mobilephone")
 }
-

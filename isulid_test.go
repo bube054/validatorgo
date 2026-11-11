@@ -19,6 +19,8 @@ func TestIsULID(t *testing.T) {
 		{name: "Invalid ULID - Lowercase Letters", param1: "01arz3ndektsv4rrffq69g5fav", want: false},           // Lowercase letters are not allowed
 		{name: "Invalid ULID - Non-base32 Characters", param1: "01ARZ3NDEKTSV4RRFFQ69G5FAL", want: false},       // Contains 'L', which is not allowed in Crockford's Base32
 		{name: "Invalid ULID - Empty String", param1: "", want: false},                                          // Empty string
+		{name: "Invalid ULID - extra text around a valid ULID", param1: "xx01ARZ3NDEKTSV4RRFFQ69G5FAVxx", want: false},
+		{name: "Invalid ULID - too long", param1: "01ARZ3NDEKTSV4RRFFQ69G5FAVX", want: false},
 	}
 
 	for _, test := range tests {

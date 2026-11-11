@@ -22,7 +22,6 @@ type IsDecimalOpts struct {
 	Locale       *string // locale used
 }
 
-
 // A validator that check if the string represents a decimal number, such as 0.1, .3, 1.1, 1.00003, 4.0, etc.
 //
 // IsDecimalOpts is a struct which defaults to {ForceDecimal: false, DecimalDigits: {Min: 0, Max: nil}, locale: 'en-US'}.
@@ -42,6 +41,8 @@ func IsDecimal(str string, opts *IsDecimalOpts) (bool, error) {
 		opts = &IsDecimalOpts{}
 	}
 
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	format, ok := localeDecimalFormats[*opts.Locale]
