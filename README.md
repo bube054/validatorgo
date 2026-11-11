@@ -2,14 +2,35 @@
   <img src="assets/logo-wordmark.svg" alt="validatorgo logo" width="420">
 </p>
 
-# validatorgo
+<p align="center">
+  <b>Validate and sanitize strings in Go.</b><br>
+  90+ validators and 13 sanitizers, ported from <a href="https://github.com/validatorjs/validator.js">validator.js</a>, with zero dependencies.
+</p>
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/bube054/validatorgo.svg)](https://pkg.go.dev/github.com/bube054/validatorgo)
-[![Go Report Card](https://goreportcard.com/badge/github.com/bube054/validatorgo)](https://goreportcard.com/report/github.com/bube054/validatorgo)
-[![Go Version](https://img.shields.io/github/go-mod/go-version/bube054/validatorgo)](https://go.dev/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+<p align="center">
+  <a href="https://github.com/bube054/validatorgo/actions/workflows/ci.yml"><img src="https://github.com/bube054/validatorgo/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://pkg.go.dev/github.com/bube054/validatorgo"><img src="https://pkg.go.dev/badge/github.com/bube054/validatorgo.svg" alt="Go Reference"></a>
+  <a href="https://github.com/bube054/validatorgo/tags"><img src="https://img.shields.io/github/v/tag/bube054/validatorgo?sort=semver&label=version" alt="Latest version"></a>
+  <a href="https://go.dev/"><img src="https://img.shields.io/github/go-mod/go-version/bube054/validatorgo" alt="Go version"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+</p>
 
-> A comprehensive library of **string validators** and **sanitizers** for Go, inspired by the popular JavaScript library [validator.js](https://github.com/validatorjs/validator.js).
+```go
+ok, _ := vgo.IsEmail("john@example.com", nil)
+fmt.Println(ok) // true
+
+ok, err := vgo.IsPort("70000")
+fmt.Println(ok, err) // false IsPort: invalid port
+
+var ve *vgo.ValidationError
+if errors.As(err, &ve) {
+	fmt.Println(ve.Code) // invalid_format: a stable code for your API responses
+}
+```
+
+```sh
+go get github.com/bube054/validatorgo
+```
 
 ---
 
@@ -32,6 +53,7 @@
   - [Colors & Data Structures](#colors--data-structures)
 - [Sanitizers](#sanitizers)
 - [Error Handling](#error-handling)
+- [Changelog](#changelog)
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
 - [License](#license)
@@ -40,11 +62,12 @@
 
 ## Features
 
-- **89+ validators** covering everything from emails and URLs to IBANs and ISO codes
+- **90+ validators** covering everything from emails and URLs to IBANs and ISO codes
 - **13 sanitizers** for cleaning, normalizing, and converting input strings
 - **Structured errors** — every validator returns `(bool, error)` with machine-readable error codes
 - **Locale-aware** — many validators accept locale options for region-specific formats
-- **Pure Go**, no heavy dependencies
+- **Pure Go, zero dependencies**: nothing extra lands in your `go.mod`
+- **Fast**: patterns are compiled once and reused, so a check like `IsEmail` takes about a microsecond
 - **Comprehensive tests** with ~90% coverage
 - Drop-in mental model for anyone familiar with [validator.js](https://github.com/validatorjs/validator.js)
 
@@ -52,9 +75,24 @@
 
 ## Why validatorgo?
 
-Other popular Go libraries like [go-playground/validator](https://github.com/go-playground/validator) and [asaskevich/govalidator](https://github.com/asaskevich/govalidator) primarily focus on validating **structs**, not standalone strings. They also lack the breadth of validators offered by [validator.js](https://github.com/validatorjs/validator.js).
+There are two well-known alternatives. Each is a good choice for a different job:
 
-validatorgo was originally built as a dependency for [ginvalidator](https://github.com/bube054/ginvalidator) — a Go equivalent of the popular Node.js library [express-validator](https://express-validator.github.io/docs/). The existing Go ecosystem options were either too complex, not robust enough, or unsuitable for that use case, so this library fills the gap.
+| | **validatorgo** | [go-playground/validator](https://github.com/go-playground/validator) | [govalidator](https://github.com/asaskevich/govalidator) |
+| --- | --- | --- | --- |
+| **Validates** | individual strings | struct fields, through tags | individual strings |
+| **Looks like** | `vgo.IsEmail(s, nil)` | `` `validate:"required,email"` `` | `govalidator.IsEmail(s)` |
+| **When a check fails** | `false` plus an error with a message and a stable code, e.g. `invalid_format` | an error listing each failed field and tag | `false` only |
+| **Options** | an options struct per check, named after validator.js's, e.g. `IsEmailOpts` | parameters in the tag, e.g. `min=3` | most checks take only the string |
+| **Dependencies** | none | 7 | none |
+| **Latest release** | v1.1.0 (2026) | v10 (2026) | v11.0.1 (2021) |
+
+**Choose go-playground/validator** if you validate whole structs, such as request bodies bound with Gin. It's the standard choice for that, and Gin's binding uses it.
+
+**Choose validatorgo** if you validate values one at a time and want to know *why* a value failed: form fields, query parameters, headers, CLI input, or a chain of rules like [ginvalidator](https://github.com/bube054/ginvalidator) builds. If you know validator.js, the function and option names will already be familiar.
+
+govalidator follows the same validator.js idea, but its checks return only `true` or `false`, and it hasn't had a release since 2021.
+
+validatorgo was originally built as the engine for [ginvalidator](https://github.com/bube054/ginvalidator), a Gin take on Node's [express-validator](https://express-validator.github.io/docs/).
 
 ---
 
@@ -114,7 +152,7 @@ fmt.Println(ok) // true
 // Or customize only what you need
 ok, err := vgo.IsEmail("user@example.com", &vgo.IsEmailOpts{
     RequireTld:               vgo.Bool(false), // override default (true)
-    DomainSpecificValidation: true,
+    DomainSpecificValidation: vgo.Bool(true),
 })
 fmt.Println(ok, err) // true <nil>
 ```
@@ -344,6 +382,12 @@ ok, _ := validatorgo.IsFQDN("example.com", &validatorgo.IsFQDNOpts{
 ```
 
 Any field left as `nil` gets its default value automatically.
+
+---
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for what changed in each release, including the behavior changes in v1.1.0.
 
 ---
 
