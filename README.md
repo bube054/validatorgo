@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo-wordmark.svg" alt="validatorgo logo" width="420">
+</p>
+
 # validatorgo
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/bube054/validatorgo.svg)](https://pkg.go.dev/github.com/bube054/validatorgo)
