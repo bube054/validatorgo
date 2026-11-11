@@ -2,7 +2,6 @@ package validatorgo
 
 import (
 	"fmt"
-	"regexp"
 )
 
 // IsMacAddressOpts is used to configure IsMacAddress
@@ -35,6 +34,8 @@ func IsMacAddress(str string, opts *IsMacAddressOpts) (bool, error) {
 	if opts == nil {
 		opts = &IsMacAddressOpts{}
 	}
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	eu48, eu64 := "48", "64"
@@ -57,11 +58,10 @@ func IsMacAddress(str string, opts *IsMacAddressOpts) (bool, error) {
 		typeReStr = "7"
 	}
 
-	re := regexp.MustCompile(fmt.Sprintf(`^([[:xdigit:]]{2}%s){%s}[[:xdigit:]]{2}$`, noSepReStr, typeReStr))
+	re := compileOnce(fmt.Sprintf(`^([[:xdigit:]]{2}%s){%s}[[:xdigit:]]{2}$`, noSepReStr, typeReStr))
 
 	if re.MatchString(str) {
 		return true, nil
 	}
 	return false, newValidationError("IsMacAddress", ErrInvalidFormat, "invalid macaddress")
 }
-

@@ -54,6 +54,8 @@ func IsDate(str string, opts *IsDateOpts) (bool, error) {
 		opts = setIsDateOptsToDefault()
 	}
 
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	switch *opts.Format {

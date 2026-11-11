@@ -2,7 +2,6 @@ package validatorgo
 
 import (
 	"fmt"
-	"regexp"
 )
 
 var (
@@ -39,6 +38,8 @@ func IsTime(str string, opts *IsTimeOpts) (bool, error) {
 		opts = setIsTimeOptsToDefault()
 	}
 
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	if *opts.HourFormat != IsTimeOptsHourFormat12 && *opts.HourFormat != IsTimeOptsHourFormat24 {
@@ -66,7 +67,7 @@ func IsTime(str string, opts *IsTimeOpts) (bool, error) {
 	}
 
 	reStr := fmt.Sprintf(`^%s:[0-5][0-9]%s%s$`, hourFmtStr1, minFmtStr, hourFmtStr2)
-	re := regexp.MustCompile(reStr)
+	re := compileOnce(reStr)
 
 	if re.MatchString(str) {
 		return true, nil

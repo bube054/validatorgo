@@ -51,6 +51,8 @@ func IsAlpha(str string, opts *IsAlphaOpts) (bool, error) {
 		opts = &IsAlphaOpts{}
 	}
 
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	var (
@@ -59,7 +61,7 @@ func IsAlpha(str string, opts *IsAlphaOpts) (bool, error) {
 	)
 
 	if *opts.Ignore == "" && *opts.Locale == "" {
-		re = regexp.MustCompile(`^[a-zA-z]+$`)
+		re = compileOnce(`^[a-zA-z]+$`)
 	}
 
 	if *opts.Ignore == "" && *opts.Locale != "" {
@@ -67,12 +69,12 @@ func IsAlpha(str string, opts *IsAlphaOpts) (bool, error) {
 		if !ok {
 			return false, newValidationError("IsAlpha", ErrInvalidFormat, "invalid alpha")
 		}
-		re = regexp.MustCompile(writingSystemAlphaRegex[wrtSys])
+		re = compileOnce(writingSystemAlphaRegex[wrtSys])
 	}
 
 	if *opts.Ignore != "" && *opts.Locale == "" {
 		charsToIgn := escapeRegexChars(*opts.Ignore)
-		rec := regexp.MustCompile(`^[a-zA-z` + charsToIgn + `]+$`)
+		rec := compileOnce(`^[a-zA-z` + charsToIgn + `]+$`)
 		re = rec
 	}
 
@@ -82,7 +84,7 @@ func IsAlpha(str string, opts *IsAlphaOpts) (bool, error) {
 		wrtSysRe := writingSystemAlphaRegex[wrtSys]
 		divLen := len(wrtSysRe) - lenClsCharFromEnd
 		fstPrtRe, secPrtRe := wrtSysRe[:divLen], wrtSysRe[divLen:]
-		rec := regexp.MustCompile(fstPrtRe + charsToIgn + secPrtRe)
+		rec := compileOnce(fstPrtRe + charsToIgn + secPrtRe)
 		re = rec
 	}
 

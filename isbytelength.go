@@ -24,6 +24,8 @@ func IsByteLength(str string, opts *IsByteLengthOpts) (bool, error) {
 	if opts == nil {
 		opts = &IsByteLengthOpts{}
 	}
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	lenInBytes := len(str)
@@ -39,4 +41,3 @@ func IsByteLength(str string, opts *IsByteLengthOpts) (bool, error) {
 		return false, newValidationError("IsByteLength", ErrInvalidFormat, "invalid bytelength")
 	}
 }
-

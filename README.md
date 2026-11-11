@@ -41,7 +41,7 @@
 - **Structured errors** — every validator returns `(bool, error)` with machine-readable error codes
 - **Locale-aware** — many validators accept locale options for region-specific formats
 - **Pure Go**, no heavy dependencies
-- **Comprehensive tests** with ~87% coverage
+- **Comprehensive tests** with ~90% coverage
 - Drop-in mental model for anyone familiar with [validator.js](https://github.com/validatorjs/validator.js)
 
 ---
@@ -57,7 +57,7 @@ validatorgo was originally built as a dependency for [ginvalidator](https://gith
 ## Installation
 
 ```sh
-go get -u github.com/bube054/validatorgo
+go get github.com/bube054/validatorgo
 ```
 
 Then import it in your code:

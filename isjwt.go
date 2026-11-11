@@ -2,7 +2,6 @@ package validatorgo
 
 import (
 	"encoding/base64"
-	"regexp"
 )
 
 // A validator that checks if the string is valid JWT token.
@@ -12,7 +11,7 @@ import (
 //	ok, _ = validatorgo.IsJWT("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c")
 //	fmt.Println(ok) // false
 func IsJWT(str string) (bool, error) {
-	re := regexp.MustCompile(`^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)`)
+	re := compileOnce(`^([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_=]+)\.([a-zA-Z0-9_\-\+\/=]*)`)
 	capGrp := re.FindStringSubmatch(str)
 
 	if capGrp == nil {

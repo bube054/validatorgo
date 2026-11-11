@@ -32,13 +32,15 @@ func IsNumeric(str string, opts *IsNumericOpts) (bool, error) {
 		opts = &IsNumericOpts{}
 	}
 
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	var re *regexp.Regexp
 
 	// has symbols and no Locale
 	if !*opts.NoSymbols && *opts.Locale == "" {
-		re = regexp.MustCompile(`^[+-]?\d+(\.\d+)?$`)
+		re = compileOnce(`^[+-]?\d+(\.\d+)?$`)
 		if re.MatchString(str) {
 			return true, nil
 		}
@@ -47,7 +49,7 @@ func IsNumeric(str string, opts *IsNumericOpts) (bool, error) {
 
 	// no symbols and no Locale
 	if *opts.NoSymbols && *opts.Locale == "" {
-		re = regexp.MustCompile(`^\d+$`)
+		re = compileOnce(`^\d+$`)
 		if re.MatchString(str) {
 			return true, nil
 		}

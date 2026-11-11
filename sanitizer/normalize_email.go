@@ -1,7 +1,6 @@
 package sanitizer
 
 import (
-	"regexp"
 	"strings"
 )
 
@@ -71,13 +70,15 @@ func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 		opts = setNormalizedEmailOptsToDefault()
 	}
 
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	if *opts.AllLowercase {
 		normEmail = strings.ToLower(normEmail)
 	}
 	// dealing with googlemail starts here
-	geMailRe := regexp.MustCompile(`^(.*)@(googlemail.com)$`)
+	geMailRe := compileOnce(`^(.*)@(googlemail.com)$`)
 	geCapGrp := geMailRe.FindStringSubmatch(normEmail)
 	isGeMail := len(geCapGrp) != 0
 
@@ -88,7 +89,7 @@ func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 	// dealing with googlemail ends here
 
 	// dealing with gmail starts here
-	gmailRe := regexp.MustCompile(`^(.*)@([gG][mM][aA][iI][lL]\.[cC][oO][mM])$`)
+	gmailRe := compileOnce(`^(.*)@([gG][mM][aA][iI][lL]\.[cC][oO][mM])$`)
 	gmailCapGr := gmailRe.FindStringSubmatch(normEmail)
 	isGmail := len(gmailCapGr) != 0
 
@@ -120,7 +121,7 @@ func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 	// dealing with gmail ends here
 
 	// dealing with outlook starts here
-	outMailRe := regexp.MustCompile(`^(.*)@([oO][uU][tT][lL][oO][oO][kK]\.[cC][oO][mM])$`)
+	outMailRe := compileOnce(`^(.*)@([oO][uU][tT][lL][oO][oO][kK]\.[cC][oO][mM])$`)
 	outMailCapGr := outMailRe.FindStringSubmatch(normEmail)
 	isOutMail := len(outMailCapGr) != 0
 
@@ -146,7 +147,7 @@ func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 	// dealing with outlook ends here
 
 	// dealing with yahoo starts here
-	yhMailRe := regexp.MustCompile(`^(.*)@([yY][aA][hH][oO][oO]\.[cC][oO][mM])$`)
+	yhMailRe := compileOnce(`^(.*)@([yY][aA][hH][oO][oO]\.[cC][oO][mM])$`)
 	yhMailCapGr := yhMailRe.FindStringSubmatch(normEmail)
 	isYhMail := len(yhMailCapGr) != 0
 
@@ -172,7 +173,7 @@ func NormalizeEmail(email string, opts *NormalizeEmailOpts) string {
 	// dealing with yahoo ends here
 
 	// dealing with icloud starts here
-	icMailRe := regexp.MustCompile(`^(.*)@([iI][cC][lL][oO][uU][dD]\.[cC][oO][mM])$`)
+	icMailRe := compileOnce(`^(.*)@([iI][cC][lL][oO][uU][dD]\.[cC][oO][mM])$`)
 	icMailCapGr := icMailRe.FindStringSubmatch(normEmail)
 	isIcMail := len(icMailCapGr) != 0
 

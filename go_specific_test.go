@@ -290,3 +290,30 @@ func TestUnicodeEdgeCases(t *testing.T) {
 		IsULID("")
 	})
 }
+
+// Validators fill in defaults on a copy of the options, so the caller's struct is
+// never changed. ginvalidator shares one options value across all requests, so a
+// write here would also be a data race.
+func TestOptsNotModified(t *testing.T) {
+	lengthOpts := &IsLengthOpts{}
+	IsLength("abc", lengthOpts)
+	if lengthOpts.Min != nil {
+		t.Errorf("IsLength set Min on the caller's options")
+	}
+
+	emailOpts := &IsEmailOpts{}
+	IsEmail("a@example.com", emailOpts)
+	if emailOpts.AllowUTF8LocalPart != nil || emailOpts.RequireTld != nil {
+		t.Errorf("IsEmail set defaults on the caller's options")
+	}
+
+	protocols := []string{"ftp", "https", "http"}
+	urlOpts := &IsURLOpts{Protocols: protocols}
+	IsURL("https://example.com", urlOpts)
+	if protocols[0] != "ftp" || protocols[1] != "https" || protocols[2] != "http" {
+		t.Errorf("IsURL reordered the caller's Protocols: %v", protocols)
+	}
+	if urlOpts.RequireTld != nil {
+		t.Errorf("IsURL set RequireTld on the caller's options")
+	}
+}

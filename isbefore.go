@@ -35,6 +35,8 @@ func IsBefore(str string, opts *IsBeforeOpts) (bool, error) {
 	if opts == nil {
 		opts = &IsBeforeOpts{}
 	}
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	date1 := sanitizer.ToDate(str)
@@ -56,4 +58,3 @@ func IsBefore(str string, opts *IsBeforeOpts) (bool, error) {
 	}
 	return false, newValidationError("IsBefore", ErrInvalidFormat, "invalid before")
 }
-

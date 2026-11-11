@@ -38,6 +38,8 @@ func IsAfter(str string, opts *IsAfterOpts) (bool, error) {
 	if opts == nil {
 		opts = &IsAfterOpts{}
 	}
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	date1 := sanitizer.ToDate(str)
@@ -58,4 +60,3 @@ func IsAfter(str string, opts *IsAfterOpts) (bool, error) {
 	}
 	return false, newValidationError("IsAfter", ErrInvalidFormat, "invalid after")
 }
-

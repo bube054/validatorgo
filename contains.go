@@ -33,6 +33,8 @@ func Contains(str, seed string, opts *ContainsOpt) (bool, error) {
 		opts = setContainOptsToDefault()
 	}
 
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	if *opts.IgnoreCase {

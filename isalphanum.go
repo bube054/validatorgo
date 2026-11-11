@@ -57,6 +57,8 @@ func IsAlphanumeric(str string, opts *IsAlphanumericOpts) (bool, error) {
 		opts = &IsAlphanumericOpts{}
 	}
 
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	var (
@@ -65,7 +67,7 @@ func IsAlphanumeric(str string, opts *IsAlphanumericOpts) (bool, error) {
 	)
 
 	if *opts.Ignore == "" && *opts.Locale == "" {
-		re = regexp.MustCompile(`^[a-zA-z0-9]+$`)
+		re = compileOnce(`^[a-zA-z0-9]+$`)
 	}
 
 	if *opts.Ignore == "" && *opts.Locale != "" {
@@ -73,12 +75,12 @@ func IsAlphanumeric(str string, opts *IsAlphanumericOpts) (bool, error) {
 		if !ok {
 			return false, newValidationError("IsAlphanumeric", ErrInvalidFormat, "invalid alphanumeric")
 		}
-		re = regexp.MustCompile(writingSystemAlphaNumRegex[wrtSys])
+		re = compileOnce(writingSystemAlphaNumRegex[wrtSys])
 	}
 
 	if *opts.Ignore != "" && *opts.Locale == "" {
 		charsToIgn := escapeRegexChars(*opts.Ignore)
-		rec := regexp.MustCompile(`^[a-zA-z0-9` + charsToIgn + `]+$`)
+		rec := compileOnce(`^[a-zA-z0-9` + charsToIgn + `]+$`)
 		re = rec
 	}
 
@@ -88,7 +90,7 @@ func IsAlphanumeric(str string, opts *IsAlphanumericOpts) (bool, error) {
 		wrtSysRe := writingSystemAlphaNumRegex[wrtSys]
 		divLen := len(wrtSysRe) - lenClsCharFromEnd
 		fstPrtRe, secPrtRe := wrtSysRe[:divLen], wrtSysRe[divLen:]
-		rec := regexp.MustCompile(fstPrtRe + charsToIgn + secPrtRe)
+		rec := compileOnce(fstPrtRe + charsToIgn + secPrtRe)
 		re = rec
 	}
 

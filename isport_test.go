@@ -25,7 +25,10 @@ func TestIsPort(t *testing.T) {
 		{name: "Invalid Port - Floating point", param1: "8080.1", want: false},
 		{name: "Invalid Port - Empty string", param1: "", want: false},
 		{name: "Invalid Port - Space character", param1: " 8080", want: false},
-		{name: "Invalid Port - Leading zero", param1: "080", want: true},
+		{name: "Invalid Port - Leading zero", param1: "080", want: false},
+		{name: "Invalid Port - Only zeros", param1: "00", want: false},
+		{name: "Valid Port - Four digits", param1: "9999", want: true},
+		{name: "Valid Port - Five digits", param1: "10000", want: true},
 		{name: "Invalid Port - Extra characters", param1: "443port", want: false},
 	}
 

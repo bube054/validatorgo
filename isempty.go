@@ -1,7 +1,5 @@
 package validatorgo
 
-import "regexp"
-
 // IsEmptyOpts is used to configure IsEmpty
 type IsEmptyOpts struct {
 	IgnoreWhitespace *bool
@@ -25,18 +23,19 @@ func IsEmpty(str string, opts *IsEmptyOpts) (bool, error) {
 	if opts == nil {
 		opts = &IsEmptyOpts{}
 	}
+	optsCopy := *opts // fill in defaults on a copy, never on the caller's struct
+	opts = &optsCopy
 	opts.mergeDefaults()
 
 	if *opts.IgnoreWhitespace {
-		if !regexp.MustCompile(`^(\s+)?$`).MatchString(str) {
+		if !compileOnce(`^(\s+)?$`).MatchString(str) {
 			return false, newValidationError("IsEmpty", ErrInvalidValue, "string is not empty")
 		}
 		return true, nil
 	} else {
-		if !regexp.MustCompile(`^$`).MatchString(str) {
+		if !compileOnce(`^$`).MatchString(str) {
 			return false, newValidationError("IsEmpty", ErrInvalidValue, "string is not empty")
 		}
 		return true, nil
 	}
 }
-

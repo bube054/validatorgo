@@ -43,24 +43,18 @@ func TestIsRgbColor(t *testing.T) {
 		// Valid
 		{name: "Valid RGB - rgb(0,0,0) nil opts", param1: "rgb(0,0,0)", param2: nil, want: true},
 		{name: "Valid RGB - rgb(255,255,255) nil opts", param1: "rgb(255,255,255)", param2: nil, want: true},
-		// TODO: should be valid per validator.js — regex does not match alpha value 0
-		{name: "Valid RGBA - rgba(0,0,0,0) nil opts", param1: "rgba(0,0,0,0)", param2: nil, want: false},
+		{name: "Valid RGBA - rgba(0,0,0,0) nil opts", param1: "rgba(0,0,0,0)", param2: nil, want: true},
 		{name: "Valid RGBA - rgba(255,255,255,1) nil opts", param1: "rgba(255,255,255,1)", param2: nil, want: true},
 		{name: "Valid RGBA - rgba(255,255,255,.1) nil opts", param1: "rgba(255,255,255,.1)", param2: nil, want: true},
 		{name: "Valid RGBA - rgba(255,255,255,0.1) nil opts", param1: "rgba(255,255,255,0.1)", param2: nil, want: true},
 		// Invalid
-		// TODO: should be invalid per validator.js — regex allows trailing comma via optional alpha group
-		{name: "Invalid RGB - trailing comma rgb(0,0,0,) nil opts", param1: "rgb(0,0,0,)", param2: nil, want: true},
-		// TODO: should be invalid per validator.js — \d{0,255} allows zero digits
-		{name: "Invalid RGB - missing value rgb(0,0,) nil opts", param1: "rgb(0,0,)", param2: nil, want: true},
-		// TODO: should be invalid per validator.js — \d{0,255} is a digit count quantifier not a numeric range check
-		{name: "Invalid RGB - out of range rgb(0,0,256) nil opts", param1: "rgb(0,0,256)", param2: nil, want: true},
+		{name: "Invalid RGB - trailing comma rgb(0,0,0,) nil opts", param1: "rgb(0,0,0,)", param2: nil, want: false},
+		{name: "Invalid RGB - missing value rgb(0,0,) nil opts", param1: "rgb(0,0,)", param2: nil, want: false},
+		{name: "Invalid RGB - out of range rgb(0,0,256) nil opts", param1: "rgb(0,0,256)", param2: nil, want: false},
 		{name: "Invalid RGB - empty parens rgb() nil opts", param1: "rgb()", param2: nil, want: false},
-		// TODO: should be invalid per validator.js — regex uses rgba? making alpha optional for both rgb and rgba
-		{name: "Invalid RGBA - missing alpha rgba(0,0,0) nil opts", param1: "rgba(0,0,0)", param2: nil, want: true},
+		{name: "Invalid RGBA - missing alpha rgba(0,0,0) nil opts", param1: "rgba(0,0,0)", param2: nil, want: false},
 		{name: "Invalid RGBA - alpha>1 rgba(255,255,255,2) nil opts", param1: "rgba(255,255,255,2)", param2: nil, want: false},
-		// TODO: should be invalid per validator.js — \d{0,255} is a digit count quantifier not a numeric range check
-		{name: "Invalid RGBA - value>255 rgba(255,255,256,0.1) nil opts", param1: "rgba(255,255,256,0.1)", param2: nil, want: true},
+		{name: "Invalid RGBA - value>255 rgba(255,255,256,0.1) nil opts", param1: "rgba(255,255,256,0.1)", param2: nil, want: false},
 		{name: "Invalid RGB - mixed percent and abs rgb(4,4,5%) nil opts", param1: "rgb(4,4,5%)", param2: nil, want: false},
 		{name: "Invalid RGBA - percent without alpha rgba(5%,5%,5%) nil opts", param1: "rgba(5%,5%,5%)", param2: nil, want: false},
 		{name: "Invalid RGBA - mixed percent rgba(3,3,3%,.3) nil opts", param1: "rgba(3,3,3%,.3)", param2: nil, want: false},
@@ -84,6 +78,9 @@ func TestIsRgbColor(t *testing.T) {
 		{name: "Invalid RGBA - broken function name rg ba", param1: "rg ba(0, 251, 22, 0.5)", param2: nil, want: false},
 		{name: "Invalid RGB - spaces inside without AllowSpaces", param1: "rgb( 255,255 ,255)", param2: nil, want: false},
 		{name: "Invalid RGB - empty string nil opts", param1: "", param2: nil, want: false},
+		{name: "Invalid RGB - 999 is out of range", param1: "rgb(999,999,999)", param2: nil, want: false},
+		{name: "Valid RGB - spaces around values with AllowSpaces", param1: "rgb( 255 , 0 , 0 )", param2: &IsRgbOpts{AllowSpaces: Bool(true)}, want: true},
+		{name: "Invalid RGB - space inside a number with AllowSpaces", param1: "rgb(2 55,0,0)", param2: &IsRgbOpts{AllowSpaces: Bool(true)}, want: false},
 	}
 
 	for _, test := range tests {
